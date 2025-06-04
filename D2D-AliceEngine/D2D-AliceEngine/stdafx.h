@@ -15,3 +15,5 @@
 #include <wincodec.h>
 #pragma comment(lib,"windowscodecs.lib")
 #include <string>
+
+#include "../Engine/Application.h"

@@ -1,11 +1,22 @@
 #pragma once
 #include "pch.h"
 #include "D2DRenderer.h"
+#include "Singleton.h"
 
 using namespace Microsoft::WRL;
 
-class Application
+class Application : public Singleton<Application>
 {
+protected:
+	Application();
+	virtual ~Application();
+	static Application* m_pInstance;
+	static Application* GetInstance()
+	{
+		assert(m_pInstance != nullptr && "Application instance not created!");
+		return m_pInstance;
+	}
+
 public:
 	virtual void Initialize();
 	virtual void Run();
@@ -24,5 +35,8 @@ protected:
 	UINT m_width = 1024;
 	UINT m_height = 768;
 	bool m_resized = false;
+
+public:
+	void MessageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 
