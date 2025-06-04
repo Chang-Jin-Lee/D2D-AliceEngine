@@ -33,5 +33,16 @@
 #pragma comment(lib, "dxguid.lib")
 #include <string>
 #include <comdef.h>
+#include <memory>
+
+#include <fstream>
+#include <vector>
+#include <map>
+
+#pragma comment(lib, "Live2DCubismCore.lib")
+#pragma comment(lib, "Live2DCubismCore_MD.lib")
+
+// Live2D 관련 헤더파일.
+#include <Live2D/Framework/src/CubismFramework.hpp>
 
 #endif //PCH_H

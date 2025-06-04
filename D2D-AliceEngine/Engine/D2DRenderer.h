@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "Live2DAllocater.h"
 
 using namespace Microsoft::WRL;
 
@@ -28,6 +29,12 @@ public:
 	HRESULT CreateBitmapFromFile(const wchar_t* path, ID2D1Bitmap1** outBitmap);
 	void CreateSwapChainAndD2DTarget();	// 비트맵을 여러 개 묶어주는 함수
 	void OutputError(HRESULT hr);
+
+	/*
+	* Live2D 관련. 일단은 여기서 테스트 후 클래스로 분리할 예정
+	*/
+	void Live2DInitialize(HWND hwnd);
+	std::unique_ptr<Live2DAllocater> m_live2DModel;
 
 	// 전역 변수
 	ComPtr<ID3D11Device> m_d3dDevice;

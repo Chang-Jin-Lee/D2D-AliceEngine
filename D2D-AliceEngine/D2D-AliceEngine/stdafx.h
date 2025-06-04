@@ -16,4 +16,7 @@
 #pragma comment(lib,"windowscodecs.lib")
 #include <string>
 
+#pragma comment(lib, "Live2DCubismCore.lib")
+#pragma comment(lib, "Live2DCubismCore_MT.lib")
+
 #include "../Engine/Application.h"

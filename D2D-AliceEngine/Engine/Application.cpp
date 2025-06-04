@@ -5,6 +5,7 @@
 
 Application::Application()
 {
+	m_pD2DRenderer = nullptr;
 	m_hwnd = nullptr;
 	m_hInstance = nullptr;
 	m_pInstance = this;

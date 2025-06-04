@@ -536,3 +536,24 @@ void D2DRenderer::OutputError(HRESULT hr)
 	_com_error err(hr);
 	OutputDebugString(err.ErrorMessage());
 }
+
+void Live2DLogger(const char* message)
+{
+	OutputDebugStringA(message);  // Windows용 디버그 출력
+	printf("[Live2D] %s\n", message);  // 콘솔 출력
+}
+
+void D2DRenderer::Live2DInitialize(HWND hwnd)
+{
+	static Live2DAllocater live2DAllocater;
+
+	Csm::CubismFramework::Option option;
+	option.LogFunction = Live2DLogger;
+	option.LoggingLevel = Csm::CubismFramework::Option::LogLevel_Verbose;
+
+	Csm::CubismFramework::StartUp(&live2DAllocater, &option);
+	Csm::CubismFramework::Initialize();
+
+	m_live2DModel = std::make_unique<Live2DAllocater>();
+
+}
