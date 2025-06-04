@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Live2DModel.h"
-#include <Live2D/Framework/src/CubismModelSettingJson.hpp>
+#include <CubismModelSettingJson.hpp>
 
 Live2DModel::Live2DModel(ID3D11Device* device)
     : m_device(device)
@@ -84,7 +84,7 @@ void Live2DModel::Update(float deltaTime)
 
 void Live2DModel::Draw(ID3D11DeviceContext* context, Csm::CubismMatrix44& projMatrix)
 {
-    auto* renderer = GetRenderer<Csm::Rendering::CubismRenderer_D3D11>();
+    Csm::Rendering::CubismRenderer_D3D11* renderer = GetRenderer<Csm::Rendering::CubismRenderer_D3D11>();
     renderer->SetMvpMatrix(&projMatrix);
     renderer->DrawModel();
 }

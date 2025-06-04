@@ -1,5 +1,5 @@
 #pragma once
-#include <Live2D/Framework/src/CubismFramework.hpp>
+#include <CubismFramework.hpp>
 
 class Live2DAllocater : public Csm::ICubismAllocator
 {

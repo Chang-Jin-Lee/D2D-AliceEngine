@@ -1,8 +1,8 @@
 #pragma once
-#include <Live2D/Framework/src/CubismFramework.hpp>
-#include <Live2D/Framework/src/Model/CubismUserModel.hpp>
-#include <Live2D/Framework/src/Rendering/D3D11/CubismRenderer_D3D11.hpp>
-#include <Live2D/Framework/src/Math/CubismMatrix44.hpp>
+#include <CubismFramework.hpp>
+#include <Model/CubismUserModel.hpp>
+#include <Rendering/D3D11/CubismRenderer_D3D11.hpp>
+#include <Math/CubismMatrix44.hpp>
 
 class Live2DModel : public Csm::CubismUserModel
 {

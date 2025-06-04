@@ -43,6 +43,6 @@
 #pragma comment(lib, "Live2DCubismCore_MD.lib")
 
 // Live2D 관련 헤더파일.
-#include <Live2D/Framework/src/CubismFramework.hpp>
+#include <CubismFramework.hpp>
 
 #endif //PCH_H
