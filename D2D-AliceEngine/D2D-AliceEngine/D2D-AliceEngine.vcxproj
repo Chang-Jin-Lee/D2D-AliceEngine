@@ -90,7 +90,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Extension\Live2D\Core\lib\windows\x86_64\143;$(SolutionDir)Extension\Live2D\Core\dll\windows\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Live2DCubismCore.lib;Live2DCubismCore_MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Live2DCubismCore.lib;Live2DCubismCore_MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,7 +122,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Extension\Live2D\Core\lib\windows\x86_64\143;$(SolutionDir)Extension\Live2D\Core\dll\windows\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Live2DCubismCore.lib;Live2DCubismCore_MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Live2DCubismCore.lib;Live2DCubismCore_MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
