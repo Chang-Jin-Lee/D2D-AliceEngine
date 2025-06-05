@@ -135,22 +135,22 @@ void CubismShader_D3D11::GenerateShaders(ID3D11Device* device)
         {
             break;
         }
-        if (!LoadShaderProgram(device, true, ShaderNames_NormalMaskedInverted, static_cast<csmChar*>("PixelMaskedInverted")))
+        /*if (!LoadShaderProgram(device, true, ShaderNames_NormalMaskedInverted, static_cast<csmChar*>("PixelMaskedInverted")))
         {
             break;
         }
         if (!LoadShaderProgram(device, true, ShaderNames_NormalPremultipliedAlpha, static_cast<csmChar*>("PixelNormalPremult")))
         {
             break;
-        }
+        }*/
         if (!LoadShaderProgram(device, true, ShaderNames_NormalMaskedPremultipliedAlpha, static_cast<const csmChar*>("PixelMaskedPremult")))
         {
             break;
         }
-        if (!LoadShaderProgram(device, true, ShaderNames_NormalMaskedInvertedPremultipliedAlpha, static_cast<csmChar*>("PixelMaskedInvertedPremult")))
+        /*if (!LoadShaderProgram(device, true, ShaderNames_NormalMaskedInvertedPremultipliedAlpha, static_cast<csmChar*>("PixelMaskedInvertedPremult")))
         {
             break;
-        }
+        }*/
 
         // 成功
         isSuccess = true;

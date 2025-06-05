@@ -16,8 +16,8 @@
 #pragma comment(lib,"windowscodecs.lib")
 #include <string>
 
-#pragma comment(lib, "Live2DCubismCore.lib")
-#pragma comment(lib, "Live2DCubismCore_MD.lib")
+//#pragma comment(lib, "Live2DCubismCore.lib")
+//#pragma comment(lib, "Live2DCubismCore_MD.lib")
 #include <CubismFramework.hpp>
 
 #include "../Engine/Application.h"

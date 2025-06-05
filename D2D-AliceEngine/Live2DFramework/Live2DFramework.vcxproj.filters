@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismCdiJson.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismDefaultParameterId.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismFramework.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismFrameworkConfig.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismJsonHolder.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismModelSettingJson.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\ICubismAllocator.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\ICubismModelSetting.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Live2DCubismCore.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Effect\CubismPose.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Effect\CubismBreath.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Effect\CubismEyeBlink.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Id\CubismId.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Id\CubismIdManager.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismMath.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismMatrix44.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismModelMatrix.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismTargetPoint.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismVector2.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismViewMatrix.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismMoc.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismModel.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserData.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserDataJson.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismUserModel.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\ACubismMotion.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotion.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotionManager.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotion.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionInternal.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionJson.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionManager.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueEntry.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueManager.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysics.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysicsInternal.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysicsJson.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\CubismClippingManager.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\CubismRenderer.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismNativeInclude_D3D11.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismOffscreenSurface_D3D11.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderer_D3D11.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderState_D3D11.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismShader_D3D11.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismType_D3D11.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmMap.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmRectF.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmString.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmVector.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\CubismBasicType.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Utils\CubismDebug.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Utils\CubismJson.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Utils\CubismString.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Live2DFramework.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismCdiJson.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismDefaultParameterId.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismFramework.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismModelSettingJson.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Effect\CubismPose.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Effect\CubismBreath.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Effect\CubismEyeBlink.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Id\CubismId.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Id\CubismIdManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismMath.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismMatrix44.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismModelMatrix.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismTargetPoint.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismVector2.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismViewMatrix.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismMoc.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismModel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserData.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserDataJson.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismUserModel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotion.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotionManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotion.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionJson.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueEntry.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\ACubismMotion.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysics.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysicsJson.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\CubismRenderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismOffscreenSurface_D3D11.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderer_D3D11.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderState_D3D11.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismShader_D3D11.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Type\csmRectF.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Type\csmString.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Utils\CubismDebug.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Utils\CubismJson.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Utils\CubismString.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Extension\Live2D\Framework\src\Rendering\CubismClippingManager.tpp" />
+  </ItemGroup>
+</Project>

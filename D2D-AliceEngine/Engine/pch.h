@@ -35,12 +35,14 @@
 #include <comdef.h>
 #include <memory>
 
+
+#include <sstream>
 #include <fstream>
 #include <vector>
 #include <map>
 
-#pragma comment(lib, "Live2DCubismCore.lib")
-#pragma comment(lib, "Live2DCubismCore_MD.lib")
+//#pragma comment(lib, "Live2DCubismCore.lib")
+#pragma comment(lib, "Live2DCubismCore_MDd.lib")
 
 // Live2D 관련 헤더파일.
 #include <CubismFramework.hpp>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{4320c59f-5f65-41c2-acc9-0a6113a76509}</ProjectGuid>
+    <RootNamespace>Live2DFramework</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(ProjectName).dir\Debug\</IntDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\Debug\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>$(ProjectName).dir\Debug\</IntDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\Debug\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismCdiJson.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismDefaultParameterId.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismFramework.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismFrameworkConfig.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismJsonHolder.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\CubismModelSettingJson.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Effect\CubismBreath.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Effect\CubismEyeBlink.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Effect\CubismPose.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\ICubismAllocator.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\ICubismModelSetting.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Id\CubismId.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Id\CubismIdManager.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Live2DCubismCore.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismMath.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismMatrix44.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismModelMatrix.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismTargetPoint.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismVector2.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Math\CubismViewMatrix.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismMoc.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismModel.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserData.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserDataJson.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Model\CubismUserModel.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\ACubismMotion.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotion.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotionManager.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotion.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionInternal.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionJson.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionManager.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueEntry.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueManager.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysics.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysicsInternal.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysicsJson.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\CubismClippingManager.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\CubismRenderer.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismNativeInclude_D3D11.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismOffscreenSurface_D3D11.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderer_D3D11.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderState_D3D11.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismShader_D3D11.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismType_D3D11.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmMap.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmRectF.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmString.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\csmVector.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Type\CubismBasicType.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Utils\CubismDebug.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Utils\CubismJson.hpp" />
+    <ClInclude Include="..\Extension\Live2D\Framework\src\Utils\CubismString.hpp" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismCdiJson.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismDefaultParameterId.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismFramework.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\CubismModelSettingJson.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Effect\CubismBreath.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Effect\CubismEyeBlink.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Effect\CubismPose.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Id\CubismId.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Id\CubismIdManager.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismMath.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismMatrix44.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismModelMatrix.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismTargetPoint.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismVector2.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Math\CubismViewMatrix.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismMoc.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismModel.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserData.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismModelUserDataJson.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Model\CubismUserModel.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\ACubismMotion.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotion.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismExpressionMotionManager.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotion.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionJson.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionManager.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueEntry.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Motion\CubismMotionQueueManager.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysics.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Physics\CubismPhysicsJson.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\CubismRenderer.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismOffscreenSurface_D3D11.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderer_D3D11.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismRenderState_D3D11.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Rendering\D3D11\CubismShader_D3D11.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Type\csmRectF.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Type\csmString.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Utils\CubismDebug.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Utils\CubismJson.cpp" />
+    <ClCompile Include="..\Extension\Live2D\Framework\src\Utils\CubismString.cpp" />
+    <ClCompile Include="Live2DFramework.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Extension\Live2D\Framework\src\Rendering\CubismClippingManager.tpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

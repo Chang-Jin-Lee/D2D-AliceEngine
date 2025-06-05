@@ -7,7 +7,7 @@ using namespace Microsoft::WRL;
 
 class Application : public Singleton<Application>
 {
-protected:
+public:
 	Application();
 	virtual ~Application();
 	static Application* m_pInstance;

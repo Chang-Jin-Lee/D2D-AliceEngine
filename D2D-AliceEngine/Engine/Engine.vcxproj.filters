@@ -36,6 +36,18 @@
     <ClInclude Include="Live2DModel.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Helper\Live2DHelper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Live2DRenderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager\TextureManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Live2DDefine.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -57,6 +69,18 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Live2DModel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper\Live2DHelper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Live2DRenderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager\TextureManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Live2DDefine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

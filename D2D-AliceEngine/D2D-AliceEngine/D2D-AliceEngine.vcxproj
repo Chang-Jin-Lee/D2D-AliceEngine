@@ -84,13 +84,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Core\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\Common;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Extension\Live2D\Core\lib\windows\x86_64\143;$(SolutionDir)Extension\Live2D\Core\dll\windows\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Live2DCubismCore.lib;Live2DCubismCore_MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(SolutionDir)Live2DFramework\Debug\Live2DFramework.lib;$(SolutionDir)Extension\Live2D\Core\lib\windows\x86_64\143\Live2DCubismCore_MDd.lib;$(SolutionDir)Extension\Live2D\DirectXTK\DirectXTK.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,13 +116,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Core\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\Common;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Extension\Live2D\Core\lib\windows\x86_64\143;$(SolutionDir)Extension\Live2D\Core\dll\windows\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Live2DCubismCore.lib;Live2DCubismCore_MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(SolutionDir)Live2DFramework\Debug\Live2DFramework.lib;$(SolutionDir)Extension\Live2D\Core\lib\windows\x86_64\143\Live2DCubismCore_MDd.lib;$(SolutionDir)Extension\Live2D\DirectXTK\DirectXTK.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

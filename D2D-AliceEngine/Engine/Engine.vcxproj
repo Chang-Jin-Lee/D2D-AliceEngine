@@ -78,7 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Core\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Framework\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -113,7 +113,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Core\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Framework\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,16 +145,23 @@
     <ClInclude Include="D2DRenderer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Live2DAllocater.h" />
+    <ClInclude Include="Helper\Live2DHelper.h" />
+    <ClInclude Include="Live2DDefine.h" />
     <ClInclude Include="Live2DModel.h" />
+    <ClInclude Include="Live2DRenderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Manager\TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="D2DRenderer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Live2DAllocater.cpp" />
+    <ClCompile Include="Helper\Live2DHelper.cpp" />
+    <ClCompile Include="Live2DDefine.cpp" />
     <ClCompile Include="Live2DModel.cpp" />
+    <ClCompile Include="Live2DRenderer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -162,6 +169,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Singleton.cpp" />
+    <ClCompile Include="Manager\TextureManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
