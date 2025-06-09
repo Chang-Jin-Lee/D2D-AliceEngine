@@ -23,7 +23,7 @@ namespace LAppDefine {
     const csmFloat32 ViewLogicalMaxTop = 2.0f;
 
     // 상대 경로
-    const csmChar* ResourcesPath = "Resources/";
+    const csmChar* ResourcesPath = "../Resource/Live2D/";
 
     // 모델 뒤에 있는 배경 이미지 파일
     const csmChar* BackImageName = "back_class_normal.png";

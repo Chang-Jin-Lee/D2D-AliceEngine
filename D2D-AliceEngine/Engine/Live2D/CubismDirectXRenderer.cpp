@@ -4,7 +4,7 @@
  * Use of this source code is governed by the Live2D Open Software license
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
-
+#include "pch.h"
 #include "LAppPal.hpp"
 
 #include <d3dcompiler.h>
@@ -13,6 +13,8 @@
 #include "CubismDirectXRenderer.hpp"
 #include "CubismDirectXView.hpp"
 #include "CubismTextureManager.hpp"
+
+
 
 namespace {
     CubismDirectXRenderer* _instance = nullptr;

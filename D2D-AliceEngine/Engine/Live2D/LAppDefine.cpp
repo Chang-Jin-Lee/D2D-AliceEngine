@@ -4,7 +4,7 @@
  * Use of this source code is governed by the Live2D Open Software license
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
-
+#include "pch.h"
 #include "LAppDefine.hpp"
 #include <CubismFramework.hpp>
 
@@ -28,7 +28,7 @@ namespace LAppDefine {
     const csmFloat32 ViewLogicalMaxTop = 2.0f;
 
     // 相対パス
-    const csmChar* ResourcesPath = "Resources/";
+    const csmChar* ResourcesPath = "../Resource/Live2D/";
 
     // モデルの後ろにある背景の画像ファイル
     const csmChar* BackImageName = "back_class_normal.png";

@@ -1,0 +1,1 @@
+C:\Users\User\Downloads\CubismSdkForNative-5-r.4\Samples\D3D11\thirdParty\DirectXTK\Bin\Desktop_2022\x64\Debug\DirectXTK.lib

@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "D2DRenderer.h"
 #include "Singleton.h"
+#include "Live2DRenderer.h"
 
 using namespace Microsoft::WRL;
 
@@ -23,6 +24,7 @@ public:
 	virtual void Uninitialize();
 
 	D2DRenderer* m_pD2DRenderer;
+	Live2DRenderer* m_pLive2DRenderer;
 
 protected:
 	HWND m_hwnd = nullptr;
@@ -35,8 +37,13 @@ protected:
 	UINT m_width = 1024;
 	UINT m_height = 768;
 	bool m_resized = false;
+	bool _isEnd = false;
 
 public:
 	void MessageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	void GetClientSize(int& rWidth, int& rHeight);
+
+	void AppEnd() { _isEnd = true; }
+	bool GetIsEnd() { return _isEnd; }
 };
 

@@ -4,13 +4,14 @@
  * Use of this source code is governed by the Live2D Open Software license
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
-
+#include "pch.h"
 #include "LAppSpriteShader.hpp"
 
 #include <d3dcompiler.h>
 #include <Utils/CubismString.hpp>
 #include "LAppDefine.hpp"
-#include "LAppDelegate.hpp"
+//#include "LAppDelegate.hpp"
+#include "Application.h"
 #include "LAppPal.hpp"
 
 LAppSpriteShader::LAppSpriteShader()
@@ -31,7 +32,7 @@ bool LAppSpriteShader::CreateShader()
 {
     ReleaseShader();
 
-    ID3D11Device* device = LAppDelegate::GetD3dDevice();
+    ID3D11Device* device = Application::GetInstance()->m_pD2DRenderer->m_d3dDevice.Get();
     HRESULT result = S_OK;
 
     ID3DBlob* vertexError = NULL;
@@ -193,7 +194,7 @@ bool LAppSpriteShader::CreateShader()
 
 void LAppSpriteShader::SetupShader()
 {
-    ID3D11DeviceContext* deviceContext = LAppDelegate::GetD3dContext();
+    ID3D11DeviceContext* deviceContext = Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get();
 
     if (_rasterizer == NULL || _samplerState == NULL || _blendState == NULL ||
         _vertexShader == NULL || _pixelShader == NULL || _vertexFormat == NULL)
@@ -203,7 +204,8 @@ void LAppSpriteShader::SetupShader()
 
     // 現在のウィンドウサイズの取得
     int windowWidth, windowHeight;
-    LAppDelegate::GetClientSize(windowWidth, windowHeight);
+    //LAppDelegate::GetClientSize(windowWidth, windowHeight);
+	Application::GetInstance()->GetClientSize(windowWidth, windowHeight);
 
     // スプライト描画用の設定をし、シェーダーセット
     deviceContext->IASetInputLayout(_vertexFormat);

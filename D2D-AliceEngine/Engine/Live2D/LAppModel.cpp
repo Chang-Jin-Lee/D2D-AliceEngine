@@ -4,7 +4,7 @@
  * Use of this source code is governed by the Live2D Open Software license
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
-
+#include "pch.h"
 #include "LAppModel.hpp"
 #include <fstream>
 #include <vector>
@@ -19,7 +19,8 @@
 #include "LAppDefine.hpp"
 #include "LAppPal.hpp"
 #include "LAppTextureManager.hpp"
-#include "LAppDelegate.hpp"
+//#include "LAppDelegate.hpp"
+#include "Application.h"
 
 using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
@@ -65,7 +66,8 @@ LAppModel::~LAppModel()
     // テクスチャの開放
     for (csmUint32 i = 0; i < _bindTextureId.GetSize(); i++)
     {
-        LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_bindTextureId[i]);
+        //LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_bindTextureId[i]);
+		Application::GetInstance()->m_pLive2DRenderer->m_textureManager->ReleaseTexture(_bindTextureId[i]);
     }
     _bindTextureId.Clear();
 
@@ -610,7 +612,7 @@ void LAppModel::SetupTextures()
         csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
         texturePath = _modelHomeDir + texturePath;
 
-        LAppTextureManager::TextureInfo* texture = LAppDelegate::GetInstance()->GetTextureManager()->CreateTextureFromPngFile(texturePath.GetRawString(), isTextureMult);
+        LAppTextureManager::TextureInfo* texture = Application::GetInstance()->m_pLive2DRenderer->m_textureManager->CreateTextureFromPngFile(texturePath.GetRawString(), isTextureMult);
 
         //
         if (texture)
@@ -618,7 +620,7 @@ void LAppModel::SetupTextures()
             const csmUint64 textureManageId = texture->id;
 
             ID3D11ShaderResourceView* textureView = NULL;
-            if (LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(textureManageId, textureView))
+            if (Application::GetInstance()->m_pLive2DRenderer->m_textureManager->GetTexture(textureManageId, textureView))
             {
                 GetRenderer<Rendering::CubismRenderer_D3D11>()->BindTexture(modelTextureNumber, textureView);
                 _bindTextureId.PushBack(textureManageId);

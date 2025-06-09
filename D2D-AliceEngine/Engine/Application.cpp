@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Application.h"
 #include "D2DRenderer.h"
+#include <LAppPal.hpp>
 
 Application::Application()
 {
@@ -45,6 +46,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void Application::Initialize()
 {
+	_isEnd = false;
 	m_pD2DRenderer = new D2DRenderer();
 
 	char szPath[MAX_PATH] = { 0, };
@@ -91,17 +93,39 @@ void Application::Initialize()
 	ShowWindow(m_hwnd, SW_SHOW);
 
 	CoInitialize(nullptr);
-	
+
+	m_pD2DRenderer->Initialize(m_hwnd);
+	m_pLive2DRenderer = new Live2DRenderer();
+	m_pLive2DRenderer->Initialize(m_hwnd);
 }
 
 void Application::Run()
 {
+	// 메시지 루프
+	MSG msg = {};
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			m_pD2DRenderer->Render();
 
+			// 시간 갱신
+			//LAppPal::UpdateTime();
+			//m_pLive2DRenderer->Render();
+		}
+	}
 }
 
 void Application::Uninitialize()
 {
-	
+	m_pD2DRenderer->Uninitialize();
+	m_pD2DRenderer = nullptr;
+	CoUninitialize();
 }
 
 
@@ -143,4 +167,18 @@ void Application::MessageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	default:
 		break;
 	}
+}
+
+void Application::GetClientSize(int& rWidth, int& rHeight)
+{
+	if (!m_hwnd)
+	{
+		return;
+	}
+
+	RECT clientRect;
+	GetClientRect(m_hwnd, &clientRect);
+
+	rWidth = (clientRect.right - clientRect.left);
+	rHeight = (clientRect.bottom - clientRect.top);
 }

@@ -4,11 +4,13 @@
  * Use of this source code is governed by the Live2D Open Software license
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
+#include "pch.h"
 #include "LAppView.hpp"
 #include <math.h>
 #include <string>
 #include "LAppPal.hpp"
-#include "LAppDelegate.hpp"
+//#include "LAppDelegate.hpp"
+#include "Application.h"
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppDefine.hpp"
@@ -86,31 +88,34 @@ void LAppView::Render()
 
     // スプライト描画
     int width, height;
-    LAppDelegate::GetInstance()->GetClientSize(width, height);
-
+    //LAppDelegate::GetInstance()->GetClientSize(width, height);
+	Application::GetInstance()->GetClientSize(width, height);
     // デバイスコンテキスト取得
-    ID3D11DeviceContext* renderContext = LAppDelegate::GetD3dContext();
+    ID3D11DeviceContext* renderContext = Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get();
 
     // デバイス取得
-    ID3D11Device* device = LAppDelegate::GetInstance()->GetD3dDevice();
+    ID3D11Device* device = Application::GetInstance()->m_pD2DRenderer->m_d3dDevice.Get();
 
     // 透過設定
     if (_back)
     {
         ID3D11ShaderResourceView* textureView = NULL;
-        LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_back->GetTextureId(), textureView);
+		Application::GetInstance()->m_pLive2DRenderer->m_textureManager->GetTexture(_back->GetTextureId(), textureView);
+        //LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_back->GetTextureId(), textureView);
         _back->RenderImmidiate(width, height, textureView, renderContext);
     }
     if (_gear)
     {
         ID3D11ShaderResourceView* textureView = NULL;
-        LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_gear->GetTextureId(), textureView);
+        Application::GetInstance()->m_pLive2DRenderer->m_textureManager->GetTexture(_gear->GetTextureId(), textureView);
+        //LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_gear->GetTextureId(), textureView);
         _gear->RenderImmidiate(width, height, textureView, renderContext);
     }
     if (_power)
     {
         ID3D11ShaderResourceView* textureView = NULL;
-        LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_power->GetTextureId(), textureView);
+        Application::GetInstance()->m_pLive2DRenderer->m_textureManager->GetTexture(_power->GetTextureId(), textureView);
+        //LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_power->GetTextureId(), textureView);
         _power->RenderImmidiate(width, height, textureView, renderContext);
     }
 
@@ -140,12 +145,13 @@ void LAppView::InitializeSprite()
 {
     // 描画領域サイズ
     int width, height;
-    LAppDelegate::GetInstance()->GetClientSize(width, height);
+    //LAppDelegate::GetInstance()->GetClientSize(width, height);
+	Application::GetInstance()->GetClientSize(width, height);
 
-    LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
+    LAppTextureManager* textureManager = Application::GetInstance()->m_pLive2DRenderer->m_textureManager;
     const string resourcesPath = ResourcesPath;
 
-    ID3D11Device* device = LAppDelegate::GetInstance()->GetD3dDevice();
+    ID3D11Device* device = Application::GetInstance()->m_pD2DRenderer->m_d3dDevice.Get();
 
     float x = 0.0f;
     float y = 0.0f;
@@ -183,7 +189,7 @@ void LAppView::InitializeSprite()
 
 void LAppView::ReleaseSprite()
 {
-    LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
+    LAppTextureManager* textureManager = Application::GetInstance()->m_pLive2DRenderer->m_textureManager;
 
     if (_renderSprite)
     {
@@ -216,7 +222,7 @@ void LAppView::ReleaseSprite()
 
 void LAppView::ResizeSprite()
 {
-    LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
+    LAppTextureManager* textureManager = Application::GetInstance()->m_pLive2DRenderer->m_textureManager;
     if (!textureManager)
     {
         return;
@@ -224,7 +230,7 @@ void LAppView::ResizeSprite()
 
     // 描画領域サイズ
     int width, height;
-    LAppDelegate::GetInstance()->GetClientSize(width, height);
+    Application::GetInstance()->GetClientSize(width, height);
 
     float x = 0.0f;
     float y = 0.0f;
@@ -304,7 +310,7 @@ void LAppView::OnTouchesEnded(float px, float py) const
     live2DManager->OnDrag(0.0f, 0.0f);
     {
         int width, height;
-        LAppDelegate::GetInstance()->GetClientSize(width, height);
+        Application::GetInstance()->GetClientSize(width, height);
 
         // シングルタップ
         float x = _deviceToScreen->TransformX(px); // 論理座標変換した座標を取得。
@@ -324,7 +330,7 @@ void LAppView::OnTouchesEnded(float px, float py) const
         // 電源ボタンにタップしたか
         if (_power->IsHit(px, py, width, height))
         {
-            LAppDelegate::GetInstance()->AppEnd();
+            Application::GetInstance()->AppEnd();
         }
     }
 }
@@ -343,19 +349,19 @@ void LAppView::PreModelDraw(LAppModel& refModel)
         if (!useTarget->IsValid())
         {// 描画ターゲット内部未作成の場合はここで作成
             int width, height;
-            LAppDelegate::GetClientSize(width, height);
+            Application::GetInstance()->GetClientSize(width, height);
 
             if (width != 0 && height != 0)
             {
                 // モデル描画キャンバス
-                useTarget->CreateOffscreenSurface(LAppDelegate::GetInstance()->GetD3dDevice(),
+                useTarget->CreateOffscreenSurface(Application::GetInstance()->m_pD2DRenderer->m_d3dDevice.Get(),
                     static_cast<csmUint32>(width), static_cast<csmUint32>(height));
             }
         }
 
         // レンダリング開始
-        useTarget->BeginDraw(LAppDelegate::GetInstance()->GetD3dContext());
-        useTarget->Clear(LAppDelegate::GetInstance()->GetD3dContext(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
+        useTarget->BeginDraw(Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get());
+        useTarget->Clear(Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
     }
 }
 
@@ -371,18 +377,18 @@ void LAppView::PostModelDraw(LAppModel& refModel)
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
         // レンダリング終了
-        useTarget->EndDraw(LAppDelegate::GetInstance()->GetD3dContext());
+        useTarget->EndDraw(Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get());
 
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
             // スプライト描画
             int width, height;
-            LAppDelegate::GetInstance()->GetClientSize(width, height);
+            Application::GetInstance()->GetClientSize(width, height);
 
             float alpha = GetSpriteAlpha(0);
             _renderSprite->SetColor(alpha, alpha, alpha, alpha);
-            _renderSprite->RenderImmidiate(width, height, useTarget->GetTextureView(), LAppDelegate::GetInstance()->GetD3dContext());
+            _renderSprite->RenderImmidiate(width, height, useTarget->GetTextureView(), Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get());
         }
     }
 }

@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-
+#include "pch.h"
 #include "LAppLive2DManager.hpp"
 #include <windows.h>
 #include <stdio.h>
@@ -15,7 +15,8 @@
 #include <Rendering/D3D11/CubismRenderer_D3D11.hpp>
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
-#include "LAppDelegate.hpp"
+//#include "LAppDelegate.hpp"
+#include "Application.h"
 #include "LAppModel.hpp"
 #include "LAppView.hpp"
 
@@ -217,11 +218,11 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 void LAppLive2DManager::OnUpdate() const
 {
     int windowWidth, windowHeight;
-    LAppDelegate::GetInstance()->GetClientSize(windowWidth, windowHeight);
+    Application::GetInstance()->GetClientSize(windowWidth, windowHeight);
 
     // D3D11 フレーム先頭処理
     // 各フレームでの、Cubism SDK の処理前にコール
-    Rendering::CubismRenderer_D3D11::StartFrame(LAppDelegate::GetInstance()->GetD3dDevice(), LAppDelegate::GetInstance()->GetD3dContext(), windowWidth, windowHeight);
+    Rendering::CubismRenderer_D3D11::StartFrame(Application::GetInstance()->m_pD2DRenderer->m_d3dDevice.Get(), Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get(), windowWidth, windowHeight);
 
     const csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
@@ -254,19 +255,19 @@ void LAppLive2DManager::OnUpdate() const
         }
 
         // モデル1体描画前コール
-        LAppDelegate::GetInstance()->GetView()->PreModelDraw(*model);
+        Application::GetInstance()->m_pLive2DRenderer->m_view->PreModelDraw(*model);
 
         // Cubismモデルの描画
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
 
         // モデル1体描画後コール
-        LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
+        Application::GetInstance()->m_pLive2DRenderer->m_view->PostModelDraw(*model);
     }
 
     // D3D11 フレーム終了処理
     // 各フレームでの、Cubism SDK の処理後にコール
-    Rendering::CubismRenderer_D3D11::EndFrame(LAppDelegate::GetInstance()->GetD3dDevice());
+    Rendering::CubismRenderer_D3D11::EndFrame(Application::GetInstance()->m_pD2DRenderer->m_d3dDevice.Get());
 }
 
 void LAppLive2DManager::NextScene()
@@ -322,11 +323,11 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
 
-        LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
+        Application::GetInstance()->m_pLive2DRenderer->m_view->SwitchRenderingTarget(useRenderTarget);
 
         // 別レンダリング先を選択した際の背景クリア色
         float clearColor[3] = { 0.0f, 0.0f, 0.0f };
-        LAppDelegate::GetInstance()->GetView()->SetRenderTargetClearColor(clearColor[0], clearColor[1], clearColor[2]);
+        Application::GetInstance()->m_pLive2DRenderer->m_view->SetRenderTargetClearColor(clearColor[0], clearColor[1], clearColor[2]);
     }
 }
 

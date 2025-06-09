@@ -78,7 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Framework\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Framework\Common;$(ProjectDir)\Live2D;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -113,7 +113,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Framework\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\Live2D\DirectXTK\Inc;$(SolutionDir)Extension\Live2D\Framework\..\Core\include;$(SolutionDir)Extension\Live2D\Framework\src;$(SolutionDir)Extension\Live2D\Framework\Common;$(ProjectDir)\Live2D;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -149,6 +149,29 @@
     <ClInclude Include="Live2DDefine.h" />
     <ClInclude Include="Live2DModel.h" />
     <ClInclude Include="Live2DRenderer.h" />
+    <ClInclude Include="Live2D\CubismDirectXRenderer.hpp" />
+    <ClInclude Include="Live2D\CubismDirectXView.hpp" />
+    <ClInclude Include="Live2D\CubismSampleViewMatrix_Common.hpp" />
+    <ClInclude Include="Live2D\CubismSprite.hpp" />
+    <ClInclude Include="Live2D\CubismSpriteShader.hpp" />
+    <ClInclude Include="Live2D\CubismTextureManager.hpp" />
+    <ClInclude Include="Live2D\CubismUserModelExtend.hpp" />
+    <ClInclude Include="Live2D\LAppAllocator_Common.hpp" />
+    <ClInclude Include="Live2D\LAppDefine.hpp" />
+    <ClInclude Include="Live2D\LAppLive2DManager.hpp" />
+    <ClInclude Include="Live2D\LAppModel.hpp" />
+    <ClInclude Include="Live2D\LAppModel_Common.hpp" />
+    <ClInclude Include="Live2D\LAppPal.hpp" />
+    <ClInclude Include="Live2D\LAppSprite.hpp" />
+    <ClInclude Include="Live2D\LAppSpriteShader.hpp" />
+    <ClInclude Include="Live2D\LAppSprite_Common.hpp" />
+    <ClInclude Include="Live2D\LAppTextureManager.hpp" />
+    <ClInclude Include="Live2D\LAppTextureManager_Common.hpp" />
+    <ClInclude Include="Live2D\LAppView.hpp" />
+    <ClInclude Include="Live2D\LAppView_Common.hpp" />
+    <ClInclude Include="Live2D\LAppWavFileHandler_Common.hpp" />
+    <ClInclude Include="Live2D\MouseActionManager_Common.hpp" />
+    <ClInclude Include="Live2D\TouchManager_Common.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Manager\TextureManager.h" />
@@ -162,6 +185,29 @@
     <ClCompile Include="Live2DDefine.cpp" />
     <ClCompile Include="Live2DModel.cpp" />
     <ClCompile Include="Live2DRenderer.cpp" />
+    <ClCompile Include="Live2D\CubismDirectXRenderer.cpp" />
+    <ClCompile Include="Live2D\CubismDirectXView.cpp" />
+    <ClCompile Include="Live2D\CubismSampleViewMatrix_Common.cpp" />
+    <ClCompile Include="Live2D\CubismSprite.cpp" />
+    <ClCompile Include="Live2D\CubismSpriteShader.cpp" />
+    <ClCompile Include="Live2D\CubismTextureManager.cpp" />
+    <ClCompile Include="Live2D\CubismUserModelExtend.cpp" />
+    <ClCompile Include="Live2D\LAppAllocator_Common.cpp" />
+    <ClCompile Include="Live2D\LAppDefine.cpp" />
+    <ClCompile Include="Live2D\LAppLive2DManager.cpp" />
+    <ClCompile Include="Live2D\LAppModel.cpp" />
+    <ClCompile Include="Live2D\LAppModel_Common.cpp" />
+    <ClCompile Include="Live2D\LAppPal.cpp" />
+    <ClCompile Include="Live2D\LAppSprite.cpp" />
+    <ClCompile Include="Live2D\LAppSpriteShader.cpp" />
+    <ClCompile Include="Live2D\LAppSprite_Common.cpp" />
+    <ClCompile Include="Live2D\LAppTextureManager.cpp" />
+    <ClCompile Include="Live2D\LAppTextureManager_Common.cpp" />
+    <ClCompile Include="Live2D\LAppView.cpp" />
+    <ClCompile Include="Live2D\LAppView_Common.cpp" />
+    <ClCompile Include="Live2D\LAppWavFileHandler_Common.cpp" />
+    <ClCompile Include="Live2D\MouseActionManager_Common.cpp" />
+    <ClCompile Include="Live2D\TouchManager_Common.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

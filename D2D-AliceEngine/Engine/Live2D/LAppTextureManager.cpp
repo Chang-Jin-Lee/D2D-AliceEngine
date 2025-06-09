@@ -4,12 +4,12 @@
  * Use of this source code is governed by the Live2D Open Software license
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
-
+#include "pch.h"
 #include "LAppTextureManager.hpp"
 #include "LAppDefine.hpp"
 #include "LAppPal.hpp"
-#include "LAppDelegate.hpp"
-
+//#include "LAppDelegate.hpp"
+#include "Application.h"
 
 using namespace LAppDefine;
 
@@ -25,8 +25,8 @@ LAppTextureManager::~LAppTextureManager()
 
 LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(std::string fileName, bool isPreMult, UINT maxSize)
 {
-    ID3D11Device* device = LAppDelegate::GetD3dDevice();
-    ID3D11DeviceContext* context = LAppDelegate::GetD3dContext();
+    ID3D11Device* device = Application::GetInstance()->m_pD2DRenderer->m_d3dDevice.Get();
+    ID3D11DeviceContext* context = Application::GetInstance()->m_pD2DRenderer->m_d3dDeviceContext.Get();
 
     // wcharに変換
     const int WCHAR_LENGTH = 512;

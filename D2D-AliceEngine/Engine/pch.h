@@ -31,6 +31,7 @@
 
 #include <d2d1effects_2.h>
 #pragma comment(lib, "dxguid.lib")
+
 #include <string>
 #include <comdef.h>
 #include <memory>
