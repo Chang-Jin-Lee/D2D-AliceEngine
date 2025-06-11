@@ -11,12 +11,6 @@ class Application : public Singleton<Application>
 public:
 	Application();
 	virtual ~Application();
-	static Application* m_pInstance;
-	static Application* GetInstance()
-	{
-		assert(m_pInstance != nullptr && "Application instance not created!");
-		return m_pInstance;
-	}
 
 public:
 	virtual void Initialize();

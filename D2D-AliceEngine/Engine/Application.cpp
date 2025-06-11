@@ -8,15 +8,12 @@ Application::Application()
 	m_hwnd = nullptr;
 	m_hInstance = nullptr;
 	m_mainCamera = nullptr;
-	m_pInstance = this;
 }
 
 Application::~Application()
 {
 
 }
-
-Application* Application::m_pInstance = nullptr;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {

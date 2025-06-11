@@ -18,7 +18,7 @@ void BitmapRenderer::Initialize()
 
 void BitmapRenderer::LoadBitmapData(const std::wstring& path)
 {
-	HRESULT hr = Application::GetInstance()->m_pD2DRenderManager.get()->CreateBitmapFromFile(
+	HRESULT hr = Application::Get().m_pD2DRenderManager.get()->CreateBitmapFromFile(
 		(Define::BASE_RESOURCE_PATH + path).c_str(), &m_bitmap);
 	assert(SUCCEEDED(hr));
 }
@@ -72,8 +72,8 @@ void BitmapRenderer::Render()
 	if (!m_bitmap)
 		return;
 
-	ID2D1DeviceContext7* context = Application::GetInstance()->m_pD2DRenderManager->m_d2dDeviceContext.Get();
-	Camera* camera = Application::GetInstance()->m_mainCamera.get();
+	ID2D1DeviceContext7* context = Application::Get().m_pD2DRenderManager->m_d2dDeviceContext.Get();
+	Camera* camera = Application::Get().m_mainCamera.get();
 
 	// ºñÆ®¸Ê Å©±â ¹× ÇÇ¹þ
 	D2D1_SIZE_U bmpSize = m_bitmap->GetPixelSize();
@@ -93,7 +93,7 @@ void BitmapRenderer::Render()
 	D2D1::Matrix3x2F view = pivotTranslate * world * cameraInv;
 
 	// Unity ÁÂÇ¥°è¸é º¯È¯ Ãß°¡
-	if (Application::GetInstance()->m_pD2DRenderManager->m_eTransformType == ETransformType::Unity)
+	if (Application::Get().m_pD2DRenderManager->m_eTransformType == ETransformType::Unity)
 	{
 		float centerX = Define::SCREEN_WIDTH * 0.5f;
 		float centerY = Define::SCREEN_HEIGHT * 0.5f;
@@ -114,5 +114,5 @@ void BitmapRenderer::Render()
 
 	context->DrawRectangle(
 		D2D1::RectF(0, 0,
-			bmpSize.width, bmpSize.height), Application::GetInstance()->m_pD2DRenderManager->m_pRedBrush.Get(), 5.0f);
+			bmpSize.width, bmpSize.height), Application::Get().m_pD2DRenderManager->m_pRedBrush.Get(), 5.0f);
 }
