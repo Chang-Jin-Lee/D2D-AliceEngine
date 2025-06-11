@@ -36,8 +36,8 @@ protected:
 
 public:
 	void MessageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	std::shared_ptr<Object> m_Sun;
-	std::shared_ptr<Object> m_Earth;
-	std::shared_ptr<Object> m_Moon;
+	std::shared_ptr<Object> m_sun;
+	std::shared_ptr<Object> m_earth;
+	std::shared_ptr<Object> m_moon;
 };
 
