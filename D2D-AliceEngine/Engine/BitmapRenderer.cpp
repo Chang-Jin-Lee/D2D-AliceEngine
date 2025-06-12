@@ -82,7 +82,14 @@ void BitmapRenderer::Render()
 		bmpSize.height * m_pivot.y
 	};
 
-	D2D1::Matrix3x2F pivotTranslate = D2D1::Matrix3x2F::Translation(-pivotOffset.x, -pivotOffset.y);
+	D2D1::Matrix3x2F unity = D2D1::Matrix3x2F::Identity();
+	D2D1::Matrix3x2F view = D2D1::Matrix3x2F::Translation(-pivotOffset.x, -pivotOffset.y);
+
+	if (Application::Get().m_pD2DRenderManager->m_eTransformType == ETransformType::Unity)
+	{
+		unity = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
+		view = view * unity;
+	}
 
 	// 로컬 피벗 기준 월드 변환
 	D2D1::Matrix3x2F world = m_worldTransform->ToMatrix();
@@ -90,18 +97,12 @@ void BitmapRenderer::Render()
 	// 카메라 역행렬 적용
 	D2D1::Matrix3x2F cameraInv = camera->m_transform->ToMatrix();
 	cameraInv.Invert();
-	D2D1::Matrix3x2F view = pivotTranslate * world * cameraInv;
+	view = view * world * cameraInv;
 
 	// Unity 좌표계면 변환 추가
 	if (Application::Get().m_pD2DRenderManager->m_eTransformType == ETransformType::Unity)
 	{
-		float centerX = Define::SCREEN_WIDTH * 0.5f;
-		float centerY = Define::SCREEN_HEIGHT * 0.5f;
-		D2D1::Matrix3x2F unity = D2D1::Matrix3x2F(
-			1, 0,
-			0, -1,
-			centerX, centerY
-		);
+		unity = unity * D2D1::Matrix3x2F::Translation(Define::SCREEN_WIDTH * 0.5f, Define::SCREEN_HEIGHT * 0.5f);
 		view = view * unity;
 	}
 

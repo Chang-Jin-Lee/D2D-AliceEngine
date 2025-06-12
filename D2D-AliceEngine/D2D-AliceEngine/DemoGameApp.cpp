@@ -60,10 +60,10 @@ void DemoGameApp::Update()
 {
 	__super::Update();
 
-	m_earth->m_bitmapRenderer->m_localTransform->Rotation += 0.5f; // 지구 자전
-	m_moon->m_bitmapRenderer->m_localTransform->Rotation -= 2.0f; // 달 자전
-	m_sun->m_bitmapRenderer->m_localTransform->Rotation += 0.2f;
-	m_sun->Update();
+    m_earth->m_bitmapRenderer->m_localTransform->Rotation += 0.5f; // 지구 자전
+    m_moon->m_bitmapRenderer->m_localTransform->Rotation -= 2.0f; // 달 자전
+    m_sun->m_bitmapRenderer->m_localTransform->Rotation += 0.2f;
+    m_sun->Update();
 
     const std::vector<int> keys = {
      VK_Z, VK_C, VK_B, VK_M,
@@ -73,7 +73,6 @@ void DemoGameApp::Update()
      VK_W, VK_A, VK_S, VK_D,
      '9', '0', 'O', 'L', 'K', VK_OEM_1  // '9','0','O','L','K',';'
     };
-
     for (int key : keys)
     {
         if (GetAsyncKeyState(key) & 0x8000)
@@ -144,13 +143,13 @@ void DemoGameApp::Update()
             case VK_UP:
             {
                 auto pos = m_mainCamera->m_transform->GetPosition();
-                m_mainCamera->m_transform->SetPosition(pos.x, pos.y - 5.0f);
+                m_mainCamera->m_transform->SetPosition(pos.x, pos.y + 5.0f);
                 break;
             }
             case VK_DOWN:
             {
                 auto pos = m_mainCamera->m_transform->GetPosition();
-                m_mainCamera->m_transform->SetPosition(pos.x, pos.y + 5.0f);
+                m_mainCamera->m_transform->SetPosition(pos.x, pos.y - 5.0f);
                 break;
             }
             case VK_1:
@@ -179,13 +178,13 @@ void DemoGameApp::Update()
             case VK_W:
             {
                 auto pos = m_sun->m_bitmapRenderer->m_localTransform->GetPosition();
-                m_sun->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y - 5.0f);
+                m_sun->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y + 5.0f);
                 break;
             }
             case VK_S:
             {
                 auto pos = m_sun->m_bitmapRenderer->m_localTransform->GetPosition();
-                m_sun->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y + 5.0f);
+                m_sun->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y - 5.0f);
                 break;
             }
 
@@ -204,13 +203,13 @@ void DemoGameApp::Update()
             case 'O':
             {
                 auto pos = m_moon->m_bitmapRenderer->m_localTransform->GetPosition();
-                m_moon->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y - 5.0f);
+                m_moon->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y + 5.0f);
                 break;
             }
             case 'L':
             {
                 auto pos = m_moon->m_bitmapRenderer->m_localTransform->GetPosition();
-                m_moon->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y + 5.0f);
+                m_moon->m_bitmapRenderer->m_localTransform->SetPosition(pos.x, pos.y - 5.0f);
                 break;
             }
             case 'K':
