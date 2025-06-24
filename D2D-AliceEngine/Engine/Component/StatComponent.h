@@ -32,7 +32,7 @@ struct DefaultStat {
 	float INT = 30.f;
 };
 
-DEFINE_STAT_TRAITS_6(DefaultStat, MAXHP, HP, MP, STR, DEX, INT)
+DEFINE_STAT_TRAITS_6(DefaultStat, HP, MAXHP, MP, STR, DEX, INT)
 
 template<typename T = DefaultStat>
 class StatComponent : public Component
