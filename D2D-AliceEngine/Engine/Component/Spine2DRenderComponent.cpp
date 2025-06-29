@@ -1,12 +1,25 @@
-#include <spine/spine.h>
-#include <spine/spine-alice.h>
 #include "pch.h"
 #include "Spine2DRenderComponent.h"
 #include "Manager/D2DRenderManager.h"
-#include <spine/Spine2DTextureLoader.h>
 #include <Manager/PackageResourceManager.h>
 
-using namespace spine;
+#include <spine/Spine2DTextureLoader.h>
+//#include <spine/SkeletonBinary.h>
+//#include <spine/spine-alice.h>
+
+Spine2DRenderComponent::Spine2DRenderComponent()
+{
+}
+
+Spine2DRenderComponent::~Spine2DRenderComponent()
+{
+	for (auto m_bitmap : m_bitmaps)
+	{
+		m_bitmap = nullptr;
+	}
+	files.clear();
+	m_bitmaps.clear();
+}
 
 void Spine2DRenderComponent::Initialize()
 {
@@ -26,13 +39,23 @@ void Spine2DRenderComponent::ReleaseFrames()
 
 void Spine2DRenderComponent::LoadData(const std::wstring& path)
 {
-	//ID2D1Bitmap1* _bitmap = nullptr;
-	//PackageResourceManager::Get().CreateBitmapFromFile(path.c_str(), &_bitmap);
-	//D2DSpine2DTextureLoader* textureLoader = new D2DSpine2DTextureLoader(_bitmap);
+	std::shared_ptr<ID2D1Bitmap1> _bitmap = PackageResourceManager::GetInstance().CreateBitmapFromFile(path.c_str());
+	spine::D2DSpine2DTextureLoader * textureLoader = new spine::D2DSpine2DTextureLoader(_bitmap.get());
 	// 1. Atlas 로드
-	//Atlas* atlas = new Atlas("Resource\\yuuka_spr\\yuuka_spr.atlas", textureLoader);
+	spine::Atlas* atlas = new spine::Atlas("Resource\\yuuka_spr\\yuuka_spr.atlas", textureLoader);
 
-	//SkeletonDrawable_D2D* skeletonDrawable = new SkeletonDrawable_D2D(_bitmap, L"Resource\\yuuka_spr\\yuuka_spr");
+	//spine::SkeletonBinary binary(atlas);
+	//binary.setScale(1.0f); // 스케일 조정
+	//
+	//spine::SkeletonData* skeletonData = binary.readSkeletonDataFile("Resource\\yuuka_spr\\yuuka_spr.skel");
+	//if (!skeletonData)
+	//{
+	//	// 에러 처리: binary.getError().buffer()
+	//}
+
+
+
+	//SkeletonDrawable_D2D* skeletonDrawable = new SkeletonDrawable_D2D(_bitmap.get(), L"Resource\\yuuka_spr\\yuuka_spr");
 	
 	//// 2. SkeletonBinary 인스턴스 생성
 	//SkeletonBinary binary(atlas);
@@ -55,4 +78,14 @@ void Spine2DRenderComponent::Release()
 
 void Spine2DRenderComponent::Render()
 {
+}
+
+FVector2 Spine2DRenderComponent::GetSize()
+{
+	if (m_bitmaps.empty() == false)
+	{
+		D2D1_SIZE_U bmpSize = m_bitmaps[0]->GetPixelSize();
+		return FVector2(bmpSize.width, bmpSize.height);
+	}
+	return FVector2();
 }

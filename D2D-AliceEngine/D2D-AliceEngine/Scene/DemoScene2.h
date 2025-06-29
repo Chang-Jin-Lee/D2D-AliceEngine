@@ -20,6 +20,8 @@ public:
 	void aruInput();
 	void CameraInput();
 
+	gameObject* m_spineTest;
+
 	gameObject* m_backgroundImage;
 
 	gameObject* m_aru;

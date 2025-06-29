@@ -1,8 +1,6 @@
 #pragma once
 #include <Math/Transform.h>
-#include "System/RenderSystem.h"
 #include "Component/RenderComponent.h"
-
 /*
 *	@briefs : Spine2DRender 컴포넌트입니다.
 *	@details :
@@ -14,16 +12,8 @@ using namespace Microsoft::WRL;
 class Spine2DRenderComponent : public RenderComponent
 {
 public:
-	Spine2DRenderComponent() {}
-	~Spine2DRenderComponent()
-	{
-		for (auto m_bitmap : m_bitmaps)
-		{
-			m_bitmap = nullptr;
-		}
-		files.clear();
-		m_bitmaps.clear();
-	}
+	Spine2DRenderComponent();
+	~Spine2DRenderComponent();
 
 	void Initialize() override;
 	void Update(const float& deltaSeconds) override;
@@ -34,15 +24,7 @@ public:
 	void Release() override;
 	void Render() override;
 
-	FVector2 GetSize()
-	{
-		if (m_bitmaps.empty() == false)
-		{
-			D2D1_SIZE_U bmpSize = m_bitmaps[0]->GetPixelSize();
-			return FVector2(bmpSize.width, bmpSize.height);
-		}
-		return FVector2();
-	}
+	FVector2 GetSize();
 	std::vector<std::wstring> files;
 	std::vector<ComPtr<ID2D1Bitmap1>> m_bitmaps; // BitmapImage 컴포넌트
 	const size_t cacheSize = 2; // 캐시할 프레임 수
