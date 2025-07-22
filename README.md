@@ -20,9 +20,10 @@ C++로 작성되었으며, 실시간 2D 캐릭터 애니메이션, 게임 메커
 
 ![image](https://github.com/user-attachments/assets/a5d5a4bc-5844-4a9d-9515-8609e8be56fa)
 ![image](https://github.com/user-attachments/assets/4eed35f8-791a-41d5-ba9f-167964154676)
-![image](https://github.com/user-attachments/assets/b642a239-cc2b-49e3-a39d-7dd101f49d3a)
+<img width="8364" height="6484" alt="image" src="https://github.com/user-attachments/assets/4ab7180c-3a87-46ba-8f0f-a2ab3e2b333f" />
 ![image](https://github.com/user-attachments/assets/3ba63e7f-b3b9-4d83-a0e0-b80878f3dca6)
 ![image](https://github.com/user-attachments/assets/260f4579-27f2-4a43-a752-69909bf1edaa)
+<img width="5328" height="3004" alt="image" src="https://github.com/user-attachments/assets/8af86458-5887-4019-9076-e77ffff45e4e" />
 
 
 ## 빌드 및 실행
