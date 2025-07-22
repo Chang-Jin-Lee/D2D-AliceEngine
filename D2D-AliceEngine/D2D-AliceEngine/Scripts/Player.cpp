@@ -80,8 +80,8 @@ void Player::Update(const float& deltaSeconds)
 	bool isGround = (rb->m_eRigidBodyState == Define::ERigidBodyState::Ground ||
 					 rb->m_eRigidBodyState == Define::ERigidBodyState::OnRigidBody);
 	if (isGround && prevGroundState == 0) {
-		jumpCount = 0; // ¶¥¿¡ Ã³À½ ´ê¾ÒÀ» ¶§¸¸ ¸®¼Â
-	}
+			jumpCount = 0; // ¶¥¿¡ Ã³À½ ´ê¾ÒÀ» ¶§¸¸ ¸®¼Â
+		}
 	prevGroundState = isGround ? 1 : 0;
 }
 
@@ -121,12 +121,14 @@ void Player::OnStart()
 
 	m_owner->AddComponent<Collider>()->SetBoxSize(FVector2(35,60));
 	m_owner->AddComponent<Rigidbody2D>();
-	auto rb = m_owner->GetComponent<Rigidbody2D>();
-	rb->m_eRigidBodyType = Define::ERigidBodyType::Dynamic;
-	rb->gravityScale = 60;
-	rb->mass = 20;
-	rb->drag = 0.6;
-	//rb->angularDrag = 0;
+	if (auto rb = m_owner->GetComponent<Rigidbody2D>())
+	{
+		rb->m_eRigidBodyType = Define::ERigidBodyType::Dynamic;
+		rb->gravityScale = 60;
+		rb->mass = 20;
+		rb->drag = 0.6;
+		//rb->angularDrag = 0;
+	}
 
 	m_owner->AddComponent<InputComponent>()->SetAction(m_owner->GetHandle(), [this]() { Input(); });
 }
@@ -160,9 +162,45 @@ void Player::Input()
 	{
 		if (jumpCount < maxJumpCount)
 		{
-			m_owner->GetComponent<Rigidbody2D>()->AddForce(0, 800);
+			m_owner->GetComponent<Rigidbody2D>()->AddForce(0, 720);
 			jumpCount++;
 		}
 		//m_owner->GetComponent<Rigidbody2D>()->velocity.y = 150;
 	}
+}
+
+void Player::OnCollisionEnter2D(Collision2D* collider)
+{
+    std::cout << "[Player] OnCollisionEnter2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW((L"[Player] OnCollisionEnter2D È£ÃâµÊ" + std::to_wstring(EnterIndex++) + L"\n").c_str());
+}
+
+void Player::OnCollisionStay2D(Collision2D* collider)
+{
+    std::cout << "[Player] OnCollisionStay2D È£ÃâµÊ" << std::endl;
+    //OutputDebugStringW((L"[Player] OnCollisionStay2D È£ÃâµÊ" + std::to_wstring(EnterIndex++) + L"\n").c_str());
+}
+
+void Player::OnCollisionExit2D(Collision2D* collider)
+{
+    std::cout << "[Player] OnCollisionExit2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW((L"[Player] OnCollisionExit2D È£ÃâµÊ" + std::to_wstring(ExitIndex++) + L"\n").c_str());
+}
+
+void Player::OnTriggerEnter2D(Collider* collider)
+{
+    std::cout << "[Player] OnTriggerEnter2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"[Player] OnTriggerEnter2D È£ÃâµÊ\n");
+}
+
+void Player::OnTriggerStay2D(Collider* collider)
+{
+    std::cout << "[Player] OnTriggerStay2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"[Player] OnTriggerStay2D È£ÃâµÊ\n");
+}
+
+void Player::OnTriggerExit2D(Collider* collider)
+{
+    std::cout << "[Player] OnTriggerExit2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"[Player] OnTriggerExit2D È£ÃâµÊ\n");
 }

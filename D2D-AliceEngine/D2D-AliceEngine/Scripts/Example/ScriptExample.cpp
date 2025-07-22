@@ -61,6 +61,42 @@ void ScriptExample::OnDestroy()
 {
 }
 
+void ScriptExample::OnCollisionEnter2D(Collision2D* collider)
+{
+    std::cout << "OnCollisionEnter2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"OnCollisionEnter2D È£ÃâµÊ\n");
+}
+
+void ScriptExample::OnCollisionStay2D(Collision2D* collider)
+{
+    std::cout << "OnCollisionStay2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"OnCollisionStay2D È£ÃâµÊ\n");
+}
+
+void ScriptExample::OnCollisionExit2D(Collision2D* collider)
+{
+    std::cout << "OnCollisionExit2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"OnCollisionExit2D È£ÃâµÊ\n");
+}
+
+void ScriptExample::OnTriggerEnter2D(Collider* collider)
+{
+    std::cout << "OnTriggerEnter2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"OnTriggerEnter2D È£ÃâµÊ\n");
+}
+
+void ScriptExample::OnTriggerStay2D(Collider* collider)
+{
+    std::cout << "OnTriggerStay2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"OnTriggerStay2D È£ÃâµÊ\n");
+}
+
+void ScriptExample::OnTriggerExit2D(Collider* collider)
+{
+    std::cout << "OnTriggerExit2D È£ÃâµÊ" << std::endl;
+    OutputDebugStringW(L"OnTriggerExit2D È£ÃâµÊ\n");
+}
+
 void ScriptExample::Input()
 {
 	// ¿©±â¿¡ Input¿¡ ´ëÇÑ ·ÎÁ÷ ÀÛ¼º

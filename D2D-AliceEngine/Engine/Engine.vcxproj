@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Experimental\Collision\Collision2D.h" />
     <ClInclude Include="Component\Rigidbody2D.h" />
     <ClInclude Include="Manager\ClassManager.h" />
     <ClInclude Include="Component\Collider.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Object\UObjectBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Experimental\Collision\Collision2D.cpp" />
     <ClCompile Include="Component\Rigidbody2D.cpp" />
     <ClCompile Include="Manager\ClassManager.cpp" />
     <ClCompile Include="Component\Collider.cpp" />

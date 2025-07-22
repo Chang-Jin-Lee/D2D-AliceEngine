@@ -31,22 +31,7 @@ public:
 	Define::EScriptGroup currnetGroup;
 	std::unordered_map<Define::EScriptGroup, std::queue<ScriptWrapper>> m_scriptQueues;
 
-	void Enque(WeakObjectPtr<Component> InTarget, Define::EScriptGroup InGroup, std::function<void()> TickFunc)
-	{
-		m_scriptQueues[InGroup].emplace(InTarget, TickFunc);
-	}
-
-    void ProcessScriptGroup(Define::EScriptGroup group)
-    {
-        currnetGroup = group;
-        while (m_scriptQueues[group].empty() == false)
-        {
-            if (!m_scriptQueues[group].front().Target.expired())
-            {
-				m_scriptQueues[group].front().TickFunc();
-            }
-			m_scriptQueues[group].pop();
-        }
-    }
+	void Enque(WeakObjectPtr<Component> InTarget, Define::EScriptGroup InGroup, std::function<void()> TickFunc);
+    void ProcessScriptGroup(Define::EScriptGroup group);
 };
 

@@ -27,13 +27,13 @@
                 {
                     "fromState": "Idle",
                     "toState": "Walk",
-                    "exitTime": 0.40000003576278689,
+                    "exitTime": 1.0,
                     "hasExitTime": true,
                     "conditions": [
                         {
                             "parameter": "speed",
                             "mode": "Greater",
-                            "threshold": 0.009999999776482582
+                            "threshold": 0.008999999612569809
                         }
                     ]
                 }
@@ -47,8 +47,21 @@
             "transitions": [
                 {
                     "fromState": "Attack",
+                    "toState": "Idle",
+                    "exitTime": 0.7760818004608154,
+                    "hasExitTime": true,
+                    "conditions": [
+                        {
+                            "parameter": "attack",
+                            "mode": "IfNot",
+                            "threshold": 0.0
+                        }
+                    ]
+                },
+                {
+                    "fromState": "Attack",
                     "toState": "Walk",
-                    "exitTime": 0.800000011920929,
+                    "exitTime": 1.0,
                     "hasExitTime": true,
                     "conditions": [
                         {
@@ -59,19 +72,6 @@
                         {
                             "parameter": "speed",
                             "mode": "Greater",
-                            "threshold": 0.0
-                        }
-                    ]
-                },
-                {
-                    "fromState": "Attack",
-                    "toState": "Idle",
-                    "exitTime": 0.800000011920929,
-                    "hasExitTime": true,
-                    "conditions": [
-                        {
-                            "parameter": "attack",
-                            "mode": "IfNot",
                             "threshold": 0.0
                         }
                     ]
@@ -87,13 +87,13 @@
                 {
                     "fromState": "Walk",
                     "toState": "Idle",
-                    "exitTime": 0.9022513628005981,
+                    "exitTime": 1.0,
                     "hasExitTime": true,
                     "conditions": [
                         {
                             "parameter": "speed",
                             "mode": "Less",
-                            "threshold": 0.009999999776482582
+                            "threshold": 0.008999999612569809
                         }
                     ]
                 }

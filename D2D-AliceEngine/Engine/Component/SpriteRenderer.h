@@ -8,7 +8,7 @@ struct ID2D1Bitmap1;
 class SpriteRenderer : public RenderComponent
 {
 public:
-	SpriteRenderer() {}
+	SpriteRenderer();
 	~SpriteRenderer();
 
 	void Initialize() override;

@@ -23,7 +23,7 @@ namespace Physics
 		};
 		// ToString 메서드 수정
 		// 보여주려고 만든거.
-		std::string ToString() const
+		inline std::string ToString() const
 		{
 			std::ostringstream oss;
 			oss << "minVector : ( X = " << minVector.x << ", Y = " << minVector.y << ", Z = " << minVector.z << " )\n";
@@ -31,7 +31,7 @@ namespace Physics
 			return oss.str();
 		}
 
-		bool IsOverlap(const TAABB* aabb)
+		inline bool IsOverlap(const TAABB* aabb)
 		{
 			if (minVector.x > aabb->maxVector.x ||
 				maxVector.x  < aabb->minVector.x ||
@@ -41,7 +41,7 @@ namespace Physics
 			return true;
 		}
 
-		TVector2<T> GetSize()
+		inline TVector2<T> GetSize()
 		{
 			return TVector2<T>(maxVector.x - minVector.x, maxVector.y - minVector.y);
 		}

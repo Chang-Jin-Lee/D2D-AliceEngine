@@ -43,9 +43,9 @@ public:
 		std::vector<T*> container;
 		for (auto component : m_components)
 		{
-			if (auto castedComponent = dynamic_cast<T*>(component.get()))
+			if (WeakObjectPtr<T> castedComponent = dynamic_cast<T*>(component))
 			{
-				container.push_back(castedComponent);
+				container.push_back(castedComponent.Get());
 			}
 		}
 		return container;

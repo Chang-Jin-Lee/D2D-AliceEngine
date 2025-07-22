@@ -9,6 +9,10 @@
 #include <System/RenderSystem.h>
 #include <Component/TransformComponent.h>
 
+SpriteRenderer::SpriteRenderer()
+{
+}
+
 SpriteRenderer::~SpriteRenderer()
 {
 	PackageResourceManager::GetInstance().UnloadData(filePath); // 비트맵 언로드

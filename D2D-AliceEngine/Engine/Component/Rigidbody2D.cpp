@@ -25,54 +25,59 @@ void Rigidbody2D::Initialize()
 
 void Rigidbody2D::Update(const float& deltaSeconds)
 {
+	if (Collider* col = GetOwner()->GetComponent<Collider>())
+	{
+		if (col->dirty) return;
+	}
+	if(GetOwner()->transform()->bMoved == false) return;
 	float substep = 0.016f;
 	float remaining = deltaSeconds;
+
+	// 임시 포지션/속도/힘 값 (실제 transform이나 velocity에 바로 적용 X!)
+	FVector2 calcPos = owner->transform()->GetPosition();
+	calcPos += collisionPush;
+	collisionPush = FVector2(0, 0);
+
+	FVector2 calcVel = velocity;
+	float calcAngle = owner->transform()->GetRotation();
+	float calcAngularVel = angularVelocity;
+	FVector2 calcForce = force;
+	float calcTorque = torque;
+
 	while (remaining > 0.0f)
 	{
 		float dt = min(substep, remaining);
 
-		// 1. 중력 힘 추가
+		// 중력
 		if (m_eRigidBodyType == Define::ERigidBodyType::Dynamic)
 		{
 			FVector2 gravityForce(0, -Define::GRAVITYCONSTANT * gravityScale * mass);
-			force += gravityForce;
+			calcForce += gravityForce;
 		}
 
-		// 2. 전체 가속도 계산
-		FVector2 acceleration = force / mass;
+		FVector2 acceleration = calcForce / mass;
+		calcVel += acceleration * dt;
+		calcVel.x *= (1.0f - drag * dt);
+		calcVel.y *= (1.0f - drag * dt);
 
-		// 3. 속도 갱신
-		velocity += acceleration * dt;
+		// y축 이동
+		calcPos.y += calcVel.y * dt;
+		calcAngle += calcAngularVel * dt;
 
-		// 4. 감쇠(마찰) 적용
-		velocity.x *= (1.0f - drag * dt);
-		velocity.y *= (1.0f - drag * dt);
-
-		// 5. 위치 갱신
-		owner->transform()->AddPosition(velocity.x * dt, velocity.y * dt);
-		owner->transform()->AddRotation(angularVelocity * dt);
-
-
-		// ========== x축 터널링 방지 시작 ==========
-		// 이동 전 현재 위치
-		FVector2 prevPos = owner->transform()->GetPosition();
-		// 이동 예정 위치 (x축)
-		FVector2 nextPos = prevPos + FVector2(velocity.x * dt, 0);
-
+		// x축 터널링 방지 알고리즘도 calcPos 기준으로!
+		FVector2 prevPos = calcPos;
+		FVector2 nextPos = prevPos + FVector2(calcVel.x * dt, 0);
 		bool blockedX = false;
-		float minHitT = 1.0f; // 0~1, 충돌 타이밍
+		float minHitT = 1.0f;
 		FVector2 hitPos;
 
-		// (씬 내 모든 Collider 대상으로 sweep)
 		for (auto& weakRb : CollisionSystem::GetInstance().m_colliders)
 		{
 			if (auto sp = weakRb.lock())
 			{
 				if (!sp || sp == owner->GetComponent<Collider>()) continue;
-				// 선분-박스 교차 검사 (여기서는 단순화 예시, AABB Sweep을 쓸 수도 있음)
 				if (Physics::FCollisionDetector::LineAABBIntersect(prevPos, nextPos, sp->aabb, hitPos))
 				{
-					// (t = prevPos ~ nextPos의 비율, 0~1)
 					float dx = nextPos.x - prevPos.x;
 					float t = dx != 0 ? (hitPos.x - prevPos.x) / dx : 1.0f;
 					if (t < minHitT)
@@ -83,36 +88,43 @@ void Rigidbody2D::Update(const float& deltaSeconds)
 				}
 			}
 		}
-
 		if (blockedX)
 		{
-			// 충돌 위치까지 이동 (t 비율만큼)
-			float xMove = (velocity.x * dt) * minHitT;
-			owner->transform()->AddPosition(xMove, 0);
-			velocity.x = 0.0f; // 정지
+			float xMove = (calcVel.x * dt) * minHitT;
+			calcPos.x += xMove;
+			calcVel.x = 0.0f;
 		}
 		else
 		{
-			owner->transform()->AddPosition(velocity.x * dt, 0);
+			calcPos.x += calcVel.x * dt;
 		}
 
-		// ========== x축 터널링 방지 끝 ==========
-
-		// 6. 힘 초기화
-		force = FVector2(0.0f, 0.0f);
-		torque = 0.0f;
+		// 힘, 토크 초기화
+		calcForce = FVector2(0.0f, 0.0f);
+		calcTorque = 0.0f;
 
 		// 7. 상태별 y속도 제한 (Ground, OnRigidBody에서만 아래로 가려는 힘 막음)
 		if (m_eRigidBodyState == Define::ERigidBodyState::Ground ||
 			m_eRigidBodyState == Define::ERigidBodyState::OnRigidBody)
 		{
-			if (velocity.y < 0)
-				velocity.y = 0.0f;
+			if (calcVel.y < 0)
+				calcVel.y = 0.0f;
 		}
 
 		remaining -= dt;
 	}
+
+	// === while 끝나고 단 1회만 실제 적용 ===
+	owner->transform()->SetPosition(calcPos);
+	owner->transform()->SetRotation(calcAngle);
+	velocity = calcVel;
+	angularVelocity = calcAngularVel;
+
+	// 이후 (CollisionSystem 등) 프레임당 1회만 Update
+	force = FVector2(0.0f, 0.0f);
+	torque = 0.0f;
 }
+
 
 void Rigidbody2D::Release()
 {

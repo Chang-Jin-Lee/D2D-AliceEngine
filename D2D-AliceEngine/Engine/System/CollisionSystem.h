@@ -3,6 +3,7 @@
 #include <Core/ObjectHandler.h>
 #include <Object/UObject.h>
 #include <Experimental/Physics/AABB.h>
+#include <set>
 /*
 * @briefs : 전역으로 모든 Collider의 충돌을 감지하는 시스템입니다.
 * @details :
@@ -31,4 +32,8 @@ public:
 
 public:
 	std::vector<WeakObjectPtr<Collider>> m_colliders;
+
+	// 충돌 상태 저장용 (주소가 작은 쪽이 first)
+	std::set<std::pair<Collider*, Collider*>> previousCollisions;
+	std::set<std::pair<Collider*, Collider*>> currentCollisions;
 };
