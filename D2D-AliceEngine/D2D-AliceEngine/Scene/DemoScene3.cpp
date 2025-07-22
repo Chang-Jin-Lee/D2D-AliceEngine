@@ -36,6 +36,25 @@ void DemoScene3::Release()
 void DemoScene3::Update()
 {
 	__super::Update();
+	auto rigidType = m_player->GetComponent<Rigidbody2D>()->m_eRigidBodyType;
+	std::wstring rigidTypeStr = L"";
+	switch (rigidType)
+	{
+	case Define::ERigidBodyType::Static:
+		rigidTypeStr = L"Static";
+		break;
+	case Define::ERigidBodyType::Kinematic:
+		rigidTypeStr = L"Kinematic";
+		break;
+	case Define::ERigidBodyType::Dynamic:
+		rigidTypeStr = L"Dynamic";
+		break;
+	default:
+		rigidTypeStr = L"Unknown";
+		break;
+	}
+
+
 	FVector2 pos = m_player->transform()->GetPosition();
 	float rotation = m_player->transform()->GetRotation();
 	FVector2 scale = m_player->transform()->GetScale();
@@ -68,6 +87,9 @@ void DemoScene3::Update()
 		L" player Gravity : ( -9.8 * "
 		+ std::to_wstring(m_player->GetComponent<Rigidbody2D>()->gravityScale)
 		+ L")"
+		L"\n"
+		L" Rigidbody Type : "
+		+ rigidTypeStr
 	);
 	for (int i = 0; i < enemyMax; i++)
 	{
@@ -88,10 +110,6 @@ void DemoScene3::Update()
 	if (m_player->GetComponent<Rigidbody2D>()->m_eRigidBodyState == Define::ERigidBodyState::Ground)
 	{
 		m_player->GetComponent<Collider>()->SetBoxColor(FColor::Green);
-	}
-	else if (m_player->GetComponent<Rigidbody2D>()->m_eRigidBodyState == Define::ERigidBodyState::OnRigidBody)
-	{
-		m_player->GetComponent<Collider>()->SetBoxColor(FColor::Blue);
 	}
 	else
 	{
@@ -119,11 +137,18 @@ void DemoScene3::OnEnter()
 		L" [g] : 플레이어 중력 증가 - 터널링 검사 \n"
 		L" [h] : 플레이어 중력 감소\n"
 		L" [u] : 플레이어 이동 방식 변경\n"
+		L" [i] : Rigidbody를 Kinematic으로 전환\n"
+		L" [o] : Rigidbody를 Dynamic으로 전환\n"
+		L" [p] : Rigidbody를 Static으로 전환\n"
 		L"\n"
 		L" <플레이어 상태>\n"
 		L" Box 색상 : 초록색 - 땅 위에 있음\n"
 		L" Box 색상 : 파란색/보라색 - 땅 위에 있는 물체 위에 있음\n"
 		L" Box 색상 : 빨간색 - 공기 중에 있음\n"
+		L" Rigidbody 타입에 따라 물리 시뮬레이션 적용/미적용이 달라집니다.\n"
+		L" - Static : 움직이지 않음(지형/벽 등)\n"
+		L" - Kinematic : 직접 제어, 물리 힘 무시\n"
+		L" - Dynamic : 중력/힘 등 물리 적용\n"
 		L" [1/2] : D2D, Unity 좌표계 \n"
 		L" [Q] : 카메라를 플레이어에게 붙이기 \n"
 		L" [E] : 카메라를 떼기 \n"
@@ -149,10 +174,10 @@ void DemoScene3::OnEnter()
 	m_widget3->GetComponent<TextRenderComponent>()->SetFontSize(20.0f);
 	m_widget3->GetComponent<TextRenderComponent>()->m_layer = 20;
 
-	m_widget4->transform()->SetPosition(0, 0);
+	m_widget4->transform()->SetPosition(512, 512);
 	m_widget4->AddComponent<TextRenderComponent>()->SetText(L" test");
 	m_widget4->GetComponent<TextRenderComponent>()->SetTextAlignment(ETextFormat::TopLeft);
-	m_widget4->GetComponent<TextRenderComponent>()->SetPosition(FVector2(20, 580));
+	m_widget4->GetComponent<TextRenderComponent>()->SetPosition(FVector2(45, 60));
 	m_widget4->GetComponent<TextRenderComponent>()->SetFontSize(20.0f);
 	m_widget4->GetComponent<TextRenderComponent>()->m_layer = 20;
 
@@ -259,5 +284,17 @@ void DemoScene3::PlayerInput()
 	if (Input::IsKeyPressed(VK_U))
 	{
 		m_player->GetComponent<Player>()->bMoveRigidBody = !m_player->GetComponent<Player>()->bMoveRigidBody;
+	}
+	if (Input::IsKeyPressed(VK_I))
+	{
+		m_player->GetComponent<Rigidbody2D>()->m_eRigidBodyType = Define::ERigidBodyType::Kinematic;
+	}
+	if (Input::IsKeyPressed(VK_O))
+	{
+		m_player->GetComponent<Rigidbody2D>()->m_eRigidBodyType = Define::ERigidBodyType::Dynamic;
+	}
+	if (Input::IsKeyPressed(VK_P))
+	{
+		m_player->GetComponent<Rigidbody2D>()->m_eRigidBodyType = Define::ERigidBodyType::Static;
 	}
 }

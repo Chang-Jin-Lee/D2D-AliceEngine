@@ -84,4 +84,11 @@ void YuukaVideo::Input()
 		m_yuuka->AddComponent<VideoComponent>()->LoadData(L"BackGround\\Alice.webm", 30, L"jpg", 95, true);
 		m_yuuka->GetComponent<VideoComponent>()->Play();
 	}
+	if (Input::IsKeyPressed(VK_0))
+	{
+		m_yuuka->GetComponent<VideoComponent>()->Stop();
+		m_yuuka->RemoveComponent<VideoComponent>(m_yuuka->GetComponent<VideoComponent>());
+		m_yuuka->AddComponent<VideoComponent>()->LoadData(L"BackGround\\Mari_Sportswear.webm", 30, L"jpg", 95, true);
+		m_yuuka->GetComponent<VideoComponent>()->Play();
+	}
 }

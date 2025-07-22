@@ -17,6 +17,10 @@ Component::Component(const std::wstring& name)
 	SetUUID(StringHelper::MakeUniqueName());
 }
 
+Component::~Component()
+{
+}
+
 void Component::Update(const float& deltaSeconds)
 {
 

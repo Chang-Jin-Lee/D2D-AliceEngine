@@ -19,6 +19,7 @@ namespace Define
 	static const std::wstring BASE_EXTENSION_PATH = L"Extension\\";
 	static const float PI = 3.14159265358979323846264f;
 	static const float GRAVITYCONSTANT = 9.8f;
+	static const float MIN_OVERLAP_EPSILON = 0.001f; // float 오차 방지용 최소 겹침값
 
 	enum class EDrawType
 	{
@@ -84,6 +85,12 @@ namespace Define
 		SG_OnStart,
 		SG_OnEnd,
 		SG_OnDestroy,
+		SG_OnCollisionEnter2D,
+		SG_OnCollisionStay2D,
+		SG_OnCollisionExit2D,
+		SG_OnTriggerEnter2D,
+		SG_OnTriggerStay2D,
+		SG_OnTriggerExit2D,
 		SG_MAX,
 	};
 

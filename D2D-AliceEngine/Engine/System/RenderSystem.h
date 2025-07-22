@@ -4,6 +4,10 @@
 #include <Core/Singleton.h>
 #include "../System/SystemBase.h"
 
+/* 
+*  @briefs : 렌더링을 담당하는 시스템입니다
+*/
+
 class RenderComponent;
 struct ViewRect { float minX, maxX, minY, maxY; };
 class RenderSystem : public Singleton<RenderSystem>

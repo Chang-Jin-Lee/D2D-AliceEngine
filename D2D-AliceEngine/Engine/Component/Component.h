@@ -13,7 +13,7 @@ class Component : public UObject, public ITickable
 public:
 	Component();
 	Component(const std::wstring& name);
-	~Component() {}
+	~Component();
 public:
 	virtual void Initialize() override {}
 	virtual void Update() override {}

@@ -9,7 +9,9 @@
 
 CollisionSystem::CollisionSystem()
 {
-	
+	currentCollisions.clear();
+	previousCollisions.clear();
+	m_colliders.clear();
 }
 
 CollisionSystem::~CollisionSystem()

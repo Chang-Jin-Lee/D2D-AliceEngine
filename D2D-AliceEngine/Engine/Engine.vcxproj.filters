@@ -213,6 +213,9 @@
     <ClInclude Include="Component\Rigidbody2D.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="Experimental\Collision\Collision2D.h">
+      <Filter>Experimental\Collission</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component\VideoComponent.cpp">
@@ -373,6 +376,9 @@
     </ClCompile>
     <ClCompile Include="Component\Rigidbody2D.cpp">
       <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Experimental\Collision\Collision2D.cpp">
+      <Filter>Experimental\Collission</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

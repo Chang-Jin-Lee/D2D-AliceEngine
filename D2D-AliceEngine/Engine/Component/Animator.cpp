@@ -75,7 +75,7 @@ void Animator::Render()
 	float ScaleX = GetSizeX() / sheet.get()->textureWidth;
 	float ScaleY = GetSizeY() / sheet.get()->textureHeight;
 	float x = sprite.x * ScaleX;
-	float y = GetSizeY() - sprite.y * ScaleY;
+	float y = sprite.y * ScaleY;
 	float width = sprite.width * ScaleX;
 	float height = sprite.height * ScaleY;
 	D2D1_RECT_F SrcRect = { x, y - height, x + width, y };

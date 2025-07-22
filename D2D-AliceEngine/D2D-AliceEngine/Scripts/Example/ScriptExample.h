@@ -30,6 +30,12 @@ public:
 	virtual void OnEnd() override;
 	virtual void OnDestroy() override;
 
+	virtual void OnCollisionEnter2D(Collision2D* collider) override;
+	virtual void OnCollisionStay2D(Collision2D* collider) override;
+	virtual void OnCollisionExit2D(Collision2D* collider) override;
+	virtual void OnTriggerEnter2D(Collider* collider) override;
+	virtual void OnTriggerStay2D(Collider* collider) override;
+	virtual void OnTriggerExit2D(Collider* collider) override;
 
 	void Input();
 

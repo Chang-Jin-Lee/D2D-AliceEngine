@@ -1,7 +1,7 @@
 {
     "clipName": "Zero_attack",
     "loop": false,
-    "texturePath": "Zero/Zero.png",
+    "texturePath": "Assets/Character/Sprites/Zero.png",
     "duration": 1.0833333730697632,
     "frames": [
         {
