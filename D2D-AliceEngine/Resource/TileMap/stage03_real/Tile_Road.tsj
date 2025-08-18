@@ -1,0 +1,14 @@
+{ "columns":5,
+ "image":"TileMap\\stage03_real\\Tile_Road.png",
+ "imageheight":360,
+ "imagewidth":600,
+ "margin":0,
+ "name":"Tile_Road",
+ "spacing":0,
+ "tilecount":15,
+ "tiledversion":"1.11.2",
+ "tileheight":120,
+ "tilewidth":120,
+ "type":"tileset",
+ "version":"1.10"
+}

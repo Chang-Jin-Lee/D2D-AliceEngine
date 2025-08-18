@@ -1,11 +1,12 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "TransformComponent.h"
 #include <Manager/UpdateTaskManager.h>
 #include <Math/Transform.h>
+#include <System/TransformSystem.h>
 
 TransformComponent::TransformComponent()
 {
-	SetTransform(FVector2(0.0f), 0, FVector2(1.0f), FVector2(0.5f));
+	SetTransform(FVector2(0), 0, FVector2(1.0f), FVector2(0.5f));
 }
 
 TransformComponent::~TransformComponent()
@@ -14,21 +15,13 @@ TransformComponent::~TransformComponent()
 
 void TransformComponent::Initialize()
 {
-	UpdateTaskManager::GetInstance().Enque(
-		WeakFromThis<ITickable>(),
-		Define::ETickingGroup::TG_EndPhysics,
-		[weak = WeakFromThis<ITickable>()](const float& dt)
-	{
-		if (auto sp = weak.lock())
-		{
-			sp->Update(dt);
-		}
-	}
-	);
+	//REGISTER_TICK_TASK(Update, Define::ETickingGroup::TG_NewlySpawned);
+	TransformSystem::GetInstance().Regist(WeakFromThis<TransformComponent>());
 }
 
 void TransformComponent::Release()
 {
+	TransformSystem::GetInstance().UnRegist(WeakFromThis<TransformComponent>());
 	for (auto child : children)
 	{
 		if (child.lock())
@@ -38,12 +31,26 @@ void TransformComponent::Release()
 	}
 }
 
+void TransformComponent::RecalcWorldRecursive(const D2D1::Matrix3x2F& parentWorld)
+{
+	// local/world dirty 체크는 Transform::ToMatrix()가 내부 캐시로 해결
+	const auto local = m_localTransform.ToMatrix();
+	const auto world = local * parentWorld;
+	m_worldTransform.SetFromMatrix(world);
+
+	for (auto& ch : children)
+	{
+		if (auto c = ch.lock())
+			c->RecalcWorldRecursive(world);
+	}
+}
+
 void TransformComponent::Update(const float& deltaSeconds)
 {
 	__super::Update(deltaSeconds);
 	D2D1::Matrix3x2F mat;
 
-	if (parent.lock())
+	if (!parent.expired())
 	{
 		mat = m_localTransform.ToMatrix() * parent.lock()->m_worldTransform.ToMatrix();
 	}
@@ -56,9 +63,9 @@ void TransformComponent::Update(const float& deltaSeconds)
 
 	for (auto child : children)
 	{
-		if (child.lock())
+		if (!child.expired())
 		{
-			child.lock()->Update(deltaSeconds);
+			child->Update(deltaSeconds);
 		}
 	}
 }
@@ -78,6 +85,25 @@ void TransformComponent::AddChildObject(WeakObjectPtr<TransformComponent> child)
 	
 	childPtr->parent = WeakFromThis<TransformComponent>();
 	children.push_back(childPtr);
+}
+
+void TransformComponent::RemoveFromParent()
+{
+	auto parentPtr = parent.lock();
+	if (!parentPtr) return; // 부모가 없으면 아무것도 하지 않음
+	
+	// 부모의 children 리스트에서 자신을 제거
+	for (auto it = parentPtr->children.begin(); it != parentPtr->children.end(); ++it)
+	{
+		if (it->lock() == this)
+		{
+			parentPtr->children.erase(it);
+			break;
+		}
+	}
+	
+	// 자신의 parent 참조 제거
+	parent.reset();
 }
 
 FVector2 TransformComponent::GetPosition() const
@@ -107,6 +133,13 @@ void TransformComponent::SetPosition(const FVector2& _v)
 	bMoved = true;
 }
 
+void TransformComponent::SetWorldPosition(const FVector2& _v)
+{
+	m_worldTransform.SetPosition(_v.x, _v.y);
+	SetDirty();
+	bMoved = true;
+}
+
 void TransformComponent::SetRotation(const float& _val)
 {
 	m_localTransform.SetRotation(_val);
@@ -123,6 +156,12 @@ FVector2 TransformComponent::GetScale()
 	return FVector2(m_localTransform.GetScale().x, m_localTransform.GetScale().y);
 }
 
+void TransformComponent::SetScale(const FVector2& _v)
+{
+	m_localTransform.SetScale(_v.x, _v.y);
+	SetDirty();
+}
+
 void TransformComponent::SetScale(const float& _x, const float& _y)
 {
 	m_localTransform.SetScale(_x, _y);
@@ -135,6 +174,12 @@ void TransformComponent::SetScale(const float& _x)
 	SetDirty();
 }
 
+void TransformComponent::SetWorldScale(const FVector2& _v)
+{
+	m_worldTransform.SetScale(_v.x, _v.y);
+	SetDirty();
+}
+
 void TransformComponent::AddRotation(const float& _val)
 {
 	m_localTransform.SetRotation(m_localTransform.GetRotation() + _val);
@@ -144,6 +189,12 @@ void TransformComponent::AddRotation(const float& _val)
 void TransformComponent::AddPosition(const float& _x, const float& _y)
 {
 	m_localTransform.SetPosition(m_localTransform.GetPosition().x + _x, m_localTransform.GetPosition().y + _y);
+	SetDirty();
+}
+
+void TransformComponent::AddPosition(const FVector2& _v)
+{
+	m_localTransform.SetPosition(m_localTransform.GetPosition().x +_v.x, m_localTransform.GetPosition().y +_v.y);
 	SetDirty();
 }
 
@@ -168,9 +219,9 @@ void TransformComponent::SetDirty()
 {
 	m_localTransform.dirty = true;
 	m_worldTransform.dirty = true;
-	for (auto& child : children)
+	for (auto child : children)
 	{
-		if (auto c = child.lock())
-			c->SetDirty();
+		if (!child.expired())
+			child->SetDirty();
 	}
 }

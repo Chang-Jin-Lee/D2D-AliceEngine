@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CollisionDetector.h"
 #include <Component/Collider.h>
 #include <Object/gameObject.h>
@@ -7,7 +7,36 @@
 #include <Component/Rigidbody2D.h>
 #include <Component/ScriptComponent.h>
 #include <System/CollisionSystem.h>
+#include <Component/BoxComponent.h>
 #include "Collision2D.h"
+
+static inline bool GetBoxWorldBounds(Collider* c, float& minX, float& maxX, float& minY, float& maxY)
+{
+	if (!c) return false;
+	gameObject* go = c->GetOwner();
+	if (!go) return false;
+	FVector2 ownerPos = go->transform() ? go->transform()->GetPosition() : FVector2(0, 0);
+	FVector2 size(0, 0);
+	FVector2 center(0, 0);
+	if (c->boxComponent && c->boxComponent->GetUsage() == BoxComponent::EUsage::Collision)
+	{
+		size = c->boxComponent->m_size;
+		// ì›”ë“œ ì¤‘ì‹¬ì€ BoxComponentì˜ ìƒëŒ€ íŠ¸ëœìŠ¤í¼(ì›”ë“œ ìœ„ì¹˜)ì„ ìš°ì„  ì‚¬ìš©
+		if (auto tr = c->boxComponent->GetRelativeTransform()) center = tr->GetPosition();
+		else center = ownerPos + c->boxComponent->GetRelativePosition();
+	}
+	else
+	{
+		return false;
+	}
+	const float halfW = size.x * 0.5f;
+	const float halfH = size.y * 0.5f;
+	minX = center.x - halfW;
+	maxX = center.x + halfW;
+	minY = center.y - halfH;
+	maxY = center.y + halfH;
+	return true;
+}
 
 void Physics::FCollisionDetector::BruteForceOverlapCheck(std::vector<WeakObjectPtr<Collider>>& objects)
 {
@@ -19,10 +48,13 @@ void Physics::FCollisionDetector::BruteForceOverlapCheck(std::vector<WeakObjectP
 		{
 			if (objects[j].expired()) continue;
 
+			// ì±„ë„ í•„í„°ë§: ê°™ì€ ì±„ë„ë§Œ ê²€ì‚¬
+			if (objects[i]->GetCollisionChannel() != objects[j]->GetCollisionChannel()) continue;
+
 			if (IsOverlapped(objects[i],objects[j]))
 			{
-                PushOverlappedArea(objects[i].Get(), objects[j].Get());
-				std::wcout << L"[Ãæµ¹] " << objects[i]->GetName()<< " " << objects[j]->GetName() << " °ãÄ§\n";
+				PushOverlappedArea(objects[i].Get(), objects[j].Get());
+				std::wcout << L"[ì¶©ëŒ] " << objects[i]->GetName()<< " " << objects[j]->GetName() << " ê²¹ì¹¨\n";
 			}
 		}
 	}
@@ -30,37 +62,70 @@ void Physics::FCollisionDetector::BruteForceOverlapCheck(std::vector<WeakObjectP
 
 std::unordered_set<Rigidbody2D*> Physics::FCollisionDetector::SweepAndPruneOverlapCheck(std::vector<WeakObjectPtr<Collider>>& objects)
 {
-    // Sweep and PruneÀ» À§ÇÑ Á¤·Ä
-    std::sort(objects.begin(), objects.end(), &FCollisionDetector::CompareColliderMinX);
-    
-    std::unordered_set<Rigidbody2D*> overlappedRigdBodies;
-    CollisionSystem::GetInstance().currentCollisions.clear();
-    for (size_t i = 0; i < objects.size(); ++i)
-    {
-        auto src = objects[i];
-		if (CheckCollisionCondition(src)) continue;
+	struct Entry
+	{
+		WeakObjectPtr<Collider> weak;
+		float minX;
+		float maxX;
+	};
 
-        for (size_t j = i + 1; j < objects.size(); ++j)
-        {
-			auto tar = objects[j];
-			if (CheckCollisionCondition(tar)) continue;
+	std::vector<Entry> active;
+	active.reserve(objects.size());
 
-            // Prune: ´õ ÀÌ»ó °ãÄ¥ ¼ö ¾øÀ¸¸é break
-            if (tar->aabb.minVector.x > src->aabb.maxVector.x)
-                break;
+	// ì‚´ì•„ìˆëŠ” ì½œë¼ì´ë”ë§Œ ìŠ¤ëƒ…ìƒ· ìƒì„±
+	for (auto& w : objects)
+	{
+		if (w.expired()) continue;
+		if (CheckCollisionCondition(w)) continue;
 
-            // ½ÇÁ¦ Ãæµ¹ °Ë»ç
-            if (IsOverlapped(src, tar))
-            {
-				if (src.expired() || tar.expired()) continue;
-                PushOverlappedArea(src.Get(), tar.Get());
-				SavePreviousCollisionData(src.Get(), tar.Get(), overlappedRigdBodies);
-            }
-        }
-    }
+		Collider* c = w.Get();
+		float minX, maxX, minY, maxY;
+		if (!GetBoxWorldBounds(c, minX, maxX, minY, maxY)) continue;
+		active.push_back(Entry{ w, minX, maxX });
+	}
+
+	// minXë¡œ ì •ë ¬
+	std::sort(active.begin(), active.end(),
+		[](const Entry& a, const Entry& b) {
+			return a.minX < b.minX;
+		});
+
+	std::unordered_set<Rigidbody2D*> overlappedRigidBodies;
+	CollisionSystem::GetInstance().currentCollisions.clear();
+
+	// Sweep & Prune
+	for (size_t i = 0; i < active.size(); ++i)
+	{
+		auto& A = active[i];
+		if (A.weak.expired()) continue;
+
+		for (size_t j = i + 1; j < active.size(); ++j)
+		{
+			auto& B = active[j];
+			if (B.weak.expired()) continue;
+
+			// Prune
+			if (B.maxX < A.minX)
+				continue;
+
+			// ì‹¤ì œ ì¶©ëŒ íŒì •
+			if (IsOverlapped(A.weak, B.weak))
+			{
+				Collider* ca = A.weak.Get();
+				Collider* cb = B.weak.Get();
+				if (!ca || !cb) continue;
+
+				// ì±„ë„ í•„í„°ë§: ê°™ì€ ì±„ë„ë§Œ ì´ë²¤íŠ¸/í•´ê²°
+				if (ca->GetCollisionChannel() != cb->GetCollisionChannel()) continue;
+
+				PushOverlappedArea(ca, cb);
+				SavePreviousCollisionData(ca, cb, overlappedRigidBodies);
+			}
+		}
+	}
+
 	LoadPreviousCollisions();
-
-    return overlappedRigdBodies;
+	return overlappedRigidBodies;
 }
 
 bool Physics::FCollisionDetector::CheckCollisionCondition(WeakObjectPtr<Collider>& _object)
@@ -73,7 +138,7 @@ bool Physics::FCollisionDetector::CheckCollisionCondition(WeakObjectPtr<Collider
 
 void Physics::FCollisionDetector::LoadPreviousCollisions()
 {
-	// ÀÌÀü Ãæµ¹ Á¤º¸¸¦ ÀüºÎ °Ë»çÇÏ¸é¼­ ÇöÀç Ãæµ¹Á¤º¸¿¡ ¾ø´Ù¸é ±×°Ç ExitÀÌ´Ù.
+	// ì´ì „ ì¶©ëŒ ì •ë³´ë¥¼ ì „ë¶€ ê²€ì‚¬í•˜ë©´ì„œ í˜„ì¬ ì¶©ëŒì •ë³´ì— ì—†ë‹¤ë©´ ê·¸ê±´ Exitì´ë‹¤.
 	for (const auto& pair : CollisionSystem::GetInstance().previousCollisions)
 	{
 		if (CollisionSystem::GetInstance().currentCollisions.find(pair) == CollisionSystem::GetInstance().currentCollisions.end())
@@ -85,13 +150,18 @@ void Physics::FCollisionDetector::LoadPreviousCollisions()
 			collision2D.otherCollider = b;
 			if (a->GetOwner()) collision2D.rigidbody = a->GetOwner()->GetComponent<Rigidbody2D>();
 			if (b->GetOwner()) collision2D.otherRigidbody = b->GetOwner()->GetComponent<Rigidbody2D>();
-			collision2D.transform = a->GetTransform();
+			collision2D.transform = a->GetOwnerTransform();
 
 			std::vector<ScriptComponent*> scA, scB;
 			if (a->GetOwner()) scA = a->GetOwner()->GetComponents<ScriptComponent>();
 			if (b->GetOwner()) scB = b->GetOwner()->GetComponents<ScriptComponent>();
-			for (auto sc : scA) sc->OnCollisionExit2D(&collision2D);
-			for (auto sc : scB) sc->OnCollisionExit2D(&collision2D);
+			if (collision2D.rigidbody && collision2D.rigidbody->m_eRigidBodyType == Define::ERigidBodyType::Dynamic && collision2D.otherRigidbody && collision2D.otherRigidbody->m_eRigidBodyType == Define::ERigidBodyType::Dynamic)
+			{
+				for (auto sc : scA) if (a->GetLayer() == b->GetLayer()) sc->OnCollisionExit2D(&collision2D);
+				for (auto sc : scB) if (a->GetLayer() == b->GetLayer()) sc->OnCollisionExit2D(&collision2D);
+			}
+			for (auto sc : scA) if (a->GetLayer() == b->GetLayer()) sc->OnTriggerExit2D(b);
+			for (auto sc : scB) if (a->GetLayer() == b->GetLayer()) sc->OnTriggerExit2D(a);
 		}
 	}
 	CollisionSystem::GetInstance().previousCollisions = CollisionSystem::GetInstance().currentCollisions;
@@ -99,40 +169,113 @@ void Physics::FCollisionDetector::LoadPreviousCollisions()
 
 void Physics::FCollisionDetector::SavePreviousCollisionData(Collider* src, Collider* tar, std::unordered_set<Rigidbody2D*>& overlappedRigdBodies)
 {
-	// »ç¿ëÇÒ º¯¼öµé ¼±¾ğºÎÅÍ ÇØÁÖÀÚ.
-	Collider* a = src;
-	Collider* b = tar;
-	Rigidbody2D* rbA = src->GetOwner()->GetComponent<Rigidbody2D>();
-	Rigidbody2D* rbB = tar->GetOwner()->GetComponent<Rigidbody2D>();
-	std::vector<ScriptComponent*> scA = a->GetOwner()->GetComponents<ScriptComponent>();
-	std::vector<ScriptComponent*> scB = b->GetOwner()->GetComponents<ScriptComponent>();
+	// ì•½í•œ í•¸ë“¤ ìŠ¤ëƒ…ìƒ·(ì¤‘ê°„ íŒŒê´´ ì•ˆì „)
+	WeakObjectPtr<Collider> wa = src ? src->WeakFromThis<Collider>() : WeakObjectPtr<Collider>{};
+	WeakObjectPtr<Collider> wb = tar ? tar->WeakFromThis<Collider>() : WeakObjectPtr<Collider>{};
 
-	auto pair = std::minmax(a, b);
-	CollisionSystem::GetInstance().currentCollisions.insert(pair);
+	// ë¦¬ì§€ë“œë°”ë””ëŠ” "í˜„ì¬ ì‚´ì•„ìˆìœ¼ë©´" ì¦‰ì‹œ ì…‹ì— ì¶”ê°€ (íŒŒê´´ë˜ë©´ ë‹¤ìŒ í”„ë ˆì„ì— ìë™ ì •ë¦¬ë¨)
+	if (auto a = wa.lock()) if (auto rb = a->GetOwner()->GetComponent<Rigidbody2D>()) overlappedRigdBodies.insert(rb);
+	if (auto b = wb.lock()) if (auto rb = b->GetOwner()->GetComponent<Rigidbody2D>()) overlappedRigdBodies.insert(rb);
 
-	if (rbA) overlappedRigdBodies.insert(rbA);
-	if (rbB) overlappedRigdBodies.insert(rbB);
+	// ì¶©ëŒ í˜ì–´ëŠ” Collider* ì£¼ì†ŒìŒì„ ì“°ê³  ìˆì—ˆìœ¼ë¯€ë¡œ, í˜„ì¬ ì‚´ì•„ìˆì„ ë•Œë§Œ ë“±ë¡
+	if (auto a = wa.lock())
+		if (auto b = wb.lock())
+		{
+			auto pair = std::minmax(a, b);
+			CollisionSystem::GetInstance().currentCollisions.insert(pair);
 
-	// Ãæµ¹ÀÌ ÀÏ¾î³­ Á¤º¸¸¦ ´ã¾Æ¼­ °Ç³»ÁÖÀÚ.
-	Collision2D collision2D;
-	collision2D.collider = a;
-	collision2D.otherCollider = b;
-	collision2D.rigidbody = rbA;
-	collision2D.otherRigidbody = rbB;
-	collision2D.transform = a->GetTransform();
+			// ìŠ¤í¬ë¦½íŠ¸ë“¤ ì•½í•œ í•¸ë“¤ë¡œ ìŠ¤ëƒ…ìƒ·
+			std::vector<WeakObjectPtr<ScriptComponent>> wScA, wScB;
+			{
+				auto list = a->GetOwner()->GetComponents<ScriptComponent>();
+				wScA.reserve(list.size());
+				for (auto* sc : list) if (sc) wScA.emplace_back(sc->WeakFromThis<ScriptComponent>());
+			}
+			{
+				auto list = b->GetOwner()->GetComponents<ScriptComponent>();
+				wScB.reserve(list.size());
+				for (auto* sc : list) if (sc) wScB.emplace_back(sc->WeakFromThis<ScriptComponent>());
+			}
 
-	// ÀÌÀü Ãæµ¹Á¤º¸¿Í ºñ±³ÇØ¼­ EnterÀÎÁö StayÀÎÁö °ËÁõÇÏÀÚ.
-	if (CollisionSystem::GetInstance().previousCollisions.find(pair) == CollisionSystem::GetInstance().previousCollisions.end())
-	{
-		for (auto sc : scA) sc->OnCollisionEnter2D(&collision2D);
-		for (auto sc : scB) sc->OnCollisionEnter2D(&collision2D);
-	}
-	else
-	{
-		for (auto sc : scA) sc->OnCollisionStay2D(&collision2D);
-		for (auto sc : scB) sc->OnCollisionStay2D(&collision2D);
-	}
+			const bool isNew =
+				(CollisionSystem::GetInstance().previousCollisions.find(pair) ==
+					CollisionSystem::GetInstance().previousCollisions.end());
+
+			auto safeLayerEq = [&]() -> bool {
+				auto aa = wa.lock(); auto bb = wb.lock();
+				return aa && bb && (aa->GetLayer() == bb->GetLayer());
+				};
+
+			auto callCollision = [&](auto memfn)
+				{
+					// ì½œë°± ì§ì „ë§ˆë‹¤ ìƒì¡´ í™•ì¸ + Collision2D ì¬êµ¬ì„±(ì¤‘ê°„ íŒŒê´´ ì•ˆì „)
+					if (!safeLayerEq()) return;
+					auto aa = wa.lock(); auto bb = wb.lock();
+					if (!aa || !bb) return;
+
+					Rigidbody2D* rbA = aa->GetOwner()->GetComponent<Rigidbody2D>();
+					Rigidbody2D* rbB = bb->GetOwner()->GetComponent<Rigidbody2D>();
+
+					Collision2D c{};
+					c.collider = aa;
+					c.otherCollider = bb;
+					c.rigidbody = rbA;
+					c.otherRigidbody = rbB;
+					c.transform = aa->GetOwnerTransform();
+
+					// A ìª½
+					for (auto& wsc : wScA)
+						if (auto sc = wsc.lock())
+							if (safeLayerEq())
+								(sc->*memfn)(&c);
+					// B ìª½
+					for (auto& wsc : wScB)
+						if (auto sc = wsc.lock())
+							if (safeLayerEq())
+								(sc->*memfn)(&c);
+				};
+
+			auto callTrigger = [&](auto memfn)
+				{
+					if (!safeLayerEq()) return;
+					auto aa = wa.lock(); auto bb = wb.lock();
+					if (!aa || !bb) return;
+
+					// A ìª½
+					for (auto& wsc : wScA)
+						if (auto sc = wsc.lock())
+							if (safeLayerEq())
+								(sc->*memfn)(bb);
+					// B ìª½
+					for (auto& wsc : wScB)
+						if (auto sc = wsc.lock())
+							if (safeLayerEq())
+								(sc->*memfn)(aa);
+				};
+
+			const bool bothDynamic =
+				(a->GetOwner()->GetComponent<Rigidbody2D>() &&
+					b->GetOwner()->GetComponent<Rigidbody2D>() &&
+					a->GetOwner()->GetComponent<Rigidbody2D>()->m_eRigidBodyType == Define::ERigidBodyType::Dynamic &&
+					b->GetOwner()->GetComponent<Rigidbody2D>()->m_eRigidBodyType == Define::ERigidBodyType::Dynamic);
+
+			if (isNew)
+			{
+				if (bothDynamic) {
+					callCollision(&ScriptComponent::OnCollisionEnter2D);
+				}
+				callTrigger(&ScriptComponent::OnTriggerEnter2D);
+			}
+			else
+			{
+				if (bothDynamic) {
+					callCollision(&ScriptComponent::OnCollisionStay2D);
+				}
+				callTrigger(&ScriptComponent::OnTriggerStay2D);
+			}
+		}
 }
+
 
 bool Physics::FCollisionDetector::CompareColliderMinX(const WeakObjectPtr<Collider>& a, const WeakObjectPtr<Collider>& b)
 {
@@ -152,25 +295,36 @@ bool Physics::FCollisionDetector::CompareColliderMinX(const WeakObjectPtr<Collid
 
 bool Physics::FCollisionDetector::IsOverlapped(const WeakObjectPtr<Collider>& a, const WeakObjectPtr<Collider>& b)
 {
-	return !(a.Get()->aabb.minVector.x > b.Get()->aabb.maxVector.x ||
-		a.Get()->aabb.minVector.y > b.Get()->aabb.maxVector.y ||
-		a.Get()->aabb.maxVector.x < b.Get()->aabb.minVector.x ||
-		a.Get()->aabb.maxVector.y < b.Get()->aabb.minVector.y);
+	Collider* ca = a.Get();
+	Collider* cb = b.Get();
+	if (!ca || !cb) return false;
+	float aminX, amaxX, aminY, amaxY;
+	float bminX, bmaxX, bminY, bmaxY;
+	if (!GetBoxWorldBounds(ca, aminX, amaxX, aminY, amaxY)) return false;
+	if (!GetBoxWorldBounds(cb, bminX, bmaxX, bminY, bmaxY)) return false;
+	return !(aminX > bmaxX || amaxX < bminX || aminY > bmaxY || amaxY < bminY);
 }
 
-// Ãæµ¹À» °¨ÁöÇÏ°í AABB ¿À¹ö·¦ µÈ ºÎºĞÀ» ¹Ğ¾î³»´Â ·ÎÁ÷ÀÔ´Ï´Ù.
-// °¢ »óÅÂ¸¦ ³ª´©¾î °ü¸®ÇÕ´Ï´Ù. 
-// 1. ¶¥ À§
-// 2. ¶¥ À§¿¡ ÀÖ´Â ¿ÀºêÁ§Æ®ÀÇ À§
-// 3. °ø±â Áß
+// ì¶©ëŒì„ ê°ì§€í•˜ê³  AABB ì˜¤ë²„ë© ëœ ë¶€ë¶„ì„ ë°€ì–´ë‚´ëŠ” ë¡œì§ì…ë‹ˆë‹¤.
+// ê° ìƒíƒœë¥¼ ë‚˜ëˆ„ì–´ ê´€ë¦¬í•©ë‹ˆë‹¤. 
+// 1. ë•… ìœ„
+// 2. ë•… ìœ„ì— ìˆëŠ” ì˜¤ë¸Œì íŠ¸ì˜ ìœ„
+// 3. ê³µê¸° ì¤‘
 //
-// --- ÀÌ¹Ì ¼±¾ğÇÑ ÇïÆÛ ÇÔ¼ö ±×´ë·Î »ç¿ë ---
+// --- ì´ë¯¸ ì„ ì–¸í•œ í—¬í¼ í•¨ìˆ˜ ê·¸ëŒ€ë¡œ ì‚¬ìš© ---
 // CalcXOverlap, CalcYOverlap, Width, IsOnGround
 
 void Physics::FCollisionDetector::PushOverlappedArea(Collider* a, Collider* b)
 {
-	FAABB& aabb_a = a->aabb;
-	FAABB& aabb_b = b->aabb;
+	FAABB aabb_a; FAABB aabb_b;
+	{
+		float minX, maxX, minY, maxY;
+		if (GetBoxWorldBounds(a, minX, maxX, minY, maxY)) { aabb_a.minVector.x = minX; aabb_a.maxVector.x = maxX; aabb_a.minVector.y = minY; aabb_a.maxVector.y = maxY; }
+	}
+	{
+		float minX, maxX, minY, maxY;
+		if (GetBoxWorldBounds(b, minX, maxX, minY, maxY)) { aabb_b.minVector.x = minX; aabb_b.maxVector.x = maxX; aabb_b.minVector.y = minY; aabb_b.maxVector.y = maxY; }
+	}
 	Rigidbody2D* rbA = a->GetOwner()->GetComponent<Rigidbody2D>();
 	Rigidbody2D* rbB = b->GetOwner()->GetComponent<Rigidbody2D>();
 	float massA = rbA ? rbA->mass : FLT_MAX;
@@ -178,14 +332,14 @@ void Physics::FCollisionDetector::PushOverlappedArea(Collider* a, Collider* b)
 	Define::ERigidBodyType typeA = rbA ? rbA->m_eRigidBodyType : Define::ERigidBodyType::Static;
 	Define::ERigidBodyType typeB = rbB ? rbB->m_eRigidBodyType : Define::ERigidBodyType::Static;
 
-	// °ãÄ£ °Å¸® °è»ê (ÇÔ¼ö »ç¿ë)
+	// ê²¹ì¹œ ê±°ë¦¬ ê³„ì‚° (í•¨ìˆ˜ ì‚¬ìš©)
 	float overlap_x = CalcXOverlap(aabb_a, aabb_b);
 	float overlap_y = CalcYOverlap(aabb_a, aabb_b);
 
 	if (overlap_x <= Define::MIN_OVERLAP_EPSILON || overlap_y <= Define::MIN_OVERLAP_EPSILON)
 		return;
 
-	// ¹Ğ¸² ¹æÇâ °áÁ¤
+	// ë°€ë¦¼ ë°©í–¥ ê²°ì •
 	float pushX = 0, pushY = 0;
 	if (overlap_x < overlap_y)
 	{
@@ -206,14 +360,14 @@ void Physics::FCollisionDetector::PushOverlappedArea(Collider* a, Collider* b)
 
 	if (typeA == Define::ERigidBodyType::Dynamic && typeB == Define::ERigidBodyType::Dynamic)
 	{
-		// Áß½ÉÁ¡ °è»ê
+		// ì¤‘ì‹¬ì  ê³„ì‚°
 		float centerA_y = (aabb_a.minVector.y + aabb_a.maxVector.y) * 0.5f;
 		float centerB_y = (aabb_b.minVector.y + aabb_b.maxVector.y) * 0.5f;
 
 		Rigidbody2D* upper = nullptr;
 		Rigidbody2D* lower = nullptr;
 
-		// yÃà ±âÁØ À§/¾Æ·¡ ÆÇº°
+		// yì¶• ê¸°ì¤€ ìœ„/ì•„ë˜ íŒë³„
 		if (centerA_y > centerB_y) {
 			upper = rbA;
 			lower = rbB;
@@ -223,7 +377,7 @@ void Physics::FCollisionDetector::PushOverlappedArea(Collider* a, Collider* b)
 			lower = rbA;
 		}
 
-		// upper(À§¿¡ ÀÖ´Â ¿ÀºêÁ§Æ®) »óÅÂ ÀüÀÌ (±âÁ¸ ±×´ë·Î)
+		// upper(ìœ„ì— ìˆëŠ” ì˜¤ë¸Œì íŠ¸) ìƒíƒœ ì „ì´ (ê¸°ì¡´ ê·¸ëŒ€ë¡œ)
 		switch (upper->m_eRigidBodyState)
 		{
 		case Define::ERigidBodyState::Space:
@@ -253,21 +407,21 @@ void Physics::FCollisionDetector::PushOverlappedArea(Collider* a, Collider* b)
 			break;
 		}
 
-		// µÑ ´Ù ¹Ğ¸² (Áú·® ºñÀ²)
+		// ë‘˜ ë‹¤ ë°€ë¦¼ (ì§ˆëŸ‰ ë¹„ìœ¨)
 		if (rbA) rbA->collisionPush += FVector2(pushX * ratioA * 1.2f, pushY * ratioA);
 		if (rbB) rbB->collisionPush += FVector2(-pushX * ratioB * 1.2f, -pushY * ratioB);
 	}
 	else if (typeA == Define::ERigidBodyType::Dynamic && (typeB == Define::ERigidBodyType::Static || typeB == Define::ERigidBodyType::Kinematic))
 	{
-		bool is_y_push = (pushY != 0);  // yÃàÀ¸·Î ¹Ğ¸²ÀÌ ÀÖÀ» ¶§¸¸
+		bool is_y_push = (pushY != 0);  // yì¶•ìœ¼ë¡œ ë°€ë¦¼ì´ ìˆì„ ë•Œë§Œ
 		bool is_on_ground = false;
 		if (is_y_push && aabb_a.minVector.y <= aabb_b.maxVector.y) 
 		{
-			// ¿À·ÎÁö yÃàÀ¸·Î ¾Æ·¡(Áï, ¹Ù´Ú¿¡) ´ê¾Ò°í, xÃà °ãÄ§ ºñÀ²µµ ÃæºĞÇÒ ¶§¸¸
+			// ì˜¤ë¡œì§€ yì¶•ìœ¼ë¡œ ì•„ë˜(ì¦‰, ë°”ë‹¥ì—) ë‹¿ì•˜ê³ , xì¶• ê²¹ì¹¨ ë¹„ìœ¨ë„ ì¶©ë¶„í•  ë•Œë§Œ
 			is_on_ground = IsOnGround(aabb_a, aabb_b, GROUND_OVERLAP_X_THRESHOLD);
 		}
 		if (rbA) rbA->m_eRigidBodyState = is_on_ground ? Define::ERigidBodyState::Ground : Define::ERigidBodyState::Space;
-		if (rbA) rbA->collisionPush += FVector2(pushX * 1.5f, pushY);
+		if (rbA) rbA->collisionPush = FVector2(pushX * 1.5f, pushY);
 	}
 	else if ((typeA == Define::ERigidBodyType::Static || typeA == Define::ERigidBodyType::Kinematic) && typeB == Define::ERigidBodyType::Dynamic)
 	{
@@ -278,19 +432,26 @@ void Physics::FCollisionDetector::PushOverlappedArea(Collider* a, Collider* b)
 			is_on_ground = IsOnGround(aabb_b, aabb_a, GROUND_OVERLAP_X_THRESHOLD);
 		}
 		if (rbB) rbB->m_eRigidBodyState = is_on_ground ? Define::ERigidBodyState::Ground : Define::ERigidBodyState::Space;
-		if (rbB) rbB->collisionPush += FVector2(-pushX * 1.5f, -pushY);
+		if (rbB) rbB->collisionPush = FVector2(-pushX * 1.5f, -pushY);
 	}
-	// ³ª¸ÓÁö(Static-Static, Kinematic-Kinematic, Static-Kinematic): ¾Æ¹«°Íµµ ¾È ÇÔ
+	// ë‚˜ë¨¸ì§€(Static-Static, Kinematic-Kinematic, Static-Kinematic): ì•„ë¬´ê²ƒë„ ì•ˆ í•¨
 }
 
 
 void Physics::FCollisionDetector::PushOverlappedAreaNoMass(Collider* a, Collider* b)
 {
-    // aabb Á¤º¸ °¡Á®¿À±â
-    const auto& aabb_a = a->aabb;
-    const auto& aabb_b = b->aabb;
+    // BoxComponent ê¸°ë°˜ AABB ê³„ì‚°
+    FAABB aabb_a; FAABB aabb_b;
+    {
+        float minX, maxX, minY, maxY;
+        if (GetBoxWorldBounds(a, minX, maxX, minY, maxY)) { aabb_a.minVector.x = minX; aabb_a.maxVector.x = maxX; aabb_a.minVector.y = minY; aabb_a.maxVector.y = maxY; }
+    }
+    {
+        float minX, maxX, minY, maxY;
+        if (GetBoxWorldBounds(b, minX, maxX, minY, maxY)) { aabb_b.minVector.x = minX; aabb_b.maxVector.x = maxX; aabb_b.minVector.y = minY; aabb_b.maxVector.y = maxY; }
+    }
 
-    // °ãÄ£ °Å¸® °è»ê
+    // ê²¹ì¹œ ê±°ë¦¬ ê³„ì‚°
     float overlap_x = min(aabb_a.maxVector.x, aabb_b.maxVector.x) - max(aabb_a.minVector.x, aabb_b.minVector.x);
     float overlap_y = min(aabb_a.maxVector.y, aabb_b.maxVector.y) - max(aabb_a.minVector.y, aabb_b.minVector.y);
 
@@ -338,10 +499,10 @@ bool Physics::FCollisionDetector::LineAABBIntersect(const FVector2& p0, const FV
         float maxVal = (axis == 0) ? aabb.maxVector.x : aabb.maxVector.y;
         float p0val = (axis == 0) ? p0.x : p0.y;
 
-        if (fabs(p) < 1e-6f) // ÀÌµ¿·®ÀÌ °ÅÀÇ ¾ø´Â °æ¿ì
+        if (fabs(p) < 1e-6f) // ì´ë™ëŸ‰ì´ ê±°ì˜ ì—†ëŠ” ê²½ìš°
         {
             if (p0val < minVal || p0val > maxVal)
-                return false; // ÇØ´ç Ãà ¹üÀ§¸¦ ¹ş¾î³²
+                return false; // í•´ë‹¹ ì¶• ë²”ìœ„ë¥¼ ë²—ì–´ë‚¨
         }
         else
         {
@@ -355,9 +516,9 @@ bool Physics::FCollisionDetector::LineAABBIntersect(const FVector2& p0, const FV
                 return false;
         }
     }
-    // ±³Â÷ ÁöÁ¡ = p0 + (p1-p0) * tmin
+    // êµì°¨ ì§€ì  = p0 + (p1-p0) * tmin
     outHitPos = p0 + d * tmin;
-    // (Ãß°¡·Î tminÀÌ 0~1 ±¸°£ ¾È¿¡ ÀÖ¾î¾ß ÇÔ: ÀÌ¹Ì À§¿¡¼­ º¸Àå)
+    // (ì¶”ê°€ë¡œ tminì´ 0~1 êµ¬ê°„ ì•ˆì— ìˆì–´ì•¼ í•¨: ì´ë¯¸ ìœ„ì—ì„œ ë³´ì¥)
     return true;
 }
 

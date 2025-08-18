@@ -24,7 +24,17 @@ void PhysicsSystem::Regist(const WeakObjectPtr<Rigidbody2D>& _component)
 
 void PhysicsSystem::UnRegist(WeakObjectPtr<Rigidbody2D>&& _component)
 {
-	m_rigidBodies.clear();
+	for (auto it = m_rigidBodies.begin(); it != m_rigidBodies.end(); ++it)
+	{
+		if ((*it).lock() && _component.lock())
+		{
+			if ((*it).lock() == _component.lock())
+			{
+				m_rigidBodies.erase(it);
+				return;
+			}
+		}
+	}
 }
 
 void PhysicsSystem::UnRegistAll()
@@ -75,4 +85,5 @@ void PhysicsSystem::Update()
 
 void PhysicsSystem::Release()
 {
+	m_rigidBodies.clear();
 }

@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include <math.h>
 #include <algorithm>
@@ -9,19 +9,20 @@ class TColor
 public:
 	T r, g, b, a;
 
-	// ±‚∫ª ª˝º∫¿⁄ (≈ı∏Ì ∞À¡§ªˆ)
-	TColor() : r(0), g(0), b(0), a(0) {}
+	// Í∏∞Î≥∏ ÏÉùÏÑ±Ïûê (Î∞òÌà¨Î™Ö Í≤ÄÏ†ïÏÉâ)
+	TColor() : r(0), g(0), b(0), a(255) {}
 
-	// RGB ª˝º∫¿⁄ (æÀ∆ƒ ±‚∫ª∞™: 0)
+	// RGB ÏÉùÏÑ±Ïûê (ÏïåÌåå Í∏∞Î≥∏Í∞í: 255)
 	TColor(T _r, T _g, T _b, T _a = 0) : r(_r), g(_g), b(_b), a(_a) {}
 
-	// ¥‹¿œ ∞™ ª˝º∫¿⁄ (±◊∑π¿ÃΩ∫ƒ…¿œ)
+	// Îã®Ïùº Í∞í ÏÉùÏÑ±Ïûê (Í∑∏Î†àÏù¥Ïä§ÏºÄÏùº)
 	TColor(T _all) : r(_all), g(_all), b(_all), a(_all) {}
 
-	// ∫πªÁ ª˝º∫¿⁄
+	// Î≥µÏÇ¨ ÏÉùÏÑ±Ïûê
 	TColor(const TColor<T>& other) = default;
 
-	// ø¨ªÍ¿⁄ ø¿πˆ∑Œµ˘
+
+	// Ïó∞ÏÇ∞Ïûê Ïò§Î≤ÑÎ°úÎî©
 	TColor operator*(const float& scalar) const {
 		return TColor(r * scalar, g * scalar, b * scalar, a * scalar);
 	}
@@ -38,7 +39,7 @@ public:
 		return TColor(r - rhs.r, g - rhs.g, b - rhs.b, a - rhs.a);
 	}
 
-	// ∫Ò±≥ ø¨ªÍ¿⁄
+	// ÎπÑÍµê Ïó∞ÏÇ∞Ïûê
 	bool operator==(const TColor& rhs) const {
 		return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
 	}
@@ -47,7 +48,7 @@ public:
 		return !(*this == rhs);
 	}
 
-	// ∫π«’ «“¥Á ø¨ªÍ¿⁄
+	// Î≥µÌï© Ìï†Îãπ Ïó∞ÏÇ∞Ïûê
 	void operator+=(const TColor& rhs) {
 		r += rhs.r;
 		g += rhs.g;
@@ -74,22 +75,22 @@ public:
 		return (v < lo) ? lo : (hi < v) ? hi : v;
 	}
 
-	// ≈¨∑•«Œ «‘ºˆ (0~1 π¸¿ß ¡¶«—)
+	// ÌÅ¥Îû®Ìïë Ìï®Ïàò (0~255 Î≤îÏúÑ Ï†úÌïú)
 	TColor Clamp() const {
 		return TColor(
-			clamp(r, T(0), T(1)),
-			clamp(g, T(0), T(1)),
-			clamp(b, T(0), T(1)),
-			clamp(a, T(0), T(1))
+			clamp(r, T(0), T(255)),
+			clamp(g, T(0), T(255)),
+			clamp(b, T(0), T(255)),
+			clamp(a, T(0), T(255))
 		);
 	}
 
-	// º±«¸ ∫∏∞£
+	// ÏÑ†Ìòï Î≥¥Í∞Ñ
 	static TColor Lerp(const TColor& A, const TColor& B, float Alpha) {
 		return A * (1.0f - Alpha) + B * Alpha;
 	}
 
-	// πÃ∏Æ ¡§¿«µ» ªˆªÛµÈ (static const)
+	// ÎØ∏Î¶¨ Ï†ïÏùòÎêú ÏÉâÏÉÅÎì§ (static const)
 	static const TColor<T> Red;
 	static const TColor<T> Green;
 	static const TColor<T> Blue;
@@ -114,29 +115,29 @@ public:
 	static const TColor<T> Gold;
 	static const TColor<T> Transparent;
 };
-// static ∏‚πˆ ¡§¿«
-template<typename T> const TColor<T> TColor<T>::Red = TColor<T>(1, 0, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Green = TColor<T>(0, 1, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Blue = TColor<T>(0, 0, 1, 1);
-template<typename T> const TColor<T> TColor<T>::White = TColor<T>(1, 1, 1, 1);
-template<typename T> const TColor<T> TColor<T>::Black = TColor<T>(0, 0, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Yellow = TColor<T>(1, 1, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Cyan = TColor<T>(0, 1, 1, 1);
-template<typename T> const TColor<T> TColor<T>::Magenta = TColor<T>(1, 0, 1, 1);
-template<typename T> const TColor<T> TColor<T>::Gray = TColor<T>(0.5, 0.5, 0.5, 1);
-template<typename T> const TColor<T> TColor<T>::LightGray = TColor<T>(0.75, 0.75, 0.75, 1);
-template<typename T> const TColor<T> TColor<T>::DarkGray = TColor<T>(0.25, 0.25, 0.25, 1);
-template<typename T> const TColor<T> TColor<T>::Orange = TColor<T>(1, 0.5, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Pink = TColor<T>(1, 0.75, 0.8, 1);
-template<typename T> const TColor<T> TColor<T>::Purple = TColor<T>(0.5, 0, 0.5, 1);
-template<typename T> const TColor<T> TColor<T>::Brown = TColor<T>(0.6, 0.3, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Lime = TColor<T>(0.75, 1, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Navy = TColor<T>(0, 0, 0.5, 1);
-template<typename T> const TColor<T> TColor<T>::Teal = TColor<T>(0, 0.5, 0.5, 1);
-template<typename T> const TColor<T> TColor<T>::Olive = TColor<T>(0.5, 0.5, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Maroon = TColor<T>(0.5, 0, 0, 1);
-template<typename T> const TColor<T> TColor<T>::Silver = TColor<T>(0.75, 0.75, 0.75, 1);
-template<typename T> const TColor<T> TColor<T>::Gold = TColor<T>(1, 0.84, 0, 1);
+// static Î©§Î≤Ñ Ï†ïÏùò
+template<typename T> const TColor<T> TColor<T>::Red = TColor<T>(255, 0, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Green = TColor<T>(0, 255, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Blue = TColor<T>(0, 0, 255, 255);
+template<typename T> const TColor<T> TColor<T>::White = TColor<T>(255, 255, 255, 255);
+template<typename T> const TColor<T> TColor<T>::Black = TColor<T>(0, 0, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Yellow = TColor<T>(255, 255, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Cyan = TColor<T>(0, 255, 255, 255);
+template<typename T> const TColor<T> TColor<T>::Magenta = TColor<T>(255, 0, 255, 255);
+template<typename T> const TColor<T> TColor<T>::Gray = TColor<T>(128, 128, 128, 255);
+template<typename T> const TColor<T> TColor<T>::LightGray = TColor<T>(191, 191, 191, 255);
+template<typename T> const TColor<T> TColor<T>::DarkGray = TColor<T>(64, 64, 64, 255);
+template<typename T> const TColor<T> TColor<T>::Orange = TColor<T>(255, 128, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Pink = TColor<T>(255, 191, 204, 255);
+template<typename T> const TColor<T> TColor<T>::Purple = TColor<T>(128, 0, 128, 255);
+template<typename T> const TColor<T> TColor<T>::Brown = TColor<T>(153, 77, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Lime = TColor<T>(191, 255, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Navy = TColor<T>(0, 0, 128, 255);
+template<typename T> const TColor<T> TColor<T>::Teal = TColor<T>(0, 128, 128, 255);
+template<typename T> const TColor<T> TColor<T>::Olive = TColor<T>(128, 128, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Maroon = TColor<T>(128, 0, 0, 255);
+template<typename T> const TColor<T> TColor<T>::Silver = TColor<T>(191, 191, 191, 255);
+template<typename T> const TColor<T> TColor<T>::Gold = TColor<T>(255, 214, 0, 255);
 template<typename T> const TColor<T> TColor<T>::Transparent = TColor<T>(0, 0, 0, 0);
 
-using FColor = TColor<float>;
+using FColor = TColor<uint8_t>;

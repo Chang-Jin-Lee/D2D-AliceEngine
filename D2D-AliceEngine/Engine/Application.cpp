@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "pch.h"
 #include "Application.h"
 #include <Core/Input.h>
@@ -10,6 +10,7 @@
 #include <Manager/UpdateTaskManager.h>
 #include <Manager/TimerManager.h>
 #include <Manager/ClassManager.h>
+#include <Manager/AudioManager.h>
 #include <System/InputSystem.h>
 #include <System/ScriptSystem.h>
 #include <System/RenderSystem.h>
@@ -17,6 +18,7 @@
 #include <System/PhysicsSystem.h>
 #include <Scene/Scene.h>
 #include <Object/Camera.h>
+#include <System/TransformSystem.h>
 
 
 Application::Application()
@@ -25,6 +27,9 @@ Application::Application()
 	m_hInstance = nullptr;
 	FileHelper::CopyFilesToBuildPath(L"Resource");
 	FileHelper::CopyFilesToBuildPath(L"Extension");
+
+	//ShowCursor(FALSE);
+	//SetCursor(NULL);
 }
 
 Application::~Application()
@@ -38,57 +43,61 @@ Application::~Application()
 	CollisionSystem::Destroy();
 	ClassManager::Destroy();
 	PhysicsSystem::Destroy();
+	AudioManager::Destroy();
+	TransformSystem::Destroy();
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	Application* pThis = nullptr;
 
-	// WM_NCCREATE: À©µµ¿ì »ı¼º ¾ÆÁÖ ÃÊ±â¿¡, ÇÁ·¹ÀÓ »ı¼º Àü¿¡. WM_CREATEº¸´Ù ÀÌÀü¿¡¹ß»ı
+	// WM_NCCREATE: ìœˆë„ìš° ìƒì„± ì•„ì£¼ ì´ˆê¸°ì—, í”„ë ˆì„ ìƒì„± ì „ì—. WM_CREATEë³´ë‹¤ ì´ì „ì—ë°œìƒ
 	if (msg == WM_NCCREATE)
 	{
-		// lParamÀº CREATESTRUCT* ÀÌ´Ù
+		// lParamì€ CREATESTRUCT* ì´ë‹¤
 		CREATESTRUCT* cs = reinterpret_cast<CREATESTRUCT*>(lParam);
 		pThis = reinterpret_cast<Application*>(cs->lpCreateParams);
 
-		// HWND¿¡ this Æ÷ÀÎÅÍ ÀúÀå
+		// HWNDì— this í¬ì¸í„° ì €ì¥
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
 	}
 	else {
-		// WM_NCCREATE°¡ ¾Æ´Ò ¶§´Â HWND¿¡¼­ this Æ÷ÀÎÅÍ¸¦ °¡Á®¿Â´Ù
+		// WM_NCCREATEê°€ ì•„ë‹ ë•ŒëŠ” HWNDì—ì„œ this í¬ì¸í„°ë¥¼ ê°€ì ¸ì˜¨ë‹¤
 		pThis = reinterpret_cast<Application*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
 	if (pThis)
-		pThis->MessageProc(hwnd, msg, wParam, lParam); // ¸â¹ö ÇÔ¼ö È£Ãâ
+		pThis->MessageProc(hwnd, msg, wParam, lParam); // ë©¤ë²„ í•¨ìˆ˜ í˜¸ì¶œ
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 void Application::Initialize()
 {
-	ObjectHandler::Create();
-	ScriptSystem::Create();
-	InputSystem::Create();
-	D2DRenderManager::Create();
-	SceneManager::Create();
-	UpdateTaskManager::Create();
-	TimerManager::Create();
-	RenderSystem::Create();
-	CollisionSystem::Create();
-	PhysicsSystem::Create();
+	ObjectHandler			::Create();
+	ScriptSystem			::Create();
+	InputSystem				::Create();
+	D2DRenderManager		::Create();
+	SceneManager			::Create();
+	UpdateTaskManager		::Create();
+	TimerManager			::Create();
+	RenderSystem			::Create();
+	CollisionSystem			::Create();
+	PhysicsSystem			::Create();
+	AudioManager			::Create();
+	TransformSystem			::Create();
 
 	char szPath[MAX_PATH] = { 0, };
-	GetModuleFileNameA(NULL, szPath, MAX_PATH); // ÇöÀç ¸ğµâÀÇ °æ·Î
-	m_ModulePath = szPath; // ¸ğµâ °æ·Î
-	GetCurrentDirectoryA(MAX_PATH, szPath); // ÇöÀç ÀÛ¾÷ µğ·ºÅä¸®
-	m_WorkingPath = szPath; // ÀÛ¾÷ µğ·ºÅä¸®
+	GetModuleFileNameA(NULL, szPath, MAX_PATH); // í˜„ì¬ ëª¨ë“ˆì˜ ê²½ë¡œ
+	m_ModulePath = szPath; // ëª¨ë“ˆ ê²½ë¡œ
+	GetCurrentDirectoryA(MAX_PATH, szPath); // í˜„ì¬ ì‘ì—… ë””ë ‰í† ë¦¬
+	m_WorkingPath = szPath; // ì‘ì—… ë””ë ‰í† ë¦¬
 	OutputDebugStringA(std::string(std::string(m_ModulePath) + std::string("\n")).c_str());
 	OutputDebugStringA(std::string(std::string(m_WorkingPath) + std::string("\n")).c_str());
 
-	m_hInstance = GetModuleHandle(NULL); // ÇöÀç ÇÁ·Î¼¼½ºÀÇ ÇÚµé
+	m_hInstance = GetModuleHandle(NULL); // í˜„ì¬ í”„ë¡œì„¸ìŠ¤ì˜ í•¸ë“¤
 
-	// WndProcÀ» µî·ÏÇØ¾ßÇØ¼­ ¿©±â¼­ ÃÊ±âÈ­.
+	// WndProcì„ ë“±ë¡í•´ì•¼í•´ì„œ ì—¬ê¸°ì„œ ì´ˆê¸°í™”.
 	WNDCLASSEX wc = { 0 };
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -97,10 +106,10 @@ void Application::Initialize()
 	wc.lpszClassName = m_WindowName.c_str();
 
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1); // ¹è°æ»ö ¼³Á¤
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1); // ë°°ê²½ìƒ‰ ì„¤ì •
 	RegisterClassEx(&wc);
 
-	// Å©±â¸¦ Á¶Á¤ÇÏÀÚ.
+	// í¬ê¸°ë¥¼ ì¡°ì •í•˜ì.
 	SIZE clientSize = { (LONG)m_width,(LONG)m_height };
 	RECT clientRect = { 0, 0, clientSize.cx, clientSize.cy };
 	AdjustWindowRect(&clientRect, WS_OVERLAPPEDWINDOW, FALSE);
@@ -117,7 +126,7 @@ void Application::Initialize()
 		nullptr,
 		nullptr,
 		m_hInstance,
-		this // this Æ÷ÀÎÅÍ¸¦ lpCreateParams·Î Àü´Ş
+		this // this í¬ì¸í„°ë¥¼ lpCreateParamsë¡œ ì „ë‹¬
 	);
 	ShowWindow(m_hwnd, SW_SHOW);
 
@@ -127,7 +136,6 @@ void Application::Initialize()
 
 	Input::Initialize(m_hwnd);
 	TimerManager::GetInstance().Initialize();
-	TimerManager::GetInstance().UpdateTime();
 	PackageResourceManager::Create();
 	PackageResourceManager::GetInstance().Initialize();
 	ClassManager::Create();
@@ -143,6 +151,7 @@ void Application::Update()
 {
 	TimerManager::GetInstance().UpdateTime();
 	SceneManager::GetInstance().Update();
+	TransformSystem::GetInstance().Flush();
 	Input::Update();
 }
 
@@ -166,6 +175,7 @@ void Application::Uninitialize()
 	InputSystem::GetInstance().UnRegistAll();
 	CollisionSystem::GetInstance().UnRegistAll();
 	PhysicsSystem::GetInstance().UnRegistAll();
+	TransformSystem::GetInstance().UnRegistAll();
 	CoUninitialize();
 }
 
@@ -173,16 +183,25 @@ void Application::MessageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 {
 	switch (uMsg)
 	{
+	case WM_SETCURSOR:
+		/*SetCursor(NULL);*/
+		break;
+
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
+		break;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
+		m_quit = true;
 		break;
 	case WM_SIZE:
 	{
 		if (wParam == SIZE_MINIMIZED)
-			break; // ÃÖ¼ÒÈ­´Â ¹«½Ã
+			break; // ìµœì†Œí™”ëŠ” ë¬´ì‹œ
 
-		UINT width = LOWORD(lParam); // »õ ³Êºñ
-		UINT height = HIWORD(lParam); // »õ ³ôÀÌ			
+		UINT width = LOWORD(lParam); // ìƒˆ ë„ˆë¹„
+		UINT height = HIWORD(lParam); // ìƒˆ ë†’ì´			
 		if (m_width != width || m_height != height)
 		{
 			m_width = width;

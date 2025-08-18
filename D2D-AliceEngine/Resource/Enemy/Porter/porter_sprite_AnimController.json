@@ -1,0 +1,15 @@
+{
+    "controllerName": "Porter",
+    "parameters": [],
+    "defaultState": "Idle",
+    "states": [
+        {
+            "name": "Idle",
+            "motionName": "porter_idle",
+            "clipLength": 0.5833333134651184,
+            "loop": true,
+            "transitions": []
+        }
+    ],
+    "anyStateTransitions": []
+}

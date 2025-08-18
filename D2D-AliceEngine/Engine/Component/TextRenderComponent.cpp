@@ -1,4 +1,4 @@
-#include "pch.h"
+Ôªø#include "pch.h"
 #include "TextRenderComponent.h"
 #include <Manager/D2DRenderManager.h>
 #include <Manager/SceneManager.h>
@@ -8,18 +8,21 @@
 #include <Math/TColor.h>
 #include <Math/TMath.h>
 #include <Math/Transform.h>
+#include <Component/TransformComponent.h>
+#include <Helpers/CoordHelper.h>
+#include <Helpers/FileHelper.h>
+#include <dwrite_3.h>
 
 TextRenderComponent::TextRenderComponent()
 {
 	m_color = FColor::Black;
-	drawType = EDrawType::ScreenSpace;
-	//InitializeFormat();
-	//InitializeColor();
-	//InitializeLayout();
+	SetDrawType(EDrawType::ScreenSpace);
+	m_layer = 101;
 }
 
 TextRenderComponent::TextRenderComponent(const std::wstring& content = L"", const FColor& color = FColor::Black, const std::wstring& font = L"Consolas", const float& fontSize = 24.0f)
 {
+	SetDrawType(EDrawType::ScreenSpace);
 	m_content = content;
 	m_color = color;
 	m_font = font;
@@ -41,17 +44,7 @@ void TextRenderComponent::Initialize()
 	InitializeColor();
 	InitializeLayout();
 
-	UpdateTaskManager::GetInstance().Enque(
-		WeakFromThis<ITickable>(),
-		Define::ETickingGroup::TG_PostUpdateWork,
-		[weak = WeakFromThis<ITickable>()](const float& dt)
-	{
-		if (auto sp = weak.lock())
-		{
-			sp->Update(dt);
-		}
-	}
-	);
+	REGISTER_TICK_TASK(Update, Define::ETickingGroup::TG_PostUpdateWork);
 }
 
 void TextRenderComponent::Update(const float& deltaSeconds)
@@ -68,91 +61,151 @@ void TextRenderComponent::Render()
 {
 	ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
 	if (!context || m_content.empty()) return;
-	D2D1::Matrix3x2F view = D2D1::Matrix3x2F::Identity();
-
+	__super::Render();
+	
 	InitializeLayout();
-	// ««π˛ ∫∏¡§
-	D2D1_POINT_2F pivotOffset = {
-		m_metrics.width * GetPivot()->x,
-		m_metrics.height * GetPivot()->y
-	};
-	D2D1::Matrix3x2F pivotAdjust = D2D1::Matrix3x2F::Translation(-pivotOffset.x, -pivotOffset.y);
 
-	// ∑Œƒ√ ∫Ø»Ø ∏’¿˙ ¿˚øÎ (≥ª∫Œ transform + pivotAdjust)
-	D2D1::Matrix3x2F localTransform =
-		D2D1::Matrix3x2F::Scale(m_transform.GetScale().x, m_transform.GetScale().y) *
-		D2D1::Matrix3x2F::Rotation(m_transform.GetRotation()) *
-		D2D1::Matrix3x2F::Translation(m_transform.GetPosition().x, m_transform.GetPosition().y);
+    // Î∏åÎü¨Ïãú Ìà¨Î™ÖÎèÑ Ï†ÅÏö©
+    if (m_pBrush)
+        m_pBrush->SetOpacity(m_opacity);
 
-	// ±◊ µ⁄ø° world, camera ¿˚øÎ
-	// m_pTransform¿Ã ∞ËªÍµ» worldTransform¿« ¡÷º“∏¶ ∞°¡ˆ∞Ì ¿÷¿Ω
-	if (m_eTransformType == ETransformType::Unity)
-	{
-		D2D1::Matrix3x2F unity = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
-		D2D1::Matrix3x2F world = GetTransform() ? GetTransform()->ToMatrix() : D2D1::Matrix3x2F::Identity();
+    D2D1_POINT_2F textPosition = D2D1::Point2F(0, 0); // destRectÏùò Ï§ëÏïô (0,0)ÏùÑ Í∏∞Ï§ÄÏ†êÏúºÎ°ú ÏÇ¨Ïö©
+    context->DrawTextLayout(textPosition, m_layout.Get(), m_pBrush.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
-		Camera* camera = SceneManager::GetCamera();
-		D2D1::Matrix3x2F cameraInv = camera ? camera->m_transform->ToMatrix() : D2D1::Matrix3x2F::Identity();
-		cameraInv.Invert();
+	//FVector2 relativeSize = GetRelativeSize();
+	//D2D1_POINT_2F textPosition = D2D1::Point2F(-relativeSize.x / 2, -relativeSize.y / 2);
+	//context->DrawTextLayout(textPosition, m_layout.Get(), m_pBrush.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
-		view = unity * world * cameraInv;
-		view = view * unity * D2D1::Matrix3x2F::Translation(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
-	}
-	else
-	{
-		view = GetTransform() ? GetTransform()->ToMatrix() : D2D1::Matrix3x2F::Identity();
-	}
-
-	D2D1::Matrix3x2F finalTransform = pivotAdjust * localTransform * view;
-	context->SetTransform(finalTransform);
-
-	// ±◊∏Æ±‚
-	context->DrawText(
-		m_content.c_str(),
-		static_cast<UINT32>(m_content.length()),
-		m_dWriteTextFormat.Get(),
-		D2D1::RectF(0, 0, m_metrics.width, m_metrics.height),
-		m_pBrush.Get()
-	);
 }
 
-float TextRenderComponent::GetSizeX()
+float TextRenderComponent::GetBitmapSizeX()
 {
 	InitializeLayout();
 	return m_metrics.width;
 }
 
-float TextRenderComponent::GetSizeY()
+float TextRenderComponent::GetBitmapSizeY()
 {
 	InitializeLayout();
 	return m_metrics.height;
+}
+
+FVector2 TextRenderComponent::GetRelativeSize()
+{
+	FVector2 relativeSize = __super::GetRelativeSize();
+	relativeSize.x *= GetBitmapSizeX();
+	relativeSize.y *= GetBitmapSizeY();;
+	return relativeSize;
 }
 
 void TextRenderComponent::InitializeFormat()
 {
 	IDWriteFactory* m_dWriteFactory = D2DRenderManager::GetInstance().m_dWriteFactory.Get();
 
-	m_dWriteFactory->CreateTextFormat(
-		m_font.c_str(), // FontName    ¡¶æÓ∆«-∏µÁ¡¶æÓ∆«-«◊∏Ò-±€≤√-≈¨∏Ø ¿∏∑Œ ±€≤√¿Ã∏ß »Æ¿Œ∞°¥…
-		NULL,
-		DWRITE_FONT_WEIGHT_NORMAL,
-		DWRITE_FONT_STYLE_NORMAL,
-		DWRITE_FONT_STRETCH_NORMAL,
-		m_fontSize,
-		L"", //locale
-		&m_dWriteTextFormat
-	);
+	if (m_eTextSource == ETextSource::System)
+	{
+		m_dWriteFactory->CreateTextFormat(
+			m_font.c_str(), // FontName    Ï†úÏñ¥Ìåê-Î™®Îì†Ï†úÏñ¥Ìåê-Ìï≠Î™©-Í∏ÄÍº¥-ÌÅ¥Î¶≠ ÏúºÎ°ú Í∏ÄÍº¥Ïù¥Î¶Ñ ÌôïÏù∏Í∞ÄÎä•
+			NULL,
+			DWRITE_FONT_WEIGHT_NORMAL,
+			DWRITE_FONT_STYLE_NORMAL,
+			DWRITE_FONT_STRETCH_NORMAL,
+			m_fontSize,
+			m_locale.c_str(), //locale
+			&m_dWriteTextFormat
+		);
+	}
+    else
+    {
+        // Ïª§Ïä§ÌÖÄ Ìè∞Ìä∏ ÌååÏùºÏùÑ Private Font CollectionÏúºÎ°ú Îì±Î°ù ÌõÑ ÏÇ¨Ïö©
+        ComPtr<IDWriteFactory> dwriteFactory = D2DRenderManager::GetInstance().m_dWriteFactory;
+        ComPtr<IDWriteFactory3> factory3;
+        HRESULT hrQI = dwriteFactory.As(&factory3);
+        if (SUCCEEDED(hrQI) && factory3)
+        {
+            // Í≤ΩÎ°ú Î≥ÄÍ≤Ω Ïãú Ïû¨Îì±Î°ù
+			if (!m_privateFontLoaded || m_fontFileAbsolutePath != m_filePath)
+			{
+				m_fontFileAbsolutePath = m_filePath;
+				m_privateFontLoaded = false;
 
-	// ≈ÿΩ∫∆Æ∏¶ ºˆ∆Ú π◊ ºˆ¡˜¿∏∑Œ ¡ﬂæ”ø° ∏¬√‰¥œ¥Ÿ.
-	m_dWriteTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_JUSTIFIED);
-	m_dWriteTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+				ComPtr<IDWriteFontSetBuilder> builder; // Í∏∞Î≥∏ Ïù∏ÌÑ∞ÌéòÏù¥Ïä§Î°ú Î∞õÍ∏∞
+				HRESULT hr = factory3->CreateFontSetBuilder(builder.GetAddressOf());
+				assert(SUCCEEDED(hr));
+
+				ComPtr<IDWriteFontSetBuilder1> fontSetBuilder;
+				hr = builder.As(&fontSetBuilder);
+				assert(SUCCEEDED(hr));
+
+				ComPtr<IDWriteFontFile> fontFile;
+				if (SUCCEEDED(dwriteFactory->CreateFontFileReference(m_filePath.c_str(), nullptr, &fontFile)) && fontFile)
+				{
+					fontSetBuilder->AddFontFile(fontFile.Get());
+					ComPtr<IDWriteFontSet> fontSet;
+					if (SUCCEEDED(fontSetBuilder->CreateFontSet(&fontSet)))
+					{
+						ComPtr<IDWriteFontCollection1> collection1;
+						if (SUCCEEDED(factory3->CreateFontCollectionFromFontSet(fontSet.Get(), &collection1)))
+						{
+							// ÏßÄÏ†ïÌïú Ìå®Î∞ÄÎ¶¨/Î°úÏºÄÏùºÎ°ú TextFormat ÏÉùÏÑ±
+							factory3->CreateTextFormat(
+								m_font.c_str(),
+								collection1.Get(),
+								DWRITE_FONT_WEIGHT_NORMAL,
+								DWRITE_FONT_STYLE_NORMAL,
+								DWRITE_FONT_STRETCH_NORMAL,
+								m_fontSize,
+								m_locale.c_str(),
+								&m_dWriteTextFormat
+							);
+							m_privateFontLoaded = (m_dWriteTextFormat != nullptr);
+						}
+					}
+				}
+			}
+
+            // Ïã§Ìå® Ïãú ÏãúÏä§ÌÖú Ïª¨Î†âÏÖòÏúºÎ°ú Ìè¥Î∞±
+            if (!m_dWriteTextFormat)
+            {
+                dwriteFactory->CreateTextFormat(
+                    m_font.c_str(),
+                    nullptr,
+                    DWRITE_FONT_WEIGHT_NORMAL,
+                    DWRITE_FONT_STYLE_NORMAL,
+                    DWRITE_FONT_STRETCH_NORMAL,
+                    m_fontSize,
+                    m_locale.c_str(),
+                    &m_dWriteTextFormat
+                );
+            }
+        }
+        else
+        {
+            // IDWriteFactory3Í∞Ä ÏóÜÎäî Íµ¨Î≤ÑÏ†Ñ ÌôòÍ≤Ω: ÏãúÏä§ÌÖú Ïª¨Î†âÏÖòÎßå ÏÇ¨Ïö© Í∞ÄÎä•
+            m_dWriteFactory->CreateTextFormat(
+                m_font.c_str(),
+                nullptr,
+                DWRITE_FONT_WEIGHT_NORMAL,
+                DWRITE_FONT_STYLE_NORMAL,
+                DWRITE_FONT_STRETCH_NORMAL,
+                m_fontSize,
+                m_locale.c_str(),
+                &m_dWriteTextFormat
+            );
+        }
+    }
 }
 
 void TextRenderComponent::InitializeColor()
 {
 	ID2D1DeviceContext7* d2dDeviceContext = D2DRenderManager::GetInstance().m_d2dDeviceContext.Get();
 	m_pBrush = nullptr;
-	d2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(m_color.r, m_color.g, m_color.b, m_color.a), m_pBrush.GetAddressOf());
+	d2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(
+		m_color.r / 255.0f,
+		m_color.g / 255.0f,
+		m_color.b / 255.0f,
+		m_color.a / 255.0f
+	), m_pBrush.GetAddressOf());
 }
 
 void TextRenderComponent::InitializeLayout()
@@ -227,23 +280,29 @@ void TextRenderComponent::SetTextAlignment(ETextFormat format)
 	default:
 		break;
 	}
+
+	InitializeFormat();
+	m_metricsDirty = true;
 }
 
 void TextRenderComponent::SetText(const std::wstring& content)
 {
 	m_content = content;
+	InitializeFormat();
 	m_metricsDirty = true;
 }
 
 void TextRenderComponent::SetText(const float& val)
 {
 	m_content = std::to_wstring(val);
+	InitializeFormat();
 	m_metricsDirty = true;
 }
 
 void TextRenderComponent::SetColor(const FColor& color)
 {
 	m_color = color;
+	InitializeColor();
 	m_metricsDirty = true;
 }
 
@@ -254,17 +313,30 @@ void TextRenderComponent::SetFontSize(const float& _size)
 	InitializeFormat();
 }
 
-void TextRenderComponent::SetPosition(const FVector2& pos)
+void TextRenderComponent::SetFont(const std::wstring& _fontName, const std::wstring& _fontLocale)
 {
-	m_transform.SetPosition(pos.x, pos.y);
+	m_font = _fontName;
+	m_locale = _fontLocale;
+	InitializeFormat();
 }
 
-void TextRenderComponent::SetScale(const FVector2& scale)
+void TextRenderComponent::SetFontFromFile(const std::wstring& filePath)
 {
-	m_transform.SetScale(scale.x, scale.y);
+    m_filePath = FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + filePath);
+    m_eTextSource = ETextSource::File;
+    m_privateFontLoaded = false;
+    m_fontFileAbsolutePath.clear();
 }
 
-void TextRenderComponent::SetTransformType(const ETransformType& type)
+void TextRenderComponent::SetIgnoreCameraTransform(bool bIgnore)
 {
-	m_eTransformType = type;
+	bIgnoreCameraTransform = bIgnore;
+}
+
+void TextRenderComponent::SetOpacity(float alpha)
+{
+    // 0..1 clamp
+    if (alpha < 0.f) alpha = 0.f;
+    if (alpha > 1.f) alpha = 1.f;
+    m_opacity = alpha;
 }

@@ -1,7 +1,7 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Animator.h"
 #include <Math/Transform.h>
-#include <Animation/TextureLoader.h>
+#include <Animation/SpriteAnimationTextureLoader.h>
 #include <Component/SpriteRenderer.h>
 #include <Manager/D2DRenderManager.h>
 #include <Manager/UpdateTaskManager.h>
@@ -24,18 +24,7 @@ Animator::~Animator()
 void Animator::Initialize()
 {
 	__super::Initialize();
-
-	UpdateTaskManager::GetInstance().Enque(
-		WeakFromThis<ITickable>(),
-		Define::ETickingGroup::TG_PostPhysics,
-		[weak = WeakFromThis<ITickable>()](const float& dt)
-	{
-		if (auto sp = weak.lock())
-		{
-			sp->Update(dt);
-		}
-	}
-	);
+	REGISTER_TICK_TASK(Update, Define::ETickingGroup::TG_PostPhysics);
 }
 
 void Animator::Update(const float& deltaSeconds)
@@ -47,9 +36,9 @@ void Animator::Update(const float& deltaSeconds)
 		m_curFrame = 0;
 		return;
 	}
-	if (!bPlay) return;	// ÇÃ·¹ÀÌ °¡´ÉÇÒ ¶§¸¸ ÇÃ·¹ÀÌ
-	//if (IsEnd()) return; // ÇÁ·¹ÀÓÀÇ ³¡¿¡¼­ ¹Ýº¹ÇÒÁö ¸»Áö ÆÇ´Ü
-	//if (IsEnd() && !bLoopping) return; // ÇÁ·¹ÀÓÀÇ ³¡¿¡¼­ ¹Ýº¹ÇÒÁö ¸»Áö ÆÇ´Ü
+	if (!bPlay) return;	// í”Œë ˆì´ ê°€ëŠ¥í•  ë•Œë§Œ í”Œë ˆì´
+	//if (IsEnd()) return; // í”„ë ˆìž„ì˜ ëì—ì„œ ë°˜ë³µí• ì§€ ë§ì§€ íŒë‹¨
+	//if (IsEnd() && !bLoopping) return; // í”„ë ˆìž„ì˜ ëì—ì„œ ë°˜ë³µí• ì§€ ë§ì§€ íŒë‹¨
 
 	m_accumTime += deltaSeconds;
 	if (m_accumTime >= animationClips[curAnimationClip]->frames[m_curFrame].duration)
@@ -68,12 +57,13 @@ void Animator::Render()
 {
 	if (sheet.get() == nullptr) return;
 	if (m_bitmap == nullptr) return;
+    if (!m_visible) return;
 	if (curAnimationClip != nextAnimationClip) return;
 	auto& sprite = sheet.get()->sprites[animationClips[curAnimationClip]->frames[m_curFrame].spriteSheetIndex];
 
-	// ÃÖÁ¾ º¯È¯ ºñÆ®¸Ê ¿øÁ¡¿¡ ¸ÂÃç ±×¸®±â (Src ÀüÃ¼ »ç¿ë)
-	float ScaleX = GetSizeX() / sheet.get()->textureWidth;
-	float ScaleY = GetSizeY() / sheet.get()->textureHeight;
+	// ìµœì¢… ë³€í™˜ ë¹„íŠ¸ë§µ ì›ì ì— ë§žì¶° ê·¸ë¦¬ê¸° (Src ì „ì²´ ì‚¬ìš©)
+	float ScaleX = GetBitmapSizeX() / sheet.get()->textureWidth;
+	float ScaleY = GetBitmapSizeY() / sheet.get()->textureHeight;
 	float x = sprite.x * ScaleX;
 	float y = sprite.y * ScaleY;
 	float width = sprite.width * ScaleX;
@@ -84,21 +74,32 @@ void Animator::Render()
 	__super::Render();
 
 	D2DRenderManager::GetD2DDevice()->DrawBitmap(m_bitmap.get(), &destRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &SrcRect);
-	D2DRenderManager::GetInstance().DrawDebugBox(-10, -10, 10, 10, 0, 0, 0, 255);
+	if (D2DRenderManager::GetInstance().bRenderedBoxRect)
+		D2DRenderManager::GetInstance().DrawDebugBox(-10, -10, 10, 10, 0, 0, 0, 255);
 }
 
-float Animator::GetSizeX()
+float Animator::GetBitmapSizeX()
 {
 	if (!m_bitmap.get()) return 0;
 	D2D1_SIZE_U bmpSize = m_bitmap->GetPixelSize();
 	return static_cast<float>(bmpSize.width);
 }
 
-float Animator::GetSizeY()
+float Animator::GetBitmapSizeY()
 {
 	if (!m_bitmap.get()) return 0;
 	D2D1_SIZE_U bmpSize = m_bitmap->GetPixelSize();
 	return static_cast<float>(bmpSize.height);
+}
+
+float Animator::GetSpriteSizeX()
+{
+	return sheet->sprites[0].width;
+}
+
+float Animator::GetSpriteSizeY()
+{
+	return sheet->sprites[0].height;
 }
 
 void Animator::PlayAnimation(std::weak_ptr<SpriteSheet> sheet, std::weak_ptr<AnimationClip> clip)
@@ -110,7 +111,7 @@ void Animator::LoadSpriteSheet(const std::wstring& filePath)
 {
 	if (sheet.get())
 	{
-		TextureLoader::LoadSpriteSheet(FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + filePath), *sheet.get());
+		SpriteAnimationTextureLoader::LoadSpriteSheet(FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + filePath), *sheet.get());
 		const std::wstring path = FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + StringHelper::string_to_wstring(sheet.get()->texture));
 		m_bitmap = PackageResourceManager::GetInstance().CreateBitmapFromFile(path.c_str());
 	}
@@ -121,7 +122,7 @@ void Animator::LoadAnimationClip(const std::wstring& filePath)
 	if (sheet.get())
 	{
 		std::unique_ptr<AnimationClip> clip = std::make_unique<AnimationClip>();
-		TextureLoader::LoadAnimationClip(FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + filePath), *clip.get(), *sheet.get());
+		SpriteAnimationTextureLoader::LoadAnimationClip(FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + filePath), *clip.get(), *sheet.get());
 		animationClips.emplace(clip->clipName, std::move(clip));
 	}
 }

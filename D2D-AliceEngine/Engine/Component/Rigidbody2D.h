@@ -4,9 +4,10 @@
 #include <Define/Define.h>
 
 /*
-*	@brief : 물리를 시뮬레이션하는 컴포넌트입니다.
-*	@details : ERigidBodyState로 상태를 관리합니다.
+* @brief : 물리를 시뮬레이션하는 컴포넌트입니다.
+* @details : ERigidBodyState로 상태를 관리합니다.
 */
+class Collider;
 class Rigidbody2D : public Component
 {
 public:
@@ -32,4 +33,19 @@ public:
 	FVector2 collisionPush;
 
 	void AddForce(const float& _x, const float& _y);
+
+	// 보간용 변수
+	FVector2 m_prevPosition;     // 이전 FixedUpdate 위치
+	FVector2 m_currentPosition;  // 현재 FixedUpdate 위치
+	float m_prevRotation;        // 이전 FixedUpdate 회전
+	float m_currentRotation;     // 현재 FixedUpdate 회전
+
+	Collider* attachedCollider = nullptr; // optional owner collider
+
+public:
+	// 보간된 위치 반환하는 함수
+	FVector2 GetPredictedPosition() const;
+	FVector2 GetInterpolatedPosition() const;
+	float GetInterpolatedRotation() const;
+	void UpdateInterpolatedPosition();
 };

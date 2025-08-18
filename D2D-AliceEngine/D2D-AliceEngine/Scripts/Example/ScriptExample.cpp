@@ -1,4 +1,4 @@
-#include "ScriptExample.h"
+ï»¿#include "ScriptExample.h"
 #include <Core/Input.h>
 #include <Math/Transform.h>
 #include <Object/gameObject.h>
@@ -10,34 +10,30 @@
 #include <Core/Delegate.h>
 #include <Core/StatTraits.h>
 #include <System/ScriptSystem.h>
+#include <Manager/UpdateTaskManager.h>
 
 void ScriptExample::Initialize()
 {
 	__super::Initialize();
-	REGISTER_SCRIPT_METHOD(Awake);
-	REGISTER_SCRIPT_METHOD(OnStart);
-	REGISTER_SCRIPT_METHOD(OnEnd);
-	REGISTER_SCRIPT_METHOD(OnDestroy);
 }
 
 void ScriptExample::FixedUpdate(const float& deltaSeconds)
 {
 	__super::FixedUpdate(deltaSeconds);
-	// ¿©±â¿¡ FixedUpdate¿¡ ´ëÇÑ ·ÎÁ÷ ÀÛ¼º
+	// ì—¬ê¸°ì— FixedUpdateì— ëŒ€í•œ ë¡œì§ ì‘ì„±
 
 }
 
 void ScriptExample::Update(const float& deltaSeconds)
 {
 	__super::Update(deltaSeconds);
-	// ¿©±â¿¡ Update¿¡ ´ëÇÑ ·ÎÁ÷ ÀÛ¼º
-
+	// ì—¬ê¸°ì— Updateì— ëŒ€í•œ ë¡œì§ ì‘ì„±
 }
 
 void ScriptExample::LateUpdate(const float& deltaSeconds)
 {
 	__super::LateUpdate(deltaSeconds);
-	// ¿©±â¿¡ LateUpdate¿¡ ´ëÇÑ ·ÎÁ÷ ÀÛ¼º
+	// ì—¬ê¸°ì— LateUpdateì— ëŒ€í•œ ë¡œì§ ì‘ì„±
 
 }
 
@@ -47,14 +43,14 @@ void ScriptExample::Awake()
 
 void ScriptExample::OnStart()
 {
-	// ¿©±â¿¡ OnStart¿¡ ´ëÇÑ ·ÎÁ÷ ÀÛ¼º
+	// ì—¬ê¸°ì— OnStartì— ëŒ€í•œ ë¡œì§ ì‘ì„±
 	m_owner = GetOwner();
 
 }
 
 void ScriptExample::OnEnd()
 {
-	// ¿©±â¿¡ OnEnd¿¡ ´ëÇÑ ·ÎÁ÷ ÀÛ¼º
+	// ì—¬ê¸°ì— OnEndì— ëŒ€í•œ ë¡œì§ ì‘ì„±
 }
 
 void ScriptExample::OnDestroy()
@@ -63,41 +59,41 @@ void ScriptExample::OnDestroy()
 
 void ScriptExample::OnCollisionEnter2D(Collision2D* collider)
 {
-    std::cout << "OnCollisionEnter2D È£ÃâµÊ" << std::endl;
-    OutputDebugStringW(L"OnCollisionEnter2D È£ÃâµÊ\n");
+    std::cout << "OnCollisionEnter2D í˜¸ì¶œë¨" << std::endl;
+    OutputDebugStringW(L"OnCollisionEnter2D í˜¸ì¶œë¨\n");
 }
 
 void ScriptExample::OnCollisionStay2D(Collision2D* collider)
 {
-    std::cout << "OnCollisionStay2D È£ÃâµÊ" << std::endl;
-    OutputDebugStringW(L"OnCollisionStay2D È£ÃâµÊ\n");
+    std::cout << "OnCollisionStay2D í˜¸ì¶œë¨" << std::endl;
+    OutputDebugStringW(L"OnCollisionStay2D í˜¸ì¶œë¨\n");
 }
 
 void ScriptExample::OnCollisionExit2D(Collision2D* collider)
 {
-    std::cout << "OnCollisionExit2D È£ÃâµÊ" << std::endl;
-    OutputDebugStringW(L"OnCollisionExit2D È£ÃâµÊ\n");
+    std::cout << "OnCollisionExit2D í˜¸ì¶œë¨" << std::endl;
+    OutputDebugStringW(L"OnCollisionExit2D í˜¸ì¶œë¨\n");
 }
 
 void ScriptExample::OnTriggerEnter2D(Collider* collider)
 {
-    std::cout << "OnTriggerEnter2D È£ÃâµÊ" << std::endl;
-    OutputDebugStringW(L"OnTriggerEnter2D È£ÃâµÊ\n");
+    std::cout << "OnTriggerEnter2D í˜¸ì¶œë¨" << std::endl;
+    OutputDebugStringW(L"OnTriggerEnter2D í˜¸ì¶œë¨\n");
 }
 
 void ScriptExample::OnTriggerStay2D(Collider* collider)
 {
-    std::cout << "OnTriggerStay2D È£ÃâµÊ" << std::endl;
-    OutputDebugStringW(L"OnTriggerStay2D È£ÃâµÊ\n");
+    std::cout << "OnTriggerStay2D í˜¸ì¶œë¨" << std::endl;
+    OutputDebugStringW(L"OnTriggerStay2D í˜¸ì¶œë¨\n");
 }
 
 void ScriptExample::OnTriggerExit2D(Collider* collider)
 {
-    std::cout << "OnTriggerExit2D È£ÃâµÊ" << std::endl;
-    OutputDebugStringW(L"OnTriggerExit2D È£ÃâµÊ\n");
+    std::cout << "OnTriggerExit2D í˜¸ì¶œë¨" << std::endl;
+    OutputDebugStringW(L"OnTriggerExit2D í˜¸ì¶œë¨\n");
 }
 
 void ScriptExample::Input()
 {
-	// ¿©±â¿¡ Input¿¡ ´ëÇÑ ·ÎÁ÷ ÀÛ¼º
+	// ì—¬ê¸°ì— Inputì— ëŒ€í•œ ë¡œì§ ì‘ì„±
 }

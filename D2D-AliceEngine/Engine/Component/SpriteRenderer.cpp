@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "SpriteRenderer.h"
 #include <Component/Component.h>
 #include <Manager/D2DRenderManager.h>
@@ -11,11 +11,18 @@
 
 SpriteRenderer::SpriteRenderer()
 {
+	spriteInfo.height = -1;
+	spriteInfo.width = -1;
+	spriteInfo.x = 0;
+	spriteInfo.y = 0;
+	spriteInfo.pivotX = 0.5f;
+	spriteInfo.pivotY = 0.5f;
+	spriteInfo.name = "";
 }
 
 SpriteRenderer::~SpriteRenderer()
 {
-	PackageResourceManager::GetInstance().UnloadData(filePath); // ºñÆ®¸Ê ¾ğ·Îµå
+	PackageResourceManager::GetInstance().UnloadData(filePath); // ë¹„íŠ¸ë§µ ì–¸ë¡œë“œ
 }
 
 void SpriteRenderer::Initialize()
@@ -30,9 +37,14 @@ void SpriteRenderer::Update(const float& deltaSeconds)
 
 void SpriteRenderer::LoadData(const std::wstring& path)
 {
-	filePath = FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + path); // ÆÄÀÏ ÀÌ¸§¸¸ ÀúÀå
+	filePath = FileHelper::ToAbsolutePath(Define::BASE_RESOURCE_PATH + path); // íŒŒì¼ ì´ë¦„ë§Œ ì €ì¥
 	m_bitmap = PackageResourceManager::GetInstance().CreateBitmapFromFile(
 		(Define::BASE_RESOURCE_PATH + path).c_str());
+
+	spriteInfo.height = GetBitmapSizeY();
+	spriteInfo.width = GetBitmapSizeX();
+	spriteInfo.pivotX = 0.5f;
+	spriteInfo.pivotY = 0.5f;
 }
 
 void SpriteRenderer::Release()
@@ -41,43 +53,245 @@ void SpriteRenderer::Release()
 }
 
 /*
-* @briefs : º¯È¯Çà·ÄÀ» Àû¿ëÇÏ¿© ºñÆ®¸ÊÀ» ¿øÇÏ´Â À§Ä¡¿¡ ±×¸³´Ï´Ù.
+* @briefs : ë³€í™˜í–‰ë ¬ì„ ì ìš©í•˜ì—¬ ë¹„íŠ¸ë§µì„ ì›í•˜ëŠ” ìœ„ì¹˜ì— ê·¸ë¦½ë‹ˆë‹¤.
 * @details
-*	ETransformType : ÁÂÇ¥°è ±¸ºĞ
+*	ETransformType : ì¢Œí‘œê³„ êµ¬ë¶„
 */
 
 void SpriteRenderer::Render()
 {
-	if (m_bitmap == nullptr) return;
+	ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
+	if (!m_bitmap || !context) return;
 	__super::Render();
 
-	// ÃÖÁ¾ º¯È¯ ºñÆ®¸Ê ¿øÁ¡¿¡ ¸ÂÃç ±×¸®±â (Src ÀüÃ¼ »ç¿ë)
-	D2D1_POINT_2F m_pivot =
+	// ì˜ë¼ì˜¬ ì˜ì—­ ê²°ì • â€• ê°’ì´ -1ì´ë©´ ì›ë³¸ ì „ë¶€
+	float cropW = (slice.srcW > 0) ? slice.srcW : spriteInfo.width;
+	float cropH = (slice.srcH > 0) ? slice.srcH : spriteInfo.height;
+	float srcL = slice.srcX;
+	float srcT = slice.srcY;
+	D2D1_RECT_F srcRect = { srcL,               srcT,
+							 srcL + cropW,       srcT + cropH };
+	// í™”ë©´ì— ê·¸ë¦´ ìœ„ì¹˜(ì„¼í„°ë§ í¬í•¨)
+	float offsetX = -cropW * spriteInfo.pivotX;
+	float offsetY = -cropH * spriteInfo.pivotY;
+
+	// ì´í™íŠ¸ ìˆì„ì‹œ ì´í™íŠ¸ ê·¸ë¦¬ê¸°
+	if (!m_effect)
 	{
-		GetSizeX() * GetPivot()->x,
-		GetSizeY() * GetPivot()->y
-	};
-	D2D1_RECT_F destRect = { -m_pivot.x, -m_pivot.y,  m_pivot.x,  m_pivot.y };
-	D2DRenderManager::GetD2DDevice()->DrawBitmap(m_bitmap.get(), &destRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
+		FVector2 relativeSize = GetBitmapSize();
+		D2D1_RECT_F destRect = D2D1::RectF(-relativeSize.x / 2, -relativeSize.y / 2, relativeSize.x / 2, relativeSize.y / 2);
+		context->DrawBitmap(m_bitmap.get(), destRect);
+	}
+	else {
+ 
+		D2D1_POINT_2F destPos = D2D1::Point2F(offsetX, offsetY);
+		context->DrawImage(m_effect.Get(), &destPos, &srcRect);
+
+	}
+		
 }
 
-float SpriteRenderer::GetSizeX()
+float SpriteRenderer::GetBitmapSizeX()
 {
 	if (!m_bitmap.get()) return 0;
 	D2D1_SIZE_U bmpSize = m_bitmap->GetPixelSize();
 	return static_cast<float>(bmpSize.width);
 }
 
-float SpriteRenderer::GetSizeY()
+float SpriteRenderer::GetBitmapSizeY()
 {
 	if (!m_bitmap.get()) return 0;
 	D2D1_SIZE_U bmpSize = m_bitmap->GetPixelSize();
 	return static_cast<float>(bmpSize.height);
 }
 
-FVector2 SpriteRenderer::GetSize()
+FVector2 SpriteRenderer::GetBitmapSize()
 {
 	if (!m_bitmap) return FVector2(0);
 	D2D1_SIZE_U bmpSize = m_bitmap->GetPixelSize();
 	return FVector2(static_cast<float>(bmpSize.width), static_cast<float>(bmpSize.height));
 }
+
+FVector2 SpriteRenderer::GetRelativeSize()
+{
+	FVector2 relativeSize = __super::GetRelativeSize();
+	relativeSize.x *= GetBitmapSizeX();
+	relativeSize.y *= GetBitmapSizeY();;
+	return relativeSize;
+}
+
+void SpriteRenderer::SetSlice(float x, float y, float w, float h)
+{
+	slice.srcX = x;  slice.srcY = y;
+	slice.srcW = w;  slice.srcH = h;
+}
+
+void SpriteRenderer::SetSkewing(bool _isSkewing, FVector2 _skewAngle /*= FVector2(0.0f, 0.0f)*/)
+{
+	
+}
+
+void SpriteRenderer::SetOpacity(float alpha)
+{
+    ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
+    if (!context || !m_bitmap) {
+        m_effect.Reset();
+        return;
+    }
+
+    // 0..1 clamp
+    const float a = (alpha < 0.f) ? 0.f : (alpha > 1.f ? 1.f : alpha);
+
+    ComPtr<ID2D1Effect> opacityEffect;
+    if (SUCCEEDED(context->CreateEffect(CLSID_D2D1Opacity, &opacityEffect)))
+    {
+        opacityEffect->SetValue(D2D1_OPACITY_PROP_OPACITY, a);
+        opacityEffect->SetInput(0, m_bitmap.get());
+        m_effect = opacityEffect; // Render ë‹¨ê³„ì—ì„œ DrawImageë¡œ ê·¸ë ¤ì§
+    }
+}
+
+void SpriteRenderer::SetFilter(float rMul, float gMul, float bMul)
+{
+	ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
+	if (!context || !m_bitmap) {
+		m_effect.Reset();
+		return;
+	}
+
+	float r = rMul / 255.0f;
+	float g = gMul / 255.0f;
+	float b = bMul / 255.0f;
+
+	ComPtr<ID2D1Effect> colorEffect;
+	if (SUCCEEDED(context->CreateEffect(CLSID_D2D1ColorMatrix, &colorEffect)))
+	{
+		// ìƒ‰ìƒ ê³±ì…ˆ í–‰ë ¬ ìƒì„±
+		D2D1_MATRIX_5X4_F matrix = D2D1::Matrix5x4F(
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 1,
+			rMul, gMul, bMul, 0
+		);
+
+		colorEffect->SetValue(D2D1_COLORMATRIX_PROP_COLOR_MATRIX, matrix);
+		colorEffect->SetInput(0, m_bitmap.get());
+		m_effect = colorEffect; // Renderì—ì„œ ìë™ ì ìš©
+	}
+}
+
+void SpriteRenderer::SetFilter(FColor color)
+{
+	ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
+	if (!context || !m_bitmap)
+	{
+		m_effect.Reset();
+		return;
+	}
+
+	ComPtr<ID2D1Effect> colorEffect;
+	if (SUCCEEDED(context->CreateEffect(CLSID_D2D1ColorMatrix, &colorEffect)))
+	{
+		// FColor ê¸°ë°˜ RGB ê³±ì…ˆ ë§¤íŠ¸ë¦­ìŠ¤ ìƒì„±
+
+		float r = color.r / 255.0f;
+		float g = color.g / 255.0f;
+		float b = color.b / 255.0f;
+		float a = color.a / 255.0f;
+
+		D2D1_MATRIX_5X4_F matrix = D2D1::Matrix5x4F(
+			0, 0, 0, 0,     
+			0, 0, 0, 0,     
+			0, 0, 0, 0,     
+			0, 0, 0, a,  
+			r, g, b, 0      // ì§€ì •ëœ ìƒ‰ìƒìœ¼ë¡œ ì˜¤í”„ì…‹(ë§ì…ˆ)
+		);
+
+		colorEffect->SetValue(D2D1_COLORMATRIX_PROP_COLOR_MATRIX, matrix);
+		colorEffect->SetInput(0, m_bitmap.get());
+		m_effect = colorEffect; // Renderì—ì„œ DrawImageë¡œ ìë™ ì ìš©
+	}
+}
+//void SpriteRenderer::SetFilter(Filter filter)
+//{
+//	ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
+//	if (!context || !m_bitmap)
+//	{
+//		m_effect.Reset();
+//		return;
+//	}
+//
+//	ComPtr<ID2D1Effect> filterEffect;
+//	if (SUCCEEDED(context->CreateEffect(CLSID_D2D1ColorMatrix, &filterEffect)))
+//	{
+//		D2D1_MATRIX_5X4_F matrix;
+//
+//		switch (filter)
+//		{
+//		case Filter::None:
+//			matrix = D2D1::Matrix5x4F(
+//				1, 0, 0, 0,
+//				0, 1, 0, 0,
+//				0, 0, 1, 0,
+//				0, 0, 0, 1,
+//				0, 0, 0, 0
+//			);
+//			break;
+//
+//		case Filter::Grayscale:
+//			matrix = D2D1::Matrix5x4F(
+//				0.3f, 0.59f, 0.11f, 0,
+//				0.3f, 0.59f, 0.11f, 0,
+//				0.3f, 0.59f, 0.11f, 0,
+//				0, 0, 0, 1,
+//				0, 0, 0, 0
+//			);
+//			break;
+//
+//		case Filter::Sepia:
+//			matrix = D2D1::Matrix5x4F(
+//				0.393f, 0.769f, 0.189f, 0,
+//				0.349f, 0.686f, 0.168f, 0,
+//				0.272f, 0.534f, 0.131f, 0,
+//				0, 0, 0, 1,
+//				0, 0, 0, 0
+//			);
+//			break;
+//
+//		case Filter::Invert:
+//			matrix = D2D1::Matrix5x4F(
+//				-1, 0, 0, 0,
+//				0, -1, 0, 0,
+//				0, 0, -1, 0,
+//				0, 0, 0, 1,
+//				1, 1, 1, 0
+//			);
+//			break;
+//
+//		case Filter::Brighten:
+//			matrix = D2D1::Matrix5x4F(
+//				1.2f, 0, 0, 0,
+//				0, 1.2f, 0, 0,
+//				0, 0, 1.2f, 0,
+//				0, 0, 0, 1,
+//				0, 0, 0, 0
+//			);
+//			break;
+//
+//		case Filter::Darken:
+//			matrix = D2D1::Matrix5x4F(
+//				0.8f, 0, 0, 0,
+//				0, 0.8f, 0, 0,
+//				0, 0, 0.8f, 0,
+//				0, 0, 0, 1,
+//				0, 0, 0, 0
+//			);
+//			break;
+//		}
+//
+//		filterEffect->SetValue(D2D1_COLORMATRIX_PROP_COLOR_MATRIX, matrix);
+//		filterEffect->SetInput(0, m_bitmap.get());
+//		m_effect = filterEffect;
+//	}
+//}

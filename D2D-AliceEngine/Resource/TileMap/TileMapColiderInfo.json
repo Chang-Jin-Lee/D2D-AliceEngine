@@ -1,0 +1,62 @@
+[
+    {
+        "index": 2,
+        "collisionChannel": 1,
+        "enemyType": 1
+    },
+    {
+        "index": 7,
+        "collisionChannel": 1,
+        "enemyType": 1
+    },
+    {
+        "index": 12,
+        "collisionChannel": 1,
+        "enemyType": 1
+    },
+    {
+        "index": 3,
+        "collisionChannel": 1,
+        "enemyType": 3
+    },
+    {
+        "index": 8,
+        "collisionChannel": 1,
+        "enemyType": 3
+    },
+    {
+        "index": 13,
+        "collisionChannel": 1,
+        "enemyType": 3
+    },
+    {
+        "index": 4,
+        "collisionChannel": 1,
+        "enemyType": 2
+    },
+    {
+        "index": 9,
+        "collisionChannel": 1,
+        "enemyType": 2
+    },
+    {
+        "index": 14,
+        "collisionChannel": 1,
+        "enemyType": 2
+    },
+    {
+        "index": 5,
+        "collisionChannel": 1,
+        "enemyType": 0
+    },
+    {
+        "index": 10,
+        "collisionChannel": 1,
+        "enemyType": 0
+    },
+    {
+        "index": 15,
+        "collisionChannel": 1,
+        "enemyType": 0
+    }
+]

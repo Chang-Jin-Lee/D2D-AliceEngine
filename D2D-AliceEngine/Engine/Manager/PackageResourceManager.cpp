@@ -95,56 +95,17 @@ std::shared_ptr<ID2D1Bitmap1> PackageResourceManager::CreateBitmapFromFile(const
 		else
 		{
 			// 처음 로드하는 경우
-			ComPtr<IWICBitmapDecoder>     decoder;
-			ComPtr<IWICBitmapFrameDecode> frame;
-			ComPtr<IWICFormatConverter>   converter;
-
-			// ① 디코더 생성
-			HRESULT hr = m_wicImagingFactory->CreateDecoderFromFilename(
-				absolutePath.c_str(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, &decoder);
-			//assert(FAILED(hr));
-
-			// ② 첫 프레임 얻기
-			hr = decoder->GetFrame(0, &frame);
-			//assert(FAILED(hr));
-
-			// ③ 포맷 변환기 생성
-			hr = m_wicImagingFactory->CreateFormatConverter(&converter);
-			//assert(FAILED(hr));
-
-			// ④ GUID_WICPixelFormat32bppPBGRA로 변환
-			hr = converter->Initialize(
-				frame.Get(),
-				GUID_WICPixelFormat32bppPBGRA,
-				WICBitmapDitherTypeNone,
-				nullptr,
-				0.0f,
-				WICBitmapPaletteTypeCustom
-			);
-			//assert(FAILED(hr));
-
-			// ⑤ Direct2D 비트맵 속성 (premultiplied alpha, B8G8R8A8_UNORM)
-			D2D1_BITMAP_PROPERTIES1 bmpProps = D2D1::BitmapProperties1(
-				D2D1_BITMAP_OPTIONS_NONE,
-				D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
-			);
-
-			// ⑥ DeviceContext에서 WIC 비트맵으로부터 D2D1Bitmap1 생성
 			ComPtr<ID2D1Bitmap1> comPtrBitmap;
-			hr = D2DRenderManager::GetInstance().m_d2dDeviceContext->CreateBitmapFromWicBitmap(converter.Get(), &bmpProps, &comPtrBitmap);
-
+			HRESULT hr = D2DRenderManager::GetInstance().CreateBitmapFromFile(absolutePath.c_str(), comPtrBitmap.GetAddressOf());
 			if (SUCCEEDED(hr)) {
 				// 커스텀 삭제자로 COM 객체 래핑
-				auto deleter = [](ID2D1Bitmap1* p) {
-					if (p) p->Release();
-					};
-
+				auto deleter = [](ID2D1Bitmap1* p) {if (p) p->Release();};
 				ID2D1Bitmap1* rawBitmap = comPtrBitmap.Detach(); // 소유권 이전
 				std::shared_ptr<ID2D1Bitmap1> sharedBitmap(rawBitmap, deleter);
 
 				m_preloadedPaths[absolutePath].loadCount++;
 				m_loadedBitmaps[m_preloadedPaths[absolutePath].uuid] = sharedBitmap;
-				return std::move(sharedBitmap);
+				return sharedBitmap;
 			}
 			else
 			{

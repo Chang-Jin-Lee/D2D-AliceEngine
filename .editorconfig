@@ -1,0 +1,6 @@
+root = true
+
+[*.{sln,vcxproj,props,targets,cs,cpp,h,rc,xaml,resx}]
+charset = utf-8-bom
+end_of_line = crlf
+insert_final_newline = true

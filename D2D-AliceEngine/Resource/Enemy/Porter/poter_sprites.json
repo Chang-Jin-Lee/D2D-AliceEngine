@@ -1,0 +1,70 @@
+{
+    "texture": "Enemy/Porter/porter_sprite.png",
+    "textureWidth": 4200,
+    "textureHeight": 360,
+    "sprites": [
+        {
+            "name": "porter_sprite_0",
+            "x": 0.0,
+            "y": 360.0,
+            "width": 600.0,
+            "height": 360.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "porter_sprite_1",
+            "x": 600.0,
+            "y": 360.0,
+            "width": 600.0,
+            "height": 360.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "porter_sprite_2",
+            "x": 1200.0,
+            "y": 360.0,
+            "width": 600.0,
+            "height": 360.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "porter_sprite_3",
+            "x": 1800.0,
+            "y": 360.0,
+            "width": 600.0,
+            "height": 360.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "porter_sprite_4",
+            "x": 2400.0,
+            "y": 360.0,
+            "width": 600.0,
+            "height": 360.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "porter_sprite_5",
+            "x": 3000.0,
+            "y": 360.0,
+            "width": 600.0,
+            "height": 360.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "porter_sprite_6",
+            "x": 3600.0,
+            "y": 360.0,
+            "width": 600.0,
+            "height": 360.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        }
+    ]
+}

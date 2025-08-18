@@ -1,0 +1,15 @@
+{
+    "controllerName": "killdong_idle_0",
+    "parameters": [],
+    "defaultState": "killdong_idle",
+    "states": [
+        {
+            "name": "killdong_idle",
+            "motionName": "killdong_idle",
+            "clipLength": 0.5833333134651184,
+            "loop": true,
+            "transitions": []
+        }
+    ],
+    "anyStateTransitions": []
+}

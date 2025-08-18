@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="spine-cpp">
+      <UniqueIdentifier>{6d15e287-76d4-4927-9327-7bf9c08d0b69}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

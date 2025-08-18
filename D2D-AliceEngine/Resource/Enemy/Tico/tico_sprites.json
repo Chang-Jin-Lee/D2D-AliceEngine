@@ -1,0 +1,61 @@
+{
+    "texture": "Enemy/Tico/tico_sprite.png",
+    "textureWidth": 480,
+    "textureHeight": 1440,
+    "sprites": [
+        {
+            "name": "tico_sprite_0",
+            "x": 0.0,
+            "y": 240.0,
+            "width": 480.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "tico_sprite_1",
+            "x": 0.0,
+            "y": 480.0,
+            "width": 480.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "tico_sprite_2",
+            "x": 0.0,
+            "y": 720.0,
+            "width": 480.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "tico_sprite_3",
+            "x": 0.0,
+            "y": 960.0,
+            "width": 480.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "tico_sprite_4",
+            "x": 0.0,
+            "y": 1200.0,
+            "width": 480.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "tico_sprite_5",
+            "x": 0.0,
+            "y": 1440.0,
+            "width": 480.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        }
+    ]
+}

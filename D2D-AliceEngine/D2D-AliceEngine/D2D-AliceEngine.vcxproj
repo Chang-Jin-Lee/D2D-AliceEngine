@@ -85,14 +85,23 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)D2D-AliceEngine;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\core\inc;$(SolutionDir)Engine;$(SolutionDir)D2D-AliceEngine;$(SolutionDir)spine-cpp\spine-cpp\</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>d2dengine_pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Extension\core\lib\x64</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy /Y "$(SolutionDir)Extension\core\lib\x64\fmod.dll" "$(OutDir)"
+
+copy /Y "$(SolutionDir)Extension\core\lib\x64\fmod_vc.lib" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -102,14 +111,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\core\inc;$(SolutionDir)Engine;$(SolutionDir)D2D-AliceEngine;$(SolutionDir)spine-cpp\spine-cpp\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Extension\core\lib\x64</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy /Y "$(SolutionDir)Extension\core\lib\x64\fmod.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -117,14 +131,27 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)D2D-AliceEngine;$(SolutionDir)Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\core\inc;$(SolutionDir)Engine;$(SolutionDir)D2D-AliceEngine;$(SolutionDir)spine-cpp\spine-cpp\</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>d2dengine_pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Extension\core\lib\x64</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>copy /Y "$(SolutionDir)Extension\core\lib\x64\fmod.dll" "$(OutDir)"
+
+copy /Y "$(SolutionDir)Extension\core\lib\x64\fmod_vc.lib" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -134,8 +161,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extension\core\inc;$(SolutionDir)Engine;$(SolutionDir)D2D-AliceEngine;$(SolutionDir)spine-cpp\spine-cpp\</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -143,52 +170,174 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Extension\core\lib\x64</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>copy /Y "$(SolutionDir)Extension\core\lib\x64\fmod.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Scripts\Enemy.h" />
+    <ClInclude Include="Scripts\Weapon\BulletColl.h" />
+    <ClInclude Include="Helper\ParticleHelper.h" />
+    <ClInclude Include="Scripts\Widget\LocationIndicatorWidgetScript.h" />
+    <ClInclude Include="Scripts\Audio\GameClearAudioScript.h" />
+    <ClInclude Include="Scripts\Enemy\Jump\JumpTrigger.h" />
+    <ClInclude Include="Scripts\Enemy\Spawn\EnemyDespawner.h" />
+    <ClInclude Include="Scripts\Widget\GameClearWidgetScript.h" />
+    <ClInclude Include="Scripts\Widget\GameOverWidgetScript.h" />
+    <ClInclude Include="Scripts\Player\PlayerMovement.h" />
+    <ClInclude Include="Scripts\Enemy\SpawnerUsingSingleton\EnemySpawnTriggerBox.h" />
+    <ClInclude Include="Scene\GameScene\GameClearScene.h" />
+    <ClInclude Include="GameManager\PlayerDataManager.h" />
+    <ClInclude Include="Scene\GameScene\GameOverScene.h" />
+    <ClInclude Include="Scene\GameScene\Scene_Stage2.h" />
+    <ClInclude Include="Scene\GameScene\Scene_Stage3.h" />
+    <ClInclude Include="GameManager\EnemyDataManager.h" />
+    <ClInclude Include="Scripts\Enemy\EnemyStatScript.h" />
+    <ClInclude Include="Scene\EffectTestScene.h" />
+    <ClInclude Include="Scripts\Widget\BlackOutWidgetScript.h" />
+    <ClInclude Include="Scripts\Widget\CutSceneWidgetScript.h" />
+    <ClInclude Include="GameManager\GamePlayManager.h" />
+    <ClInclude Include="Scripts\Bike\BikeStatScript.h" />
+    <ClInclude Include="Scripts\Weapon\Drone.h" />
+    <ClInclude Include="Scripts\Enemy\Spawn\EnemySpawner.h" />
+    <ClInclude Include="Scripts\Enemy\EnemyManager.h" />
+    <ClInclude Include="Prefab\Enemy\NormalCar.h" />
+    <ClInclude Include="Prefab\Enemy\JumpTruck.h" />
+    <ClInclude Include="Prefab\Enemy\NormalTruck.h" />
+    <ClInclude Include="GameManager\BulletManager.h" />
+    <ClInclude Include="Scripts\Weapon\Bullet.h" />
+    <ClInclude Include="Scene\KangScene\KangScene.h" />
+    <ClInclude Include="Prefab\Enemy\Core\Car.h" />
+    <ClInclude Include="Scripts\Player\PlayerManager.h" />
+    <ClInclude Include="Prefab\Player\PlayerBike.h" />
+    <ClInclude Include="Prefab\Enemy\EnemyBike.h" />
+    <ClInclude Include="Scripts\BackGroundRender.h" />
+    <ClInclude Include="Scripts\Camera\CameraMover.h" />
+    <ClInclude Include="Scripts\Bike\BikeMovementScript.h" />
+    <ClInclude Include="Scripts\Bike\LaneController.h" />
+    <ClInclude Include="Scripts\Bike\Battery.h" />
+    <ClInclude Include="Scripts\Audio.h" />
+    <ClInclude Include="Scene\DemoScene4.h" />
+    <ClInclude Include="Scene\ExampleScene\ExampleScene.h" />
+    <ClInclude Include="Scripts\Legacy\Enemy.h" />
     <ClInclude Include="Scene\DemoScene3.h" />
-    <ClInclude Include="Scripts\Player.h" />
-    <ClInclude Include="Scripts\Aru2.h" />
+    <ClInclude Include="Scripts\Bike\Health.h" />
+    <ClInclude Include="Scripts\Legacy\Player.h" />
+    <ClInclude Include="Scripts\Legacy\Aru2.h" />
     <ClInclude Include="Scripts\Example\ScriptExample.h" />
-    <ClInclude Include="Scripts\CameraController.h" />
+    <ClInclude Include="Scripts\Legacy\CameraController.h" />
     <ClInclude Include="Scripts\BackGroundImage.h" />
     <ClInclude Include="Scripts\BackGroundVideo.h" />
-    <ClInclude Include="Scripts\Aru.h" />
-    <ClInclude Include="Scripts\Moon.h" />
-    <ClInclude Include="Scripts\Earth.h" />
+    <ClInclude Include="Scripts\Legacy\Aru.h" />
+    <ClInclude Include="Scripts\SolarScene\Moon.h" />
+    <ClInclude Include="Scripts\SolarScene\Earth.h" />
     <ClInclude Include="Scene\DemoScene2.h" />
     <ClInclude Include="Scene\DemoScene.h" />
     <ClInclude Include="DemoGameApp.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Scripts\Sun.h" />
+    <ClInclude Include="Scripts\SolarScene\Sun.h" />
     <ClInclude Include="d2dengine_pch.h" />
+    <ClInclude Include="Scene\SelectScene.h" />
+    <ClInclude Include="Scripts\Widget\SelectWidgetScript.h" />
+    <ClInclude Include="Scripts\Enemy\Spawn\SpawnCollider.h" />
+    <ClInclude Include="Scripts\Enemy\Spawn\SpawnData.h" />
+    <ClInclude Include="Scene\SpineScene.h" />
+    <ClInclude Include="Scripts\Spine2D\SpineScript.h" />
+    <ClInclude Include="Scripts\Widget\StageWidgetScript.h" />
+    <ClInclude Include="Scene\GameScene\Scene_Stage1.h" />
+    <ClInclude Include="Scripts\Audio\StageAudioScript.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Scripts\YuukaVideo.h" />
+    <ClInclude Include="Scripts\Video\YuukaVideo.h" />
+    <ClInclude Include="Prefab\Truck.h" />
+    <ClInclude Include="Scene\GameScene\TitleScene.h" />
+    <ClInclude Include="Scripts\Widget\TitleWidgetScript.h" />
+    <ClInclude Include="Scripts\Audio\TitleAudioScript.h" />
+    <ClInclude Include="Scripts\TileMap\TileMapManager.h" />
+    <ClInclude Include="Scripts\Widget\VignetteWidgetScript.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Scripts\Weapon\BulletColl.cpp" />
+    <ClCompile Include="Helper\ParticleHelper.cpp" />
+    <ClCompile Include="Scripts\Widget\LocationIndicatorWidgetScript.cpp" />
+    <ClCompile Include="Scripts\Audio\GameClearAudioScript.cpp" />
+    <ClCompile Include="Scripts\Enemy\Jump\JumpTrigger.cpp" />
+    <ClCompile Include="Scripts\Enemy\Spawn\EnemyDespawner.cpp" />
+    <ClCompile Include="Scripts\Widget\GameClearWidgetScript.cpp" />
+    <ClCompile Include="Scripts\Widget\GameOverWidgetScript.cpp" />
+    <ClCompile Include="Scripts\Player\PlayerMovement.cpp" />
+    <ClCompile Include="Scripts\Enemy\SpawnerUsingSingleton\EnemySpawnTriggerBox.cpp" />
+    <ClCompile Include="Scene\GameScene\GameClearScene.cpp" />
+    <ClCompile Include="GameManager\PlayerDataManager.cpp" />
+    <ClCompile Include="Scene\GameScene\GameOverScene.cpp" />
+    <ClCompile Include="Scene\GameScene\Scene_Stage2.cpp" />
+    <ClCompile Include="Scene\GameScene\Scene_Stage3.cpp" />
+    <ClCompile Include="GameManager\EnemyDataManager.cpp" />
+    <ClCompile Include="Scripts\Enemy\EnemyStatScript.cpp" />
+    <ClCompile Include="Scene\EffectTestScene.cpp" />
+    <ClCompile Include="Scripts\Widget\BlackOutWidgetScript.cpp" />
+    <ClCompile Include="Scripts\Widget\CutSceneWidgetScript.cpp" />
+    <ClCompile Include="GameManager\GamePlayManager.cpp" />
+    <ClCompile Include="Scripts\Bike\BikeStatScript.cpp" />
+    <ClCompile Include="Scripts\Weapon\Drone.cpp" />
+    <ClCompile Include="Scripts\Enemy\Spawn\EnemySpawner.cpp" />
+    <ClCompile Include="Scripts\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="Prefab\Enemy\NormalCar.cpp" />
+    <ClCompile Include="Prefab\Enemy\JumpTruck.cpp" />
+    <ClCompile Include="Prefab\Enemy\NormalTruck.cpp" />
+    <ClCompile Include="GameManager\BulletManager.cpp" />
+    <ClCompile Include="Scripts\Weapon\Bullet.cpp" />
+    <ClCompile Include="Scene\KangScene\KangScene.cpp" />
+    <ClCompile Include="Prefab\Enemy\Core\Car.cpp" />
+    <ClCompile Include="Scripts\Player\PlayerManager.cpp" />
+    <ClCompile Include="Prefab\Player\PlayerBike.cpp" />
+    <ClCompile Include="Prefab\Enemy\EnemyBike.cpp" />
+    <ClCompile Include="Scripts\BackGroundRender.cpp" />
+    <ClCompile Include="Scripts\Camera\CameraMover.cpp" />
+    <ClCompile Include="Scripts\Bike\BikeMovementScript.cpp" />
+    <ClCompile Include="Scripts\Legacy\Player.cpp" />
+    <ClCompile Include="Scripts\Bike\LaneController.cpp" />
+    <ClCompile Include="Scripts\Bike\Battery.cpp" />
+    <ClCompile Include="Scripts\Audio.cpp" />
     <ClCompile Include="d2dengine_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Scripts\Enemy.cpp" />
+    <ClCompile Include="Scene\DemoScene4.cpp" />
+    <ClCompile Include="Scene\ExampleScene\ExampleScene.cpp" />
+    <ClCompile Include="Scripts\Legacy\Enemy.cpp" />
     <ClCompile Include="Scene\DemoScene3.cpp" />
-    <ClCompile Include="Scripts\Player.cpp" />
-    <ClCompile Include="Scripts\Aru2.cpp" />
+    <ClCompile Include="Scripts\Legacy\Aru2.cpp" />
     <ClCompile Include="Scripts\Example\ScriptExample.cpp" />
-    <ClCompile Include="Scripts\CameraController.cpp" />
+    <ClCompile Include="Scripts\Legacy\CameraController.cpp" />
     <ClCompile Include="Scripts\BackGroundImage.cpp" />
     <ClCompile Include="Scripts\BackGroundVideo.cpp" />
-    <ClCompile Include="Scripts\Aru.cpp" />
-    <ClCompile Include="Scripts\Moon.cpp" />
-    <ClCompile Include="Scripts\Earth.cpp" />
+    <ClCompile Include="Scripts\Legacy\Aru.cpp" />
+    <ClCompile Include="Scripts\Bike\Health.cpp" />
+    <ClCompile Include="Scripts\SolarScene\Moon.cpp" />
+    <ClCompile Include="Scripts\SolarScene\Earth.cpp" />
     <ClCompile Include="Scene\DemoScene2.cpp" />
     <ClCompile Include="Scene\DemoScene.cpp" />
     <ClCompile Include="DemoGameApp.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Scripts\Sun.cpp" />
-    <ClCompile Include="Scripts\YuukaVideo.cpp" />
+    <ClCompile Include="Scripts\SolarScene\Sun.cpp" />
+    <ClCompile Include="Scripts\Video\YuukaVideo.cpp" />
+    <ClCompile Include="Prefab\Truck.cpp" />
+    <ClCompile Include="Scene\GameScene\TitleScene.cpp" />
+    <ClCompile Include="Scripts\Widget\TitleWidgetScript.cpp" />
+    <ClCompile Include="Scene\SelectScene.cpp" />
+    <ClCompile Include="Scripts\Widget\SelectWidgetScript.cpp" />
+    <ClCompile Include="Scripts\Enemy\Spawn\SpawnCollider.cpp" />
+    <ClCompile Include="Scripts\Enemy\Spawn\SpawnData.cpp" />
+    <ClCompile Include="Scene\SpineScene.cpp" />
+    <ClCompile Include="Scripts\Spine2D\SpineScript.cpp" />
+    <ClCompile Include="Scripts\Audio\TitleAudioScript.cpp" />
+    <ClCompile Include="Scripts\TileMap\TileMapManager.cpp" />
+    <ClCompile Include="Scripts\Widget\StageWidgetScript.cpp" />
+    <ClCompile Include="Scripts\Widget\VignetteWidgetScript.cpp" />
+    <ClCompile Include="Scene\GameScene\Scene_Stage1.cpp" />
+    <ClCompile Include="Scripts\Audio\StageAudioScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

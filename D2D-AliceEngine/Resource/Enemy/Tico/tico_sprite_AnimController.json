@@ -1,0 +1,15 @@
+{
+    "controllerName": "tico_sprite_0",
+    "parameters": [],
+    "defaultState": "Idle",
+    "states": [
+        {
+            "name": "Idle",
+            "motionName": "tico_idle",
+            "clipLength": 0.5,
+            "loop": true,
+            "transitions": []
+        }
+    ],
+    "anyStateTransitions": []
+}

@@ -1,0 +1,61 @@
+{
+    "texture": "Enemy/Bike/bike_sprite.png",
+    "textureWidth": 2160,
+    "textureHeight": 240,
+    "sprites": [
+        {
+            "name": "bike_sprite_0",
+            "x": 0.0,
+            "y": 240.0,
+            "width": 360.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "bike_sprite_1",
+            "x": 360.0,
+            "y": 240.0,
+            "width": 360.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "bike_sprite_2",
+            "x": 720.0,
+            "y": 240.0,
+            "width": 360.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "bike_sprite_3",
+            "x": 1080.0,
+            "y": 240.0,
+            "width": 360.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "bike_sprite_4",
+            "x": 1440.0,
+            "y": 240.0,
+            "width": 360.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "bike_sprite_5",
+            "x": 1800.0,
+            "y": 240.0,
+            "width": 360.0,
+            "height": 240.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        }
+    ]
+}

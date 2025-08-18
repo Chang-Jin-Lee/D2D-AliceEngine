@@ -15,5 +15,9 @@ UObject::~UObject()
 
 Scene* UObject::GetWorld()
 {
-	return SceneManager::GetInstance().GetWorld();
+	if (Scene* scene = SceneManager::GetInstance().GetWorld())
+	{
+		return scene; // 월드가 없을 경우 nullptr 반환
+	}
+	return nullptr;
 }

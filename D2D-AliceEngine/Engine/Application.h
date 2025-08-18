@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "pch.h"
 #include <Core/Singleton.h>
 
@@ -18,6 +18,8 @@ public:
 	virtual void Input();
 	virtual void Uninitialize();
 
+	FVector2 GetSize() { return FVector2(m_width, m_height); }
+
 protected:
 	HWND m_hwnd = nullptr;
 	HINSTANCE m_hInstance;
@@ -29,9 +31,10 @@ protected:
 	UINT m_width = Define::SCREEN_WIDTH;
 	UINT m_height = Define::SCREEN_HEIGHT;
 	bool m_resized = false;
-
+	bool m_quit = false;
 public:
 	void MessageProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void GetApplicationSize(int& width, int& height);
+	void GameQuit() { m_quit = true; }
 };
 #define GetApplication() Application::Get()

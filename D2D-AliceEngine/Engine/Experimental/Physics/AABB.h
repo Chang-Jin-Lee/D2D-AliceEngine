@@ -1,16 +1,22 @@
-#pragma once
+ï»¿#pragma once
 
+#include <limits>
+#include <sstream>
+#include <vector>
+#include <Math/TMath.h>
 
 namespace Physics
 {
 	template<typename T>
 	struct TAABB
 	{
-		TVector2<T> minVector = TVector2<T>(FLT_MAX, FLT_MAX);
-		TVector2<T> maxVector = TVector2<T>(FLT_MIN, FLT_MIN);
+		TVector2<T> minVector = TVector2<T>((std::numeric_limits<T>::max)(), (std::numeric_limits<T>::max)());
+		TVector2<T> maxVector = TVector2<T>((std::numeric_limits<T>::lowest)(), (std::numeric_limits<T>::lowest)());
 
-		//float x, y;
-		inline TAABB() : minVector(FLT_MAX), maxVector(FLT_MIN) {}
+		inline TAABB() :
+			minVector((std::numeric_limits<T>::max)()),
+			maxVector((std::numeric_limits<T>::lowest)())
+		{}
 		inline TAABB(std::vector<TVector2<T>>& _vertices)
 		{
 			for (const TVector2<T>& vertex : _vertices)
@@ -21,13 +27,12 @@ namespace Physics
 				maxVector.y = max(maxVector.y, vertex.y);
 			}
 		};
-		// ToString ¸Þ¼­µå ¼öÁ¤
-		// º¸¿©ÁÖ·Á°í ¸¸µç°Å.
+		// ToString ë©”ì„œë“œ ìˆ˜ì • (2D ì „ìš©)
 		inline std::string ToString() const
 		{
 			std::ostringstream oss;
-			oss << "minVector : ( X = " << minVector.x << ", Y = " << minVector.y << ", Z = " << minVector.z << " )\n";
-			oss << "maxVector : ( X = " << maxVector.x << ", Y = " << maxVector.y << ", Z = " << maxVector.z << " )\n";
+			oss << "minVector : ( X = " << minVector.x << ", Y = " << minVector.y << " )\n";
+			oss << "maxVector : ( X = " << maxVector.x << ", Y = " << maxVector.y << " )\n";
 			return oss.str();
 		}
 

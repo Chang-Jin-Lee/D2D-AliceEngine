@@ -1,0 +1,70 @@
+{
+    "texture": "Player/KillDong/killdong_idle.png",
+    "textureWidth": 2520,
+    "textureHeight": 240,
+    "sprites": [
+        {
+            "name": "killdong_idle_0",
+            "x": 17.0,
+            "y": 240.0,
+            "width": 320.0,
+            "height": 199.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "killdong_idle_1",
+            "x": 380.0,
+            "y": 218.0,
+            "width": 320.0,
+            "height": 197.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "killdong_idle_2",
+            "x": 740.0,
+            "y": 219.0,
+            "width": 320.0,
+            "height": 199.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "killdong_idle_3",
+            "x": 1109.0,
+            "y": 219.0,
+            "width": 320.0,
+            "height": 199.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "killdong_idle_4",
+            "x": 1460.0,
+            "y": 219.0,
+            "width": 320.0,
+            "height": 199.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "killdong_idle_5",
+            "x": 1820.0,
+            "y": 218.0,
+            "width": 320.0,
+            "height": 199.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        },
+        {
+            "name": "killdong_idle_6",
+            "x": 2180.0,
+            "y": 218.0,
+            "width": 320.0,
+            "height": 197.0,
+            "pivotX": 0.5,
+            "pivotY": 0.5
+        }
+    ]
+}

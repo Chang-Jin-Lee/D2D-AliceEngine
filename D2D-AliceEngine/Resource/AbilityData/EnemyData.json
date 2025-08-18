@@ -1,0 +1,65 @@
+[
+  {
+    "typeId": 0.0,
+    "maxHP": 30.0,
+    "hp": 30.0,
+    "battery": 10.0,
+    "bulletSpeed": -115.0,
+    "attackDelay": 2.0,
+    "damage": 5.0
+  },
+  {
+    "typeId": 1.0,
+    "maxHP": 300.0,
+    "hp": 300.0,
+    "battery": 0.0,
+    "bulletSpeed": 2.0,
+    "attackDelay": 0.0,
+    "damage": 0.0
+  },
+  {
+    "typeId": 2.0,
+    "maxHP": 350.0,
+    "hp": 350.0,
+    "battery": 0.0,
+    "bulletSpeed": 15.0,
+    "attackDelay": 0.0,
+    "damage": 0.0
+  },
+  {
+    "typeId": 3.0,
+    "maxHP": 120.0,
+    "hp": 120.0,
+    "battery": 12.0,
+    "bulletSpeed": 4.0,
+    "attackDelay": 2.5,
+    "damage": 7.0
+  },
+  {
+    "typeId": 4.0,
+    "maxHP": 600.0,
+    "hp": 600.0,
+    "battery": 20.0,
+    "bulletSpeed": 3.0,
+    "attackDelay": 1.5,
+    "damage": 3.0
+  },
+  {
+    "typeId": 999.0,
+    "maxHP": 23.0,
+    "hp": 23.0,
+    "battery": 20.0,
+    "bulletSpeed": 3.0,
+    "attackDelay": 4.5,
+    "damage": 1.0
+  },
+  {
+    "typeId": 1000.0,
+    "maxHP": 23.0,
+    "hp": 23.0,
+    "battery": 20.0,
+    "bulletSpeed": 3.0,
+    "attackDelay": 1.5,
+    "damage": 2.0
+  }
+]

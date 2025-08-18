@@ -1,9 +1,13 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "SceneManager.h"
 #include <Scene/Scene.h>
+#include <Manager/TimerManager.h>
 
-SceneManager::SceneManager()
+std::wstring SceneManager::m_prevSceneName = L"";
+
+SceneManager::SceneManager() : m_currentScene{nullptr}
 {
+
 }
 
 SceneManager::~SceneManager()
@@ -27,6 +31,7 @@ void SceneManager::Update()
     {
         PerformSceneChange(m_nextSceneName);
         m_nextSceneName.clear();
+        return;
     }
 
     if (WeakObjectPtr<Scene> scene = m_currentScene)
@@ -47,6 +52,18 @@ Scene* SceneManager::GetWorld()
     }
 }
 
+WeakObjectPtr<Scene> SceneManager::GetWorldByWeak()
+{
+	if (WeakObjectPtr<Scene> scene = m_currentScene)
+	{
+		return scene;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 Camera* SceneManager::GetCamera()
 {
     if (WeakObjectPtr<Scene> scene = GetInstance().m_currentScene)
@@ -60,22 +77,32 @@ void SceneManager::PerformSceneChange(const std::wstring& NewobjectName)
 {
     if (WeakObjectPtr<Scene> searchedScene = GetWeakPtrFromObjectName(NewobjectName))
     {
-        if (WeakObjectPtr<Scene> weak = m_currentScene)	// ÇöÀç ¾ÀÀÌ ÀÖ´Ù¸é ±× ¾ÀÀ» Exit ½ÃÅµ´Ï´Ù.
+        if (m_currentScene && !m_currentScene->GetName().empty())
+        {
+            m_prevSceneName = m_currentScene->GetName();
+        }
+
+        if (WeakObjectPtr<Scene> weak = m_currentScene)	// í˜„ì¬ ì”¬ì´ ìˆë‹¤ë©´ ê·¸ ì”¬ì„ Exit ì‹œí‚µë‹ˆë‹¤.
         {
             weak->OnExit();
             weak->Release();
             SceneManager::GetInstance().GetCamera()->Release();
         }
+        
+        // ì”¬ ì „í™˜ ì‹œ ë§ˆìš°ìŠ¤ ìƒíƒœ ì´ˆê¸°í™”
+        searchedScene->OnSceneTransition();
+        
+        TimerManager::GetInstance().SetGlobalTimeScale(1.0f);
         m_currentScene = searchedScene.Get();
         m_currentScene->Initialize();
-        m_currentScene->OnEnter();	// ¹Ù²Ù·Á´Â ¾ÀÀÇ OnEnter() ÇÔ¼ö¸¦ ½ÇÇà½ÃÅµ´Ï´Ù.
         SceneManager::GetInstance().GetCamera()->Initialize();
+        m_currentScene->OnEnter();	// ë°”ê¾¸ë ¤ëŠ” ì”¬ì˜ OnEnter() í•¨ìˆ˜ë¥¼ ì‹¤í–‰ì‹œí‚µë‹ˆë‹¤.
     }
 }
 
 WeakObjectPtr<Scene> SceneManager::GetWeakPtrFromObjectName(const std::wstring& name)
 {
-	// ÀÌ¸§ ±âÁØÀ¸·Î Ã£±â
+	// ì´ë¦„ ê¸°ì¤€ìœ¼ë¡œ ì°¾ê¸°
 	for (auto& scenePair : GetInstance().m_scenes)
 	{
 		if (WeakObjectPtr<Scene> sceneWeak = scenePair.second.get())

@@ -1,232 +1,39 @@
-#pragma once
+ï»¿#pragma once
+
 class FileHelper
 {
 	/*
-	* ÆÄÀÏ °ü·ÃÀÔ´Ï´Ù. Resource ÆÄÀÏÀ» º¹»çÇÕ´Ï´Ù.
+	* íŒŒì¼ ê´€ë ¨ì…ë‹ˆë‹¤. Resource íŒŒì¼ì„ ë³µì‚¬í•©ë‹ˆë‹¤.
 	*/
 public:
 
-	static bool CreateDirectoryIfNotExists(const std::wstring& dir) {
-		if (CreateDirectoryW(dir.c_str(), NULL) ||
-			GetLastError() == ERROR_ALREADY_EXISTS) {
-			return true;
-		}
-		return false;
-	}
+	static bool CreateDirectoryIfNotExists(const std::wstring& dir);
 
-	static void ClearOutputDirectory(const std::wstring& dir) {
-		WIN32_FIND_DATAW findFileData;
-		std::wstring searchPath = dir + L"\\*";
-		HANDLE hFind = FindFirstFileW(searchPath.c_str(), &findFileData);
+	static void ClearOutputDirectory(const std::wstring& dir);
 
-		if (hFind == INVALID_HANDLE_VALUE) return;
+	static std::vector<std::wstring> GetFilesWithPattern(const std::wstring& outputDir, const std::wstring& pattern);
 
-		do {
-			std::wstring fileName = findFileData.cFileName;
-			if (fileName == L"." || fileName == L"..") continue;
+	static std::wstring GetProjectRootPath();
+	static std::wstring ToAbsolutePath(const std::wstring& baseDir);
 
-			std::wstring filePath = dir + L"\\" + fileName;
-			if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				// Àç±ÍÀûÀ¸·Î ÇÏÀ§ Æú´õ »èÁ¦ (ÇÊ¿äÇÏ´Ù¸é)
-				// RemoveDirectoryW(filePath.c_str());
-			}
-			else {
-				DeleteFileW(filePath.c_str());
-			}
-		} while (FindNextFileW(hFind, &findFileData) != 0);
+	static bool CreateDirectoryRecursive(const std::wstring& path);
+	// íŒŒì¼ ë³µì‚¬ í•¨ìˆ˜ (ë®ì–´ì“°ê¸°)
+	static bool CopyFileOverwrite(const std::wstring& src, const std::wstring& dst);
+	// ë””ë ‰í† ë¦¬ ì¬ê·€ ë³µì‚¬ í•¨ìˆ˜
+	static bool CopyDirectoryRecursive(const std::wstring& sourceDir, const std::wstring& targetDir);
 
-		FindClose(hFind);
-	}
+	static void CopyFilesToBuildPath(const std::wstring& _str);
 
-	static std::vector<std::wstring> GetFilesWithPattern(const std::wstring& outputDir, const std::wstring& pattern) {
-		std::vector<std::wstring> files;
-		std::wstring searchPath = outputDir + L"\\" + pattern;
-		WIN32_FIND_DATAW findFileData;
-		HANDLE hFind = FindFirstFileW(searchPath.c_str(), &findFileData);
-
-		if (hFind != INVALID_HANDLE_VALUE) {
-			do {
-				if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-					std::wstring filePath = outputDir + L"\\" + findFileData.cFileName;
-					files.push_back(filePath);
-				}
-			} while (FindNextFileW(hFind, &findFileData) != 0);
-			FindClose(hFind);
-		}
-		std::sort(files.begin(), files.end());
-		return files;
-	}
-
-	static std::wstring GetProjectRootPath()
-	{
-		WCHAR buffer[MAX_PATH] = { 0 };
-		GetModuleFileNameW(NULL, buffer, MAX_PATH);
-		std::wstring exePath(buffer);
-		size_t lastSlash = exePath.find_last_of(L"\\/");
-		if (lastSlash != std::wstring::npos)
-			return exePath.substr(0, lastSlash); // ½ÇÇà ÆÄÀÏÀÌ ÀÖ´Â Æú´õ
-		return L"";
-	}
-
-	static std::wstring ToAbsolutePath(const std::wstring& baseDir)
-	{
-		// ÀÌ¹Ì Àı´ë°æ·Î¶ó¸é ±×´ë·Î ¹İÈ¯
-		if (baseDir.size() > 1 && (baseDir[1] == L':' || baseDir[0] == L'\\' || baseDir[0] == L'/'))
-			return baseDir;
-
-		std::wstring root = GetProjectRootPath();
-		if (root.empty()) return baseDir;
-		return root + L"\\" + baseDir;
-	}
-
-	static bool CreateDirectoryRecursive(const std::wstring& path) {
-		if (path.empty()) return false;
-
-		DWORD attr = GetFileAttributesW(path.c_str());
-		if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY)) {
-			// ÀÌ¹Ì Æú´õ Á¸Àç
-			return true;
-		}
-
-		size_t pos = path.find_last_of(L"\\/");
-		if (pos != std::wstring::npos) {
-			std::wstring parent = path.substr(0, pos);
-			if (GetFileAttributesW(parent.c_str()) == INVALID_FILE_ATTRIBUTES) {
-				if (!CreateDirectoryRecursive(parent))
-					return false;
-			}
-		}
-
-		return CreateDirectoryW(path.c_str(), NULL) || GetLastError() == ERROR_ALREADY_EXISTS;
-	}
-
-	// ÆÄÀÏ º¹»ç ÇÔ¼ö (µ¤¾î¾²±â)
-	static bool CopyFileOverwrite(const std::wstring& src, const std::wstring& dst) {
-		return CopyFileW(src.c_str(), dst.c_str(), FALSE) != 0;
-	}
-
-	// µğ·ºÅä¸® Àç±Í º¹»ç ÇÔ¼ö
-	static bool CopyDirectoryRecursive(const std::wstring& sourceDir, const std::wstring& targetDir) {
-		WIN32_FIND_DATAW findData;
-		std::wstring searchPath = sourceDir + L"\\*";
-		HANDLE hFind = FindFirstFileW(searchPath.c_str(), &findData);
-		if (hFind == INVALID_HANDLE_VALUE) {
-			// ¼Ò½º Æú´õ°¡ ¾ø°Å³ª ºñ¾îÀÖÀ½
-			return false;
-		}
-
-		// Å¸°Ù Æú´õ »ı¼º
-		if (!CreateDirectoryRecursive(targetDir)) {
-			FindClose(hFind);
-			return false;
-		}
-
-		do {
-			const std::wstring fileName = findData.cFileName;
-
-			// "." ¹× ".." Á¦¿Ü
-			if (fileName == L"." || fileName == L"..") continue;
-
-			std::wstring sourcePath = sourceDir + L"\\" + fileName;
-			std::wstring targetPath = targetDir + L"\\" + fileName;
-
-			if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				// ÇÏÀ§ Æú´õ Àç±Í º¹»ç
-				if (!CopyDirectoryRecursive(sourcePath, targetPath)) {
-					FindClose(hFind);
-					return false;
-				}
-			}
-			else {
-				// ÆÄÀÏ º¹»ç
-				if (!CopyFileOverwrite(sourcePath, targetPath)) {
-					FindClose(hFind);
-					return false;
-				}
-			}
-		} while (FindNextFileW(hFind, &findData) != 0);
-
-		FindClose(hFind);
-		return true;
-	}
-
-	static void CopyFilesToBuildPath(const std::wstring& _str)
-	{
-		std::wstring sourcePath = ToAbsolutePath(L"") + L"..\\..\\" + _str;
-		std::wstring targetPath = ToAbsolutePath(L"") + L"\\" + _str;
-
-		CreateDirectoryIfNotExists(targetPath);
-
-		bool result = CopyDirectoryRecursive(sourcePath, targetPath);
-		assert(result && L"Resource º¹»ç ½ÇÆĞ");
-	}
-
-
-	// Àç±ÍÀûÀ¸·Î ÆÄÀÏ °æ·Î¸¦ ¼öÁıÇÏ´Â ÇÔ¼ö
-	static void CollectFilePathsRecursive(const std::wstring& directory, std::vector<std::wstring>& outFiles)
-	{
-		WIN32_FIND_DATAW findData;
-		std::wstring searchPath = directory + L"\\*";
-		HANDLE hFind = FindFirstFileW(searchPath.c_str(), &findData);
-		if (hFind == INVALID_HANDLE_VALUE) {
-			// Æú´õ°¡ ¾ø°Å³ª ºñ¾îÀÖÀ½
-			return;
-		}
-
-		do {
-			const std::wstring fileName = findData.cFileName;
-			if (fileName == L"." || fileName == L"..") continue;
-
-			std::wstring fullPath = directory + L"\\" + fileName;
-
-			if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				// ÇÏÀ§ Æú´õ Àç±Í Å½»ö
-				CollectFilePathsRecursive(fullPath, outFiles);
-			}
-			else {
-				// ÆÄÀÏ °æ·Î ÀúÀå
-				outFiles.push_back(fullPath);
-			}
-		} while (FindNextFileW(hFind, &findData) != 0);
-
-		FindClose(hFind);
-	}
-
-	static void ResourceFilesInBuildPath(const std::wstring& _str, std::vector<std::wstring>& filesPaths)
-	{
-		std::wstring path = ToAbsolutePath(L"") + _str;
-		CollectFilePathsRecursive(path, filesPaths);
-		//assert(result && L"Resource Å½»ö ½ÇÆĞ");
-	}
-
-	// ÆÄÀÏ ÀÌ¸§°ú È®ÀåÀÚ¸¦ ÃßÃâÇÏ´Â ÇÔ¼ö
-	// ¹İÈ¯°ª: {ÆÄÀÏÀÌ¸§, È®ÀåÀÚ}
-	static std::pair<std::wstring, std::wstring> ExtractFileNameAndExtension(const std::wstring& absPath)
-	{
-		// ¸¶Áö¸· °æ·Î ±¸ºĞÀÚ À§Ä¡
-		size_t lastSlash = absPath.find_last_of(L"\\/");
-		std::wstring fileNameWithExt = (lastSlash == std::wstring::npos) ? absPath : absPath.substr(lastSlash + 1);
-
-		// ¸¶Áö¸· Á¡(.) À§Ä¡
-		size_t lastDot = fileNameWithExt.find_last_of(L'.');
-		if (lastDot == std::wstring::npos) {
-			// È®ÀåÀÚ°¡ ¾ø´Â °æ¿ì
-			return { fileNameWithExt, L"" };
-		}
-
-		std::wstring fileName = fileNameWithExt.substr(0, lastDot);
-		std::wstring extension = fileNameWithExt.substr(lastDot + 1);
-		return { fileName, extension };
-	}
-
-
-	// ÆÄÀÏ °æ·Î¿¡¼­ ÇØ´ç Æú´õ¸¸ °¡Á®¿À´Â ÇÔ¼ö (std::wstring ¹öÀü)
+	// ì¬ê·€ì ìœ¼ë¡œ íŒŒì¼ ê²½ë¡œë¥¼ ìˆ˜ì§‘í•˜ëŠ” í•¨ìˆ˜
+	static void CollectFilePathsRecursive(const std::wstring& directory, std::vector<std::wstring>& outFiles);
+	static void ResourceFilesInBuildPath(const std::wstring& _str, std::vector<std::wstring>& filesPaths);
+	// íŒŒì¼ ì´ë¦„ê³¼ í™•ì¥ìë¥¼ ì¶”ì¶œí•˜ëŠ” í•¨ìˆ˜
+	// ë°˜í™˜ê°’: {íŒŒì¼ì´ë¦„, í™•ì¥ì}
+	static std::pair<std::wstring, std::wstring> ExtractFileNameAndExtension(const std::wstring& absPath);
+	// í•´ë‹¹ ê²½ë¡œì˜ í´ë”ì™€ ì´ë¦„ì„ ë¶„ë¦¬í•˜ëŠ” í•¨ìˆ˜
+	static std::pair<std::wstring, std::wstring> ExtractFileDirectoryAndName(const std::wstring& absPath);
+	// íŒŒì¼ ê²½ë¡œì—ì„œ í•´ë‹¹ í´ë”ë§Œ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜ (std::wstring ë²„ì „)
 	// "\\Resource\\content\\video\\aru.mp4" -> "\\Resource\\content\\video"
-	static std::wstring get_folder_path(const std::wstring& filepath) {
-		std::size_t last_slash = filepath.find_last_of(L"\\/");
-		if (last_slash == std::wstring::npos)
-			return filepath; // ½½·¡½Ã°¡ ¾øÀ¸¸é ÀüÃ¼°¡ Æú´õ·Î °£ÁÖ
-		return filepath.substr(0, last_slash);
-	}
+	static std::wstring get_folder_path(const std::wstring& filepath);
 };
 
