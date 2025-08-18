@@ -1,0 +1,10 @@
+[
+  {
+    "maxHP": 2500.0,
+    "hp": 2500.0,
+    "battery": 10.0,
+    "bulletSpeed": -65.0,
+    "attackDelay": 0.1,
+    "damage": 12.0
+  }
+]

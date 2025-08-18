@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <string>
 #include <memory>
@@ -8,6 +8,8 @@
 
 class gameObject;
 class Transform;
+class TransformComponent;
+class Camera;
 class Component : public UObject, public ITickable
 {
 public:
@@ -20,9 +22,6 @@ public:
 	virtual void Update(const float& deltaSeconds) override;
 	virtual void Release() override {}
 
-	// Render°¡ ÇÊ¿ä¾ø´Â Componentµµ ÀÖÀ½
-	virtual void Render() {};
-
 	virtual void Awake() {};
 	virtual void OnStart() {}
 	virtual void OnEnd() {}
@@ -33,9 +32,13 @@ public:
 	inline void SetOwner(WeakObjectPtr<gameObject> object) { owner = object; }
 	inline gameObject* GetOwner() { return owner.Get(); }
 	const std::wstring& GetOwnerName();
-	Transform* GetTransform() const;
-	FVector2* GetPivot() const;
+	Transform* GetOwnerTransform() const;
+	TransformComponent* GetOwnerTransformComponent() const;
+	FVector2* GetOwnerPivot() const;
 
 protected:
 	WeakObjectPtr<gameObject> owner;
+
+protected:
+	Camera* GetCamera();
 };

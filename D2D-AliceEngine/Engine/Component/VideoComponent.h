@@ -27,8 +27,8 @@ public:
 	void Release() override;
 	void Render() override;
 
-	virtual float GetSizeX() override;
-	virtual float GetSizeY() override;
+	virtual float GetBitmapSizeX() override;
+	virtual float GetBitmapSizeY() override;
 
 	FVector2 GetSize();
 	std::vector<std::wstring> files;
@@ -44,5 +44,4 @@ public:
 	bool bPlay = false;
 	float m_fFPSTime = 1.0f / 18.0f;
 	float m_fFPSLastTime = 0;
-	D2D1_SIZE_U bmpSize;
 };

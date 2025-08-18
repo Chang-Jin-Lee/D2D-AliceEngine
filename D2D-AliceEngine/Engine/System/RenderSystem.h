@@ -1,15 +1,17 @@
-#pragma once
+ï»¿#pragma once
 #include "Component/Component.h"
 #include <Helpers/StringHelper.h>
 #include <Core/Singleton.h>
 #include "../System/SystemBase.h"
+#include <Define/Define.h>
+#include <tuple>
 
 /* 
-*  @briefs : ·»´õ¸µÀ» ´ã´çÇÏ´Â ½Ã½ºÅÛÀÔ´Ï´Ù
+*  @briefs : ë Œë”ë§ì„ ë‹´ë‹¹í•˜ëŠ” ì‹œìŠ¤í…œì…ë‹ˆë‹¤
 */
-
 class RenderComponent;
 struct ViewRect { float minX, maxX, minY, maxY; };
+
 class RenderSystem : public Singleton<RenderSystem>
 {
 public:
@@ -24,11 +26,22 @@ public:
 	void Initialize();
 	void UnInitialize();
 
-	// ·»´õ¸µ ´ë±â¿­
-	std::vector<std::vector<WeakObjectPtr<RenderComponent>>> m_renderers;
+	// ë Œë”ë§ ëŒ€ê¸°ì—´
+	std::vector<WeakObjectPtr<RenderComponent>> m_renderers;
 
 	void Render();
+	void RenderReady();
+	void RenderWorldSpace(); // ìƒˆë¡œìš´ í†µí•© ë Œë”ë§ í•¨ìˆ˜
+	void DebugCamera();
+	void RenderD2D();
+
 	ViewRect GetCameraView();
-	bool CheckCameraCulling(const WeakObjectPtr<RenderComponent>& renderer, const ViewRect& view);
+	static bool CheckCameraCulling(const WeakObjectPtr<RenderComponent>& renderer, const ViewRect& view);
 	static bool RenderSortCompare(const WeakObjectPtr<RenderComponent>& a, const WeakObjectPtr<RenderComponent>& b);
+
+	void RenderAfterEffect();
+
+	void RenderScreenSpace();
+
+	bool bUseScreenEffect = true;
 };

@@ -133,68 +133,39 @@ void VideoComponent::Render()
 	if (m_bitmaps[m_curClip] == nullptr) return;
 
 	ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
-	Camera* camera = SceneManager::GetCamera();
-	bmpSize = m_bitmaps[m_curClip]->GetPixelSize(); // 비트맵 크기 및 피벗
-	D2D1_POINT_2F pivotOffset = {
-		bmpSize.width * 0.5f,
-		bmpSize.height * 0.5f
-	};
-	if (auto pivot = GetPivot()) {
-		pivotOffset = {
-			bmpSize.width * pivot->x,
-			bmpSize.height * pivot->y
-		};
-	}
-	D2D1::Matrix3x2F unity = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
-	D2D1::Matrix3x2F view = D2D1::Matrix3x2F::Translation(-pivotOffset.x, -pivotOffset.y);
-	D2D1::Matrix3x2F world = GetTransform() ? GetTransform()->ToMatrix() : D2D1::Matrix3x2F::Identity();
-	D2D1::Matrix3x2F cameraInv = camera->m_transform->ToMatrix();
-
-	if (D2DRenderManager::GetInstance().m_eTransformType == ETransformType::Unity)
-	{
-		view = view * unity;
-	}
-
-	// 로컬 피벗 기준 월드 변환, 카메라 역행렬 적용
-	cameraInv.Invert();
-	view = view * world * cameraInv;
-
-	// Unity 좌표계면 변환 추가
-	if (D2DRenderManager::GetInstance().m_eTransformType == ETransformType::Unity)
-	{
-		view = view * unity * D2D1::Matrix3x2F::Translation(Define::SCREEN_WIDTH * 0.5f, Define::SCREEN_HEIGHT * 0.5f);
-	}
-
+	if (!context)return;
 	// 최종 변환 비트맵 원점에 맞춰 그리기 (Src 전체 사용)
-	context->SetTransform(view);
+	D2D1::Matrix3x2F backToD2DTransform = D2D1::Matrix3x2F::Translation(-GetBitmapSizeX() / 2, -GetBitmapSizeY() / 2);
+	D2D1::Matrix3x2F pivotTransform = D2D1::Matrix3x2F::Translation((GetBitmapSizeX() / 2) * (GetOwnerPivot()->x - 0.5f), (GetBitmapSizeY() / 2) * (GetOwnerPivot()->y - 0.5f));
+	context->SetTransform(backToD2DTransform * pivotTransform * view);
 	context->DrawBitmap(m_bitmaps[m_curClip].get());
 }
 
-float VideoComponent::GetSizeX()
+float VideoComponent::GetBitmapSizeX()
 {
-	if (m_bitmaps.empty() == false)
+	if (m_bitmaps.size() > m_curClip)
 	{
-		return static_cast<float>(bmpSize.width);
+		return static_cast<float>(m_bitmaps[m_curClip].get()->GetSize().width);
 	}
 	return 0;
 }
 
-float VideoComponent::GetSizeY()
+float VideoComponent::GetBitmapSizeY()
 {
-	if (m_bitmaps.empty() == false)
+	if (m_bitmaps.size() > m_curClip)
 	{
-		return static_cast<float>(bmpSize.height);
+		return static_cast<float>(m_bitmaps[m_curClip].get()->GetSize().height);
 	}
 	return 0;
 }
 
 FVector2 VideoComponent::GetSize()
 {
-	if (m_bitmaps.empty() == false)
+	if (m_bitmaps.size() > m_curClip)
 	{
 		if (m_bitmaps[m_curClip])
 		{
-			return FVector2(static_cast<float>(bmpSize.width), static_cast<float>(bmpSize.height));
+			return FVector2(static_cast<float>(m_bitmaps[m_curClip].get()->GetPixelSize().width), static_cast<float>(m_bitmaps[m_curClip].get()->GetPixelSize().height));
 		}
 	}
 	return FVector2();

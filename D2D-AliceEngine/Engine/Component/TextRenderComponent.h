@@ -19,8 +19,10 @@ public:
 	void Release() override;
 	void Render() override;
 
-	virtual float GetSizeX() override;
-	virtual float GetSizeY() override;
+	virtual float GetBitmapSizeX() override;
+	virtual float GetBitmapSizeY() override;
+
+	virtual FVector2 GetRelativeSize() override;
 
 	ComPtr<IDWriteTextLayout> m_layout;
 	ComPtr<IDWriteTextFormat> m_dWriteTextFormat;
@@ -46,23 +48,37 @@ public:
 		};
 
 		m_content = oss.str();
+		InitializeFormat();
 		InitializeLayout();
+		m_metricsDirty = true;
 	}
 	void SetColor(const FColor& color);
 	void SetFontSize(const float& _size);
-	void SetPosition(const FVector2& pos);
-	void SetScale(const FVector2& scale);
-	void SetTransformType(const ETransformType& type);
+	void SetFont(const std::wstring& _fontName, const std::wstring& _fontLocale);
+	void SetFontFromFile(const std::wstring& filePath);
+	void SetIgnoreCameraTransform(bool bIgnore);
+  // Text opacity 0..1
+  void SetOpacity(float alpha);
 
 public:
 	ETransformType m_eTransformType = ETransformType::D2D;
-	Transform m_transform;
 	std::wstring m_content = L"";
 	FColor m_color;
 	std::wstring m_font = L"Consolas";
+	std::wstring m_locale = L"";
 	float m_fontSize = 24.0f;
 
 	DWRITE_TEXT_METRICS m_metrics{};
 	bool m_metricsDirty = true;
+
+	ETextSource m_eTextSource = ETextSource::System;
+	std::wstring m_filePath;
+    // 커스텀 폰트를 프로세스에 Private로 등록했는지 추적
+    std::wstring m_fontFileAbsolutePath;
+    bool m_privateFontLoaded = false;
+private:
+	bool bIgnoreCameraTransform = false;
+  float m_opacity = 1.0f;
+
 };
 

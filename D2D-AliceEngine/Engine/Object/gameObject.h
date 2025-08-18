@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 #include <Object/UObject.h>
 #include <Component/Component.h>
 #include <memory>
 #include <Math/TMath.h>
 
 /*
-* @brief Object Å¬·¡½º.
-* @details ÀÌ¹ÌÁö¿Í ÁÂÇ¥¸¦ °ü¸®ÇÏ´Â BitmapRenderer ÄÄÆ÷³ÍÆ®¸¦ Æ÷ÇÔÇÕ´Ï´Ù.
+* @brief Object í´ë˜ìŠ¤.
+* @details ì´ë¯¸ì§€ì™€ ì¢Œí‘œë¥¼ ê´€ë¦¬í•˜ëŠ” BitmapRenderer ì»´í¬ë„ŒíŠ¸ë¥¼ í¬í•¨í•©ë‹ˆë‹¤.
 */
 
 class TransformComponent;
@@ -21,7 +21,7 @@ public:
 	virtual void OnStart();
 	virtual void OnEnd();
 	/*
-	* @ Component¸¦ °ü¸®ÇÏ´Â ·ÎÁ÷ÀÔ´Ï´Ù.
+	* @ Componentë¥¼ ê´€ë¦¬í•˜ëŠ” ë¡œì§ì…ë‹ˆë‹¤.
 	*/
 
 	std::vector<Component*> m_components;
@@ -30,8 +30,12 @@ public:
 	T* AddComponent(Args&&... args)
 	{	
 		T* createdComp = new T(std::forward<Args>(args)...);
-		createdComp->Initialize();
 		createdComp->SetOwner(WeakFromThis<gameObject>());
+		createdComp->Initialize();
+
+		const char* p = typeid(T).name();
+		createdComp->SetClassType(std::wstring(p, p + std::strlen(p)));
+
 		m_components.emplace_back(createdComp);
 
 		return createdComp;
@@ -56,10 +60,10 @@ public:
 	{
 		for (auto& comp : m_components)
 		{
-			// shared_ptr<Component> ¡æ shared_ptr<T>·Î Ä³½ºÆÃ
+			// shared_ptr<Component> â†’ shared_ptr<T>ë¡œ ìºìŠ¤íŒ…
 			if (auto casted = dynamic_cast<T*>(comp))
 			{
-				return casted; // raw pointer ¹İÈ¯
+				return casted; // raw pointer ë°˜í™˜
 			}
 		}
 		return nullptr;
@@ -88,6 +92,10 @@ public:
 		T* createdComp = new T(std::forward<Args>(args)...);
 		createdComp->Initialize();
 		createdComp->SetOwner(WeakFromThis<gameObject>());
+
+		const char* p = typeid(T).name();
+		createdComp->SetClassType(std::wstring(p, p + std::strlen(p)));
+
 		m_components.emplace_back(createdComp);
 		return WeakObjectPtr<T>(createdComp);
 	}
@@ -110,8 +118,25 @@ public:
 	void Release() override;
 	void Initialize(const FVector2& position, const float& rotation, const FVector2& scale, const FVector2& pivot);
 
-	TransformComponent* transform() const { return m_transformComponent.lock(); }
+	TransformComponent* transform() const;
 	void AddChildObject(const gameObject* obj);
+	void AddChildTransform(TransformComponent* transform);
+	void SetParent(TransformComponent* transform);
+	void RemoveFromParent();
+
+	// ì¢Œí‘œ, ìŠ¤ì¼€ì¼, íšŒì „ ê´€ë ¨ í•¨ìˆ˜ë“¤
+	void SetPosition(const FVector2& _pos);
+	void SetRotation(const float& _rotation);
+	void SetScale(const FVector2& _scale);
+	
+	void AddPosition(const FVector2& _pos);
+	void AddRotation(const float& _rotation);
+	void AddScale(const FVector2& _scale);
+	
+	FVector2 GetPosition() const;
+	float GetRotation();
+	FVector2 GetScale();
+	FVector2 GetScaleInv();
 
 public:
 	WeakObjectPtr<TransformComponent> m_transformComponent;

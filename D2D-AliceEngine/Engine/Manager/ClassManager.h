@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <Core/Singleton.h>
 #include <unordered_map>
 #include <string>
@@ -20,26 +20,26 @@
 #include <Core/ObjectHandler.h>
 #include <Scene/Scene.h>
 
-//------------------- ¸ÅÅ©·Î Á¤ÀÇ -------------------
+//------------------- ë§¤í¬ë¡œ ì •ì˜ -------------------
 #define REGISTER_MEMBER(map, ClassType, Member) \
     map.insert({ #Member, MemberInfo(#Member, typeid(decltype(ClassType::Member)).name(), offsetof(ClassType, Member)) })
 
 #define REGISTER_FUNCTION(map, FuncName, ReturnType, ...) \
     map.insert({ #FuncName, FunctionInfo(#FuncName, #ReturnType, { __VA_ARGS__ }, false) })
 
-//------------------- ¸â¹ö Á¤º¸ ±¸Á¶Ã¼ -------------------
+//------------------- ë©¤ë²„ ì •ë³´ êµ¬ì¡°ì²´ -------------------
 struct MemberInfo
 {
 	std::string name;
 	std::string typeName;
 	size_t offset;
-	MemberInfo() : name(""), typeName(""), offset(0) {} // ±âº» »ı¼ºÀÚ Ãß°¡
+	MemberInfo() : name(""), typeName(""), offset(0) {} // ê¸°ë³¸ ìƒì„±ì ì¶”ê°€
 	MemberInfo(const std::string& n, const std::string& t, size_t o)
 		: name(n), typeName(t), offset(o) {}
 };
 
-//------------------- ÇÔ¼ö Á¤º¸ ±¸Á¶Ã¼ -------------------
-// ÀÏ´Ü ÇÔ¼ö´Â ³ªÁß¿¡.
+//------------------- í•¨ìˆ˜ ì •ë³´ êµ¬ì¡°ì²´ -------------------
+// ì¼ë‹¨ í•¨ìˆ˜ëŠ” ë‚˜ì¤‘ì—.
 //struct FunctionInfo 
 //{
 //	std::string name;
@@ -51,10 +51,10 @@ struct MemberInfo
 //		: name(n), returnType(r), paramTypes(p), paramCount(p.size()), isVirtual(v) {}
 //};
 
-//------------------- ¸ŞÅ¸ Á¤º¸ ±¸Á¶Ã¼ -------------------
+//------------------- ë©”íƒ€ ì •ë³´ êµ¬ì¡°ì²´ -------------------
 struct ClassMetaInfo {
 	std::string className;
-	std::string memberInfoKey; // allMemberInfosÀÇ key
+	std::string memberInfoKey; // allMemberInfosì˜ key
 	std::vector<std::string> parentNames;
 	std::vector<std::string> childNames;
 	std::function<class UObject* ()> creator;
@@ -65,12 +65,12 @@ class ClassManager : public Singleton<ClassManager>
 	std::unordered_map<std::string, std::unordered_map<std::string, MemberInfo>> allMemberInfos;
 	//std::unordered_map<std::string, FunctionInfo> myClassFunctionInfo;
 
-	// ¸ğµç Å¬·¡½ºÀÇ ¸ŞÅ¸ Á¤º¸
+	// ëª¨ë“  í´ë˜ìŠ¤ì˜ ë©”íƒ€ ì •ë³´
 	std::unordered_map<std::string, ClassMetaInfo> metaInfos;
 	std::unordered_map<std::type_index, ClassMetaInfo*> typeMetaMap;
 
 public:
-	// ·±Å¸ÀÓ °´Ã¼ÀÇ ½ÇÁ¦ Å¸ÀÔ¿¡ ¸Â´Â »õ °´Ã¼ »ı¼º
+	// ëŸ°íƒ€ì„ ê°ì²´ì˜ ì‹¤ì œ íƒ€ì…ì— ë§ëŠ” ìƒˆ ê°ì²´ ìƒì„±
 	void ReplicateAllMembers(UObject* dst, const UObject* src)
 	{
 		std::string dstClassName = typeid(*dst).name();
@@ -78,7 +78,7 @@ public:
 		ReplicateRecursive(dstClassName, dst, src, srcClassName);
 	}
 
-	// ·±Å¸ÀÓ °´Ã¼ÀÇ ½ÇÁ¦ Å¸ÀÔ¿¡ ¸Â´Â »õ °´Ã¼ »ı¼º
+	// ëŸ°íƒ€ì„ ê°ì²´ì˜ ì‹¤ì œ íƒ€ì…ì— ë§ëŠ” ìƒˆ ê°ì²´ ìƒì„±
 	UObject* CreateClass(const UObject* obj)
 	{
 		std::type_index ti(typeid(*obj));
@@ -92,15 +92,13 @@ public:
 	{
 		allMemberInfos.clear();
 
-		// º¯¼ö µî·Ï (¸ÅÅ©·Î È°¿ë)
+		// ë³€ìˆ˜ ë“±ë¡ (ë§¤í¬ë¡œ í™œìš©)
 		// ==============================UObject==============================
 		std::string className = typeid(UObject).name();
 		REGISTER_MEMBER(allMemberInfos[className], UObject, m_name);
 		REGISTER_MEMBER(allMemberInfos[className], UObject, m_uuid);
 		// ==============================RenderComponent==============================
 		className = typeid(RenderComponent).name();
-		REGISTER_MEMBER(allMemberInfos[className], RenderComponent, m_layer);
-		REGISTER_MEMBER(allMemberInfos[className], RenderComponent, drawType);
 		REGISTER_MEMBER(allMemberInfos[className], RenderComponent, bFlip);
 		className = typeid(SpriteRenderer).name();
 		REGISTER_MEMBER(allMemberInfos[className], SpriteRenderer, filePath);
@@ -115,7 +113,6 @@ public:
 		REGISTER_MEMBER(allMemberInfos[className], TextRenderComponent, m_dWriteTextFormat);
 		REGISTER_MEMBER(allMemberInfos[className], TextRenderComponent, m_pBrush);
 		REGISTER_MEMBER(allMemberInfos[className], TextRenderComponent, m_eTransformType);
-		REGISTER_MEMBER(allMemberInfos[className], TextRenderComponent, m_transform);
 		REGISTER_MEMBER(allMemberInfos[className], TextRenderComponent, m_content);
 		REGISTER_MEMBER(allMemberInfos[className], TextRenderComponent, m_color);
 		REGISTER_MEMBER(allMemberInfos[className], TextRenderComponent, m_font);
@@ -132,7 +129,6 @@ public:
 		REGISTER_MEMBER(allMemberInfos[className], VideoComponent, bPlay);
 		REGISTER_MEMBER(allMemberInfos[className], VideoComponent, m_fFPSTime);
 		REGISTER_MEMBER(allMemberInfos[className], VideoComponent, m_fFPSLastTime);
-		REGISTER_MEMBER(allMemberInfos[className], VideoComponent, bmpSize);
 		className = typeid(TransformComponent).name();
 		REGISTER_MEMBER(allMemberInfos[className], TransformComponent, parent);
 		REGISTER_MEMBER(allMemberInfos[className], TransformComponent, children);
@@ -152,7 +148,7 @@ public:
 		REGISTER_MEMBER(allMemberInfos[className], Animator, bLoopping);
 		REGISTER_MEMBER(allMemberInfos[className], Animator, m_accumTime);
 
-		// 2. ¸ŞÅ¸ µî·Ï (ºÎ¸ğºÎÅÍ!)
+		// 2. ë©”íƒ€ ë“±ë¡ (ë¶€ëª¨ë¶€í„°!)
 		RegisterMetaInfoTypeWithoutCreator<UObject>();
 		RegisterMetaInfoType<Component>({ "UObject" });
 		RegisterMetaInfoTypeWithoutCreator<RenderComponent>({ "Component" });
@@ -163,19 +159,19 @@ public:
 		//RegisterMetaInfoType<Animator>({ "RenderComponent" });
 		RegisterMetaInfoType<TransformComponent>({ "Component" });
 
-		// ÇÔ¼ö µî·Ï (¸ÅÅ©·Î È°¿ë, ¸Å°³º¯¼ö Å¸ÀÔÀº ¹®ÀÚ¿­·Î)
+		// í•¨ìˆ˜ ë“±ë¡ (ë§¤í¬ë¡œ í™œìš©, ë§¤ê°œë³€ìˆ˜ íƒ€ì…ì€ ë¬¸ìì—´ë¡œ)
 		//REGISTER_FUNCTION(myClassFunctionInfo, Initialize, void);
 		//REGISTER_FUNCTION(myClassFunctionInfo, Update, void);
 		//REGISTER_FUNCTION(myClassFunctionInfo, Release, int);
 		//REGISTER_FUNCTION(myClassFunctionInfo, SetK, void, typeid(const int&).name());
 
-		// º¯¼ö µî·Ï
+		// ë³€ìˆ˜ ë“±ë¡
 		//myClassMemberInfo.insert({ "HP", { "HP", typeid(int).name(), offsetof(myClass, HP) } });
 		//myClassMemberInfo.insert({ "k",  { "k",  typeid(float).name(), offsetof(myClass, k) } });
 		//myClassMemberInfo.insert({ "p",  { "p",  typeid(double).name(), offsetof(myClass, p) } });
 		//myClassMemberInfo.insert({ "box",{ "box", typeid(FAABB).name(), offsetof(myClass, box) } });
 
-		//// ÇÔ¼ö µî·Ï
+		//// í•¨ìˆ˜ ë“±ë¡
 		//myClassFunctionInfo.insert({ "Update",
 		//	{ "Update", "void", {}, 0, false } });
 		//myClassFunctionInfo.insert({ "Render",
@@ -218,7 +214,7 @@ public:
 		ClassMetaInfo* srcMeta = GetMetaInfo(srcClassName);
 		if (!dstMeta || !srcMeta) return;
 
-		// ºÎ¸ğ ¸ÕÀú º¹Á¦ (°¢ °èÃşÀÇ ºÎ¸ğ¸¦ ¸ÂÃç¼­ º¹Á¦)
+		// ë¶€ëª¨ ë¨¼ì € ë³µì œ (ê° ê³„ì¸µì˜ ë¶€ëª¨ë¥¼ ë§ì¶°ì„œ ë³µì œ)
 		for (size_t i = 0; i < dstMeta->parentNames.size(); ++i) 
 		{
 			if (i < srcMeta->parentNames.size())
@@ -232,11 +228,11 @@ public:
 		{
 			const std::string& memberName = it.first;
 			const MemberInfo& dstInfo = it.second;
-			// ¼Ò½º¿¡ µ¿ÀÏ ¸â¹ö°¡ ¾øÀ¸¸é °Ç³Ê¶Ü
+			// ì†ŒìŠ¤ì— ë™ì¼ ë©¤ë²„ê°€ ì—†ìœ¼ë©´ ê±´ë„ˆëœ€
 			auto srcIt = srcMembers.find(memberName);
 			if (srcIt == srcMembers.end()) continue;
 			const MemberInfo& srcInfo = srcIt->second;
-			// Å¸ÀÔ ºÒÀÏÄ¡ ½Ã °Ç³Ê¶Ü
+			// íƒ€ì… ë¶ˆì¼ì¹˜ ì‹œ ê±´ë„ˆëœ€
 			if (dstInfo.typeName != srcInfo.typeName) continue;
 
 			size_t dstOffset = dstInfo.offset;
@@ -244,7 +240,7 @@ public:
 			const std::string& type = dstInfo.typeName;
 
 			/* ===========================================================================
-			*  C++¿¡ ÀÖ´Â ±âº» Å¸ÀÔµé
+			*  C++ì— ìˆëŠ” ê¸°ë³¸ íƒ€ì…ë“¤
 			*/
 			if (type == typeid(int).name()) {
 				int* dstVal = reinterpret_cast<int*>(reinterpret_cast<char*>(dst) + dstOffset);
@@ -352,7 +348,7 @@ public:
 				*dstVal = *srcVal;
 			}
 			/* ===========================================================================
-			*  Define¿¡ ÀÖ´Â Á¤ÀÇµé
+			*  Defineì— ìˆëŠ” ì •ì˜ë“¤
 			*/
 			else if (type == typeid(std::string).name()) {
 				std::string* dstVal = reinterpret_cast<std::string*>(reinterpret_cast<char*>(dst) + dstOffset);
@@ -372,11 +368,6 @@ public:
 			else if (type == typeid(Define::ETransformType).name()) {
 				Define::ETransformType* dstVal = reinterpret_cast<Define::ETransformType*>(reinterpret_cast<char*>(dst) + dstOffset);
 				const Define::ETransformType* srcVal = reinterpret_cast<const Define::ETransformType*>(reinterpret_cast<const char*>(src) + srcOffset);
-				*dstVal = *srcVal;
-			}
-			else if (type == typeid(Define::ERenderLayer).name()) {
-				Define::ERenderLayer* dstVal = reinterpret_cast<Define::ERenderLayer*>(reinterpret_cast<char*>(dst) + dstOffset);
-				const Define::ERenderLayer* srcVal = reinterpret_cast<const Define::ERenderLayer*>(reinterpret_cast<const char*>(src) + srcOffset);
 				*dstVal = *srcVal;
 			}
 			else if (type == typeid(Define::ETickingGroup).name()) {
@@ -399,29 +390,29 @@ public:
 				const Define::EBoxType* srcVal = reinterpret_cast<const Define::EBoxType*>(reinterpret_cast<const char*>(src) + srcOffset);
 				*dstVal = *srcVal;
 			}
-			// ±âÅ¸ Å¸ÀÔ ÇÊ¿ä½Ã Ãß°¡
-			// SpriteRender¿¡ ¾²ÀÓ
+			// ê¸°íƒ€ íƒ€ì… í•„ìš”ì‹œ ì¶”ê°€
+			// SpriteRenderì— ì“°ì„
 			else if (type == typeid(std::shared_ptr<ID2D1Bitmap1>).name()) {
 				std::shared_ptr<ID2D1Bitmap1>* dstVal = reinterpret_cast<std::shared_ptr<ID2D1Bitmap1>*>(reinterpret_cast<char*>(dst) + dstOffset);
 				const std::shared_ptr<ID2D1Bitmap1>* srcVal = reinterpret_cast<const std::shared_ptr<ID2D1Bitmap1>*>(reinterpret_cast<const char*>(src) + srcOffset);
-				*dstVal = *srcVal; // ÂüÁ¶ Ä«¿îÆ® Áõ°¡
+				*dstVal = *srcVal; // ì°¸ì¡° ì¹´ìš´íŠ¸ ì¦ê°€
 			}
-			// BoxComponent¿¡¼­ COmPtr º¹Á¦
+			// BoxComponentì—ì„œ COmPtr ë³µì œ
 			else if (type == typeid(Microsoft::WRL::ComPtr<ID2D1SolidColorBrush>).name()) {
 				auto* dstVal = reinterpret_cast<Microsoft::WRL::ComPtr<ID2D1SolidColorBrush>*>(reinterpret_cast<char*>(dst) + dstOffset);
 				const auto* srcVal = reinterpret_cast<const Microsoft::WRL::ComPtr<ID2D1SolidColorBrush>*>(reinterpret_cast<const char*>(src) + srcOffset);
-				*dstVal = *srcVal; // ÂüÁ¶ Ä«¿îÆ® Áõ°¡, °°Àº ºê·¯½Ã °´Ã¼ °øÀ¯
+				*dstVal = *srcVal; // ì°¸ì¡° ì¹´ìš´íŠ¸ ì¦ê°€, ê°™ì€ ë¸ŒëŸ¬ì‹œ ê°ì²´ ê³µìœ 
 			}
-			// ¾Æ·¡ 3°³´Â TextRenderComponent º¹Á¦
+			// ì•„ë˜ 3ê°œëŠ” TextRenderComponent ë³µì œ
 			else if (type == typeid(Microsoft::WRL::ComPtr<IDWriteTextLayout>).name()) {
 				auto* dstVal = reinterpret_cast<Microsoft::WRL::ComPtr<IDWriteTextLayout>*>(reinterpret_cast<char*>(dst) + dstOffset);
 				const auto* srcVal = reinterpret_cast<const Microsoft::WRL::ComPtr<IDWriteTextLayout>*>(reinterpret_cast<const char*>(src) + srcOffset);
-				*dstVal = *srcVal; // ÂüÁ¶ Ä«¿îÆ® Áõ°¡, °°Àº °´Ã¼ °øÀ¯
+				*dstVal = *srcVal; // ì°¸ì¡° ì¹´ìš´íŠ¸ ì¦ê°€, ê°™ì€ ê°ì²´ ê³µìœ 
 			}
 			else if (type == typeid(Microsoft::WRL::ComPtr<IDWriteTextFormat>).name()) {
 				auto* dstVal = reinterpret_cast<Microsoft::WRL::ComPtr<IDWriteTextFormat>*>(reinterpret_cast<char*>(dst) + dstOffset);
 				const auto* srcVal = reinterpret_cast<const Microsoft::WRL::ComPtr<IDWriteTextFormat>*>(reinterpret_cast<const char*>(src) + srcOffset);
-				*dstVal = *srcVal; // ÂüÁ¶ Ä«¿îÆ® Áõ°¡, °°Àº °´Ã¼ °øÀ¯
+				*dstVal = *srcVal; // ì°¸ì¡° ì¹´ìš´íŠ¸ ì¦ê°€, ê°™ì€ ê°ì²´ ê³µìœ 
 			}
 			else if (type == typeid(DWRITE_TEXT_METRICS).name()) {
 				DWRITE_TEXT_METRICS* dstVal = reinterpret_cast<DWRITE_TEXT_METRICS*>(reinterpret_cast<char*>(dst) + dstOffset);
@@ -432,7 +423,7 @@ public:
 			else if (type == typeid(std::vector<std::shared_ptr<ID2D1Bitmap1>>).name()) {
 				std::vector<std::shared_ptr<ID2D1Bitmap1>>* dstVal = reinterpret_cast<std::vector<std::shared_ptr<ID2D1Bitmap1>>*>(reinterpret_cast<char*>(dst) + dstOffset);
 				const std::vector<std::shared_ptr<ID2D1Bitmap1>>* srcVal = reinterpret_cast<const std::vector<std::shared_ptr<ID2D1Bitmap1>>*>(reinterpret_cast<const char*>(src) + srcOffset);
-				*dstVal = *srcVal; // ³»ºÎ Æ÷ÀÎÅÍÀÇ ÂüÁ¶ Ä«¿îÆ®°¡ Áõ°¡ÇÏ¸ç ¾ÈÀüÇÏ°Ô º¹Á¦µÊ
+				*dstVal = *srcVal; // ë‚´ë¶€ í¬ì¸í„°ì˜ ì°¸ì¡° ì¹´ìš´íŠ¸ê°€ ì¦ê°€í•˜ë©° ì•ˆì „í•˜ê²Œ ë³µì œë¨
 			}
 			else if (type == typeid(std::vector<std::wstring>).name()) {
 				std::vector<std::wstring>* dstVal = reinterpret_cast<std::vector<std::wstring>*>(reinterpret_cast<char*>(dst) + dstOffset);
@@ -462,9 +453,9 @@ public:
 				auto* dstVal = reinterpret_cast<std::unique_ptr<SpriteSheet>*>(reinterpret_cast<char*>(dst) + dstOffset);
 				const auto* srcVal = reinterpret_cast<const std::unique_ptr<SpriteSheet>*>(reinterpret_cast<const char*>(src) + srcOffset);
 				if (srcVal->get()) {
-					// SpriteSheet¿¡ Clone() °°Àº º¹Á¦ ¸Ş¼­µå°¡ ÀÖ´Ù¸é
+					// SpriteSheetì— Clone() ê°™ì€ ë³µì œ ë©”ì„œë“œê°€ ìˆë‹¤ë©´
 					(*dstVal) = std::make_unique<SpriteSheet>(*(srcVal->get()));
-					// ¶Ç´Â (*dstVal) = srcVal->get()->Clone();
+					// ë˜ëŠ” (*dstVal) = srcVal->get()->Clone();
 				}
 				else {
 					dstVal->reset();
@@ -476,9 +467,9 @@ public:
 				dstVal->clear();
 				for (const auto& pair : *srcVal) {
 					if (pair.second) {
-						// AnimationClipÀÌ º¹»ç »ı¼ºÀÚ³ª Clone() Áö¿ø ½Ã
+						// AnimationClipì´ ë³µì‚¬ ìƒì„±ìë‚˜ Clone() ì§€ì› ì‹œ
 						(*dstVal)[pair.first] = std::make_unique<AnimationClip>(*(pair.second));
-						// ¶Ç´Â (*dstVal)[pair.first] = pair.second->Clone();
+						// ë˜ëŠ” (*dstVal)[pair.first] = pair.second->Clone();
 					}
 					else {
 						(*dstVal)[pair.first].reset();
@@ -504,10 +495,10 @@ public:
 		}
 		for (const auto& parent : meta->parentNames) 
 		{
-			// ºÎ¸ğµµ ÅÛÇÃ¸´ ±â¹İÀ¸·Î Ãâ·Â
+			// ë¶€ëª¨ë„ í…œí”Œë¦¿ ê¸°ë°˜ìœ¼ë¡œ ì¶œë ¥
 			if (parent == typeid(UObject).name())
 				PrintClassMeta<UObject>(depth + 1);
-			// ´ÙÁß »ó¼ÓÀÌ ÀÖ´Ù¸é else if·Î Ãß°¡
+			// ë‹¤ì¤‘ ìƒì†ì´ ìˆë‹¤ë©´ else ifë¡œ ì¶”ê°€
 		}
 	}
 };

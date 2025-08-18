@@ -1,16 +1,17 @@
-#pragma once
+Ôªø#pragma once
 #include <Object/gameObject.h>
 #include <Object/Camera.h>
 #include <Helpers/StringHelper.h>
 #include <unordered_set>
 
+class ParticleComponent;
 class Scene : public UObject
 {
 public:
 	Scene();
 	virtual ~Scene();
 
-	Camera* m_mainCamera; // Main Camera
+	WeakObjectPtr<Camera> m_mainCamera; // Main Camera
 
 	void Initialize() override;
 	void Release() override;
@@ -18,13 +19,12 @@ public:
 
 	virtual void OnEnter();
 	virtual void OnExit();
+	virtual void OnSceneTransition(); // Ïî¨ Ï†ÑÌôò Ïãú Ìò∏Ï∂úÎêòÎäî Ìï®Ïàò Ï∂îÍ∞Ä
 
 	void VisibleMemoryInfo();
+    void UpdateDebugHUD(float deltaTime);
 
-	Camera* GetCamera()
-	{
-		return m_mainCamera;
-	}
+	Camera* GetCamera();
 
 public:
 	template<class TReturnType, typename... Args>
@@ -32,61 +32,24 @@ public:
 	{
 		//static_assert(std::is_base_of_v<IComponent, TReturnType>, "TReturnType must be derived from IComponent");
 		std::unique_ptr<TReturnType> createdObj = std::make_unique<TReturnType>(std::forward<Args>(args)...);
+		std::wstring uuid = NewobjectName + StringHelper::MakeUniqueName();
 
 		createdObj->SetName(NewobjectName);
-		createdObj->SetUUID(NewobjectName + StringHelper::MakeUniqueName());
-		m_nameToUUIDs[NewobjectName].insert(createdObj->GetUUID());
-		TReturnType* rawPtr = createdObj.get();
-		m_objects[createdObj->GetUUID()] = std::move(createdObj);
+		createdObj->SetUUID(uuid);
+		m_nameToUUIDs[NewobjectName].insert(uuid);
+		TReturnType* returnObject = createdObj.get();
+		m_objects[uuid] = std::move(createdObj);
 
-		return rawPtr;
+		return returnObject;
 	}
 
-	template<class T>
-	void RemoveObject(T& targetObj)
-	{
-		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
-		{
-			if (*it == targetObj)
-			{
-				it->second.reset();
-				m_objects.erase(it);
-				return true;
-			}
-		}
-		return false;
-	}
+	bool RemoveObject(gameObject* targetObj);
 
-	bool RemoveObjectByName(const std::wstring& objectName)
-	{
-		auto it = m_nameToUUIDs.find(objectName);
-		if (it != m_nameToUUIDs.end()) 
-		{
-			// øπ: √ππ¯¬∞ UUID ªË¡¶ (¥Ÿ∏• πÊΩƒµµ ∞°¥…)
-			auto uuidIt = it->second.begin();
-			m_objects.erase(*uuidIt);
-			it->second.erase(uuidIt);
-			if (it->second.empty())
-				m_nameToUUIDs.erase(it);
-			return true;
-		}
-		return false;
-	}
+	bool RemoveObjectByName(const std::wstring& objectName);
 
-	bool RemoveAllObjectsByName(const std::wstring& name) 
-	{
-		auto it = m_nameToUUIDs.find(name);
-		if (it != m_nameToUUIDs.end()) 
-		{
-			for (const auto& uuid : it->second)
-			{
-				m_objects.erase(uuid);
-			}
-			m_nameToUUIDs.erase(it);
-			return true;
-		}
-		return false;
-	}
+	bool RemoveAllObjectsByName(const std::wstring& name);
+
+	void FlushPendingRemovals();
 
 	template<class T>
 	bool RemoveObjectByType()
@@ -114,18 +77,121 @@ public:
 	{
 		//static_assert(std::is_base_of_v<IComponent, TReturnType>, "TReturnType must be derived from IComponent");
 		TReturnType* createdObj = new TReturnType(std::forward<Args>(args)...);
+		std::wstring uuid = NewobjectName + StringHelper::MakeUniqueName();
+
 		createdObj->SetName(NewobjectName);
-		createdObj->SetUUID(NewobjectName + StringHelper::MakeUniqueName());
-		m_objects.emplace(createdObj->GetUUID(), createdObj);
+		createdObj->SetUUID(uuid);
+		m_objects.emplace(uuid, createdObj);
 
 		return WeakObjectPtr<TReturnType>(createdObj);
 	}
 
-	gameObject* Instantiate(gameObject* obj);
+	template<class T>
+	WeakObjectPtr<T> FindObject()
+	{
+		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+		{
+			if (auto found = dynamic_cast<T*>(it->second.get()))
+			{
+				return WeakObjectPtr<T>(found);
+			}
+		}
+		return WeakObjectPtr<T>();
+	}
 
+	template<class T>
+	std::vector<WeakObjectPtr<T>> FindObjects()
+	{
+		std::vector<WeakObjectPtr<T>> foundObjects;
+		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+		{
+			if (auto found = dynamic_cast<T*>(it->second.get()))
+			{
+				foundObjects.push_back(WeakObjectPtr<T>(found));
+			}
+		}
+		return foundObjects;
+	}
+
+	template<class T>
+	WeakObjectPtr<T> FindObjectByTag(std::wstring _tag)
+	{
+		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+		{
+			if (auto found = dynamic_cast<T*>(it->second.get()))
+			{
+				if (found->GetTag() == _tag)
+					return WeakObjectPtr<T>(found);
+			}
+		}
+		return WeakObjectPtr<T>();
+	}
+
+	template<class T>
+	std::vector<WeakObjectPtr<T>> FindObjectsByTag(std::wstring _tag)
+	{
+		std::vector<WeakObjectPtr<T>> foundObjects;
+		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+		{
+			if (auto found = dynamic_cast<T*>(it->second.get()))
+			{
+				if (found->GetTag() == _tag)
+					foundObjects.push_back(WeakObjectPtr<T>(found));
+			}
+		}
+		return foundObjects;
+	}
+
+	template<class T>
+	WeakObjectPtr<T> FindObjectByName(std::wstring _name)
+	{
+		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+		{
+			if (auto found = dynamic_cast<T*>(it->second.get()))
+			{
+				if (found->GetName() == _name)
+					return WeakObjectPtr<T>(found);
+			}
+		}
+		return WeakObjectPtr<T>();
+	}
+
+	template<class T>
+	std::vector<WeakObjectPtr<T>> FindObjectsByName(std::wstring _name)
+	{
+		std::vector<WeakObjectPtr<T>> foundObjects;
+		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+		{
+			if (auto found = dynamic_cast<T*>(it->second.get()))
+			{
+				if (found->GetName() == _name)
+					foundObjects.push_back(WeakObjectPtr<T>(found));
+			}
+		}
+		return foundObjects;
+	}
+
+	gameObject* Instantiate(gameObject* obj);
+	void MouseTrailAndClick();
+protected:
+	ParticleComponent* m_mouseParticle;
 private:
 	gameObject* m_sysinfoWidget;
+	gameObject* m_fpsWidget{ nullptr };
+	gameObject* m_mouseTrail{ nullptr };
+    bool m_debugHudVisible{ false };
 	std::unordered_map<std::wstring, std::unique_ptr<gameObject>> m_objects;
 	std::unordered_map<std::wstring, std::unordered_set<std::wstring>> m_nameToUUIDs;
+
+	std::unordered_set<std::wstring> m_pendingDeleteUUIDs;
+
+	std::wstring FindUUIDByPointer(gameObject* ptr) const;
+
+public:
+	bool GetClickable() const { return m_bClickable; }
+	void SetClickable(const bool value) { m_bClickable = value; }
+
+private:
+	bool m_bClickable = false;
 };
 

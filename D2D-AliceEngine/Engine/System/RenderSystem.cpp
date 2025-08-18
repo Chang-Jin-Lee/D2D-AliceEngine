@@ -1,16 +1,17 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "RenderSystem.h"
-#include "Component/TextRenderComponent.h"
 #include <Component/SpriteRenderer.h>
 #include <Component/VideoComponent.h>
 #include <Component/BoxComponent.h>
 #include <Component/Animator.h>
 #include <Manager/SceneManager.h>
 #include <Manager/D2DRenderManager.h>
+#include <tuple>
+#include <Define/Define.h>
 
 RenderSystem::RenderSystem()
 {
-	m_renderers.assign(static_cast<int>(ERenderLayer::Max), std::vector<WeakObjectPtr<RenderComponent>>());
+	m_renderers.clear();
 }
 
 RenderSystem::~RenderSystem()
@@ -22,162 +23,151 @@ void RenderSystem::Regist(WeakObjectPtr<RenderComponent>&& renderer)
 {
 	if (!renderer.expired())
 	{
-		auto ptr = renderer.lock(); // raw pointer ¹İÈ¯
-
-		if (dynamic_cast<SpriteRenderer*>(ptr))
-		{
-			m_renderers[static_cast<int>(ERenderLayer::SpriteComponent)].push_back(renderer);
-		}
-		else if (dynamic_cast<VideoComponent*>(ptr))
-		{
-			m_renderers[static_cast<int>(ERenderLayer::VideoComponent)].push_back(renderer);
-		}
-		else if (dynamic_cast<BoxComponent*>(ptr))
-		{
-			m_renderers[static_cast<int>(ERenderLayer::BoxComponent)].push_back(renderer);
-		}
-		else if (dynamic_cast<TextRenderComponent*>(ptr))
-		{
-			m_renderers[static_cast<int>(ERenderLayer::TextRenderComponent)].push_back(renderer);
-		}
-		else if (dynamic_cast<Animator*>(ptr))
-		{
-			m_renderers[static_cast<int>(ERenderLayer::Animator)].push_back(renderer);
-		}
+		m_renderers.push_back(renderer);
 	}
 }
-
 void RenderSystem::UnRegist(WeakObjectPtr<RenderComponent>&& renderer)
 {
-	if (renderer.expired())
-		return;
-
-	auto ptr = renderer.lock();
-
-	int layer = -1;
-	if (dynamic_cast<SpriteRenderer*>(ptr))
-		layer = static_cast<int>(ERenderLayer::SpriteComponent);
-	else if (dynamic_cast<VideoComponent*>(ptr))
-		layer = static_cast<int>(ERenderLayer::VideoComponent);
-	else if (dynamic_cast<BoxComponent*>(ptr))
-		layer = static_cast<int>(ERenderLayer::BoxComponent);
-	else if (dynamic_cast<TextRenderComponent*>(ptr))
-		layer = static_cast<int>(ERenderLayer::TextRenderComponent);
-	else if (dynamic_cast<Animator*>(ptr))
-		layer = static_cast<int>(ERenderLayer::Animator);
-
-	if (layer >= 0)
+	if (auto ptr = renderer.lock())
 	{
-		for (size_t i = 0; i < m_renderers[layer].size(); ++i) 
-		{
-			if (!m_renderers[layer][i].expired() && m_renderers[layer][i].lock() == ptr) 
+		// ê¸°ì¡´ ë Œë”ëŸ¬ ëª©ë¡ì—ì„œ ì œê±°
+		m_renderers.erase(std::remove_if(m_renderers.begin(), m_renderers.end(),
+			[&](const WeakObjectPtr<RenderComponent>& r)
 			{
-				m_renderers[layer].erase(m_renderers[layer].begin() + i);
-				break;
-			}
-		}
+				return r.handle == renderer.handle;
+			}), m_renderers.end());
 	}
 }
 
 void RenderSystem::UnRegistAll()
 {
-	for (int i = 0; i < static_cast<int>(ERenderLayer::Max); ++i)
-	{
-		m_renderers[i].clear();
-	}
+	m_renderers.clear();
 }
 
 void RenderSystem::Initialize()
 {
-	for (int i = 0; i < static_cast<int>(ERenderLayer::Max); ++i)
-	{
-		for (size_t j = 0; j < m_renderers[i].size(); ++j)
-		{
-			if (!m_renderers[i][j].expired())
-			{
-				m_renderers[i][j].lock()->Initialize();
-			}
-		}
-	}
+
 }
 
 void RenderSystem::UnInitialize()
 {
-	for (int i = 0; i < static_cast<int>(ERenderLayer::Max); ++i)
-	{
-		for (size_t j = 0; j < m_renderers[i].size(); ++j)
-		{
-			if (!m_renderers[i][j].expired())
-			{
-				m_renderers[i][j].lock()->Release();
-			}
-		}
-	}
 	UnRegistAll();
 	m_renderers.clear();
 }
 
 void RenderSystem::Render()
 {
-	ComPtr<ID2D1DeviceContext7> m_d2dDeviceContext = D2DRenderManager::GetInstance().m_d2dDeviceContext;
-	bool m_resizePending = D2DRenderManager::GetInstance().m_resizePending;
-	m_d2dDeviceContext->BeginDraw();
-	m_d2dDeviceContext->Clear(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
-	if (m_resizePending)
-	{
-		D2DRenderManager::GetInstance().CreateSwapChainAndD2DTarget();
-		m_resizePending = false;
-	}
-	m_d2dDeviceContext->SetTarget(D2DRenderManager::GetInstance().m_d2dBitmapTarget.Get());
-	m_d2dDeviceContext->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-	m_d2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+	// ë§Œë£Œëœ ì•„ì´í…œ ì œê±°
+	m_renderers.erase(std::remove_if(m_renderers.begin(), m_renderers.end(),
+		[](const WeakObjectPtr<RenderComponent>& item) { return item.expired(); }), m_renderers.end());
 
-	ViewRect view = GetCameraView();
-	std::vector<WeakObjectPtr<RenderComponent>> collectedComponents;
-	for (int i = 0; i < static_cast<int>(Define::ERenderLayer::Max); i++)
-	{
-		if (m_renderers[i].empty()) continue;
-
-		sort(m_renderers[i].begin(), m_renderers[i].end(), &RenderSystem::RenderSortCompare);
-
-		for (auto it = m_renderers[i].begin(); it != m_renderers[i].end(); )
-		{
-			if (it->expired())
-			{
-				it = m_renderers[i].erase(it);
-				continue;
-			}
-			if (it->lock()->drawType == Define::EDrawType::WorldSpace && CheckCameraCulling(*it, view)) {
-				++it;
-				continue;
-			}
-			auto renderer = dynamic_cast<RenderComponent*>(it->lock());
-			if (renderer->m_layer != -999)
-			{
-				collectedComponents.push_back(renderer);
-			}
-			else
-			{
-				it->lock()->Render();
-			}
-			++it;
-		}
-	}
-	sort(collectedComponents.begin(), collectedComponents.end(), &RenderSystem::RenderSortCompare);
-	for (auto it = collectedComponents.begin(); it != collectedComponents.end(); ++it)
-	{
-		if (!it->expired())
-		{
-			it->lock()->Render();
-		}
-	}
-
-	HRESULT hr = m_d2dDeviceContext->EndDraw();
-	if (FAILED(hr)) {
-		D2DRenderManager::GetInstance().OutputError(hr);
-	}
+	RenderReady();
+	RenderWorldSpace();
+	DebugCamera();
+	RenderAfterEffect();
+	RenderScreenSpace();
 
 	D2DRenderManager::GetInstance().m_dxgiSwapChain->Present(1, 0);
+}
+
+void RenderSystem::RenderReady()
+{
+	ComPtr<ID2D1DeviceContext7> deviceContext = D2DRenderManager::GetInstance().m_d2dDeviceContext;
+	if (!deviceContext.Get()) return;
+	bool m_resizePending = D2DRenderManager::GetInstance().m_resizePending;
+	deviceContext->SetTarget(D2DRenderManager::GetInstance().m_screenBitmap.Get());
+	deviceContext->BeginDraw();
+	deviceContext->Clear(D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
+	if (m_resizePending)
+	{
+		//D2DRenderManager::GetInstance().CreateSwapChainAndD2DTarget();
+		m_resizePending = false;
+	}
+	deviceContext->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
+	deviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+}
+
+void RenderSystem::RenderWorldSpace()
+{
+	ViewRect view = GetCameraView();
+
+	std::vector<WeakObjectPtr<RenderComponent>> worldQueue;
+	worldQueue.reserve(m_renderers.size());
+
+	std::copy_if(
+		m_renderers.begin(), m_renderers.end(),
+		std::back_inserter(worldQueue),
+		[&](const WeakObjectPtr<RenderComponent>& item) {
+			return !item.expired() && item->GetDrawType() == Define::EDrawType::WorldSpace;
+		}
+	);
+
+	std::sort(
+		worldQueue.begin(), worldQueue.end(),
+		[](const WeakObjectPtr<RenderComponent>& a, const WeakObjectPtr<RenderComponent>& b) {
+			return RenderSortCompare(a, b);
+		}
+	);
+
+	std::for_each(
+		worldQueue.begin(), worldQueue.end(),
+		[view](const WeakObjectPtr<RenderComponent>& item) {
+			if (item.expired()) return;
+
+			if (!RenderSystem::CheckCameraCulling(item, view))
+			{
+				item->Render();
+			}
+		}
+	);
+}
+
+void RenderSystem::DebugCamera()
+{
+	if (!D2DRenderManager::GetInstance().bRenderedBoxRect) return;
+	ComPtr<ID2D1DeviceContext7> deviceContext = D2DRenderManager::GetInstance().m_d2dDeviceContext;
+	if (!deviceContext.Get()) return;
+	if (Camera* camera = SceneManager::GetCamera())
+	{
+		if (camera->bDebug)
+		{
+			D2D1::Matrix3x2F flipY = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
+			D2D1::Matrix3x2F screen = D2D1::Matrix3x2F::Translation(Define::SCREEN_WIDTH * 0.5f, Define::SCREEN_HEIGHT * 0.5f);
+			D2D1::Matrix3x2F cameraInv = camera->relativeTransform.m_worldTransform.ToMatrix();
+			cameraInv.Invert();
+			deviceContext->SetTransform(cameraInv * flipY * screen);
+
+			FVector2 pos = SceneManager::GetCamera()->GetRelativePosition();
+			D2DRenderManager::GetInstance().DrawDebugBox(pos.x - 10, pos.y - 10, pos.x + 10, pos.y + 10, 0, 0, 255, 255);
+
+			deviceContext->SetTransform(cameraInv * screen);
+			D2DRenderManager::GetInstance().DrawDebugText(L"(" + std::to_wstring(pos.x) + L" " + std::to_wstring(pos.y) + L")", pos.x, pos.y, 24, D2D1::ColorF(0, 0, 255, 1));
+		}
+	}
+}
+
+void RenderSystem::RenderD2D()
+{
+	ViewRect view = GetCameraView();
+	for (auto it = m_renderers.begin(); it != m_renderers.end(); )
+	{
+		if (it->expired())
+		{
+			it = m_renderers.erase(it);
+			continue;
+		}
+		if (it->lock()->GetDrawType() == Define::EDrawType::WorldSpace && CheckCameraCulling(*it, view))
+		{
+			++it;
+			continue;
+		}
+
+		if (auto renderer = it->lock())
+		{
+			renderer->Render();
+		}
+		++it;
+	}
 }
 
 ViewRect RenderSystem::GetCameraView()
@@ -185,50 +175,46 @@ ViewRect RenderSystem::GetCameraView()
 	const float camX = SceneManager::GetCamera()->GetPositionX();
 	const float camY = SceneManager::GetCamera()->GetPositionY();
 	const float fov = SceneManager::GetCamera()->fieldOfView;
-	FVector2 scale = SceneManager::GetCamera()->GetScale();
-	if (scale.x == 0.0f) scale.x = 1.0f;
-	if (scale.y == 0.0f) scale.y = 1.0f;
-	int screenWidth = 0, screenHeight = 0;
-	D2DRenderManager::GetInstance().GetApplicationSize(screenWidth, screenHeight);
-	const float halfWidth = (screenWidth * 0.5f * fov) * scale.x;
-	const float halfHeight = (screenHeight * 0.5f * fov) * scale.y;
-	return ViewRect{ camX - halfWidth, camX + halfWidth, camY - halfHeight, camY + halfHeight };
+	//FVector2 scale = SceneManager::GetCamera()->GetScale();
+	//if (scale.x == 0.0f) scale.x = 1.0f;
+	//if (scale.y == 0.0f) scale.y = 1.0f;
+	FVector2 screen = D2DRenderManager::GetInstance().GetApplicationSize();
+	//const float halfWidth = (screen.x * 0.5f * fov) * scale.x;
+	//const float halfHeight = (screen.y * 0.5f * fov) * scale.y;
+  const FVector2 cullScale = SceneManager::GetCamera()->GetCullingScale();
+  const float halfWidth = (screen.x * 0.5f * fov) * (cullScale.x > 0.0f ? cullScale.x : 1.0f);
+  const float halfHeight = (screen.y * 0.5f * fov) * (cullScale.y > 0.0f ? cullScale.y : 1.0f);
+  return ViewRect{ camX - halfWidth, camX + halfWidth, camY - halfHeight, camY + halfHeight };
 }
 
-// ÄÃ¸µÀÌ µÇ´Â°É È®½ÇÇÏ°Ô º¸·Á¸é ÁÖ¼®Ã³¸® µÈ ºÎºĞÀ» »ç¿ë
+// ì»¬ë§ì´ ë˜ëŠ”ê±¸ í™•ì‹¤í•˜ê²Œ ë³´ë ¤ë©´ ì£¼ì„ì²˜ë¦¬ ëœ ë¶€ë¶„ì„ ì‚¬ìš©
 bool RenderSystem::CheckCameraCulling(const WeakObjectPtr<RenderComponent>& renderer, const ViewRect& view)
 {
-	auto* transform = renderer->GetTransform();
-	const auto pos = transform ? transform->GetPosition() : D2D1_VECTOR_2F{ 0, 0 };
-	const auto scale = transform ? transform->GetScale() : D2D1_VECTOR_2F{ 1, 1 };
+	TransformComponent* transform = renderer->GetRelativeTransform();
+	const auto pos = transform ? transform->GetPosition() : FVector2{ 0, 0 };
+	const auto scale = transform ? transform->GetScale() : FVector2{ 1, 1 };
 
 	/*const float shrinkRatio = 0.5;
 	const float halfW = renderer->GetSizeX() * 0.5f * scale.x * shrinkRatio;
 	const float halfH = renderer->GetSizeY() * 0.5f * scale.y * shrinkRatio;*/
-	const float halfW = renderer->GetSizeX() * 0.5f * scale.x;
-	const float halfH = renderer->GetSizeY() * 0.5f * scale.y;
+	const float halfW = renderer->GetBitmapSizeX() * 0.5f * scale.x;
+	const float halfH = renderer->GetBitmapSizeY() * 0.5f * scale.y;
 
 	const float left = pos.x - halfW;
 	const float right = pos.x + halfW;
 	const float bottom = pos.y - halfH;
 	const float top = pos.y + halfH;
 
-	// margin ºñÀ² (¿¹: 0.1f = 10% ¿©À¯)
-	/*const float marginRatio = 0.01f;
+	// margin ë¹„ìœ¨ (ì˜ˆ: 0.1f = 10% ì—¬ìœ )
+	const float marginRatio = 0.05f;
 	const float marginX = (view.maxX - view.minX) * marginRatio;
-	const float marginY = (view.maxY - view.minY) * marginRatio;
+	const float marginY = (view.maxY - view.minY) * 1.2f;
 	const float minX = view.minX - marginX;
 	const float maxX = view.maxX + marginX;
 	const float minY = view.minY - marginY;
-	const float maxY = view.maxY + marginY;*/
-	const float marginX = (view.maxX - view.minX);
-	const float marginY = (view.maxY - view.minY);
-	const float minX = view.minX;
-	const float maxX = view.maxX;
-	const float minY = view.minY;
-	const float maxY = view.maxY;
+	const float maxY = view.maxY + marginY;
 
-	// Ä«¸Ş¶ó ºä ¾È¿¡¸¸ º¸ÀÌ°Ô (¿©À¯ Æ÷ÇÔ)
+	// ì¹´ë©”ë¼ ë·° ì•ˆì—ë§Œ ë³´ì´ê²Œ (ì—¬ìœ  í¬í•¨)
 	return (right < minX || left > maxX ||
 		top < minY || bottom > maxY);
 }
@@ -237,5 +223,86 @@ bool RenderSystem::RenderSortCompare(const WeakObjectPtr<RenderComponent>& a, co
 {
 	if (a.expired()) return false;
 	if (b.expired()) return false;
-	return a->m_layer < b->m_layer;
+	return a->GetLayer() < b->GetLayer();
+}
+
+void RenderSystem::RenderAfterEffect()
+{
+	ComPtr<ID2D1DeviceContext7> deviceContext = D2DRenderManager::GetInstance().m_d2dDeviceContext;
+	if (!deviceContext.Get()) return;
+
+	if (D2DRenderManager::GetInstance().m_sceneEffect.Get())
+	{
+		deviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+		D2D1_SIZE_F size = D2DRenderManager::GetInstance().m_screenBitmap->GetSize();	//	ê·¸ë¦´ í¬ê¸°
+		D2D1_RECT_F DestRect{ 0,0,size.width,size.height };
+		deviceContext->DrawBitmap(
+			D2DRenderManager::GetInstance().m_overlayBitmap.Get(),
+			DestRect,           // g_d2dBitmapScene í¬ê¸°ì— ë§ê²Œ ëŠ˜ë¦¼
+			1.0f,              // Opacity (0.0 ~ 1.0)
+			D2D1_INTERPOLATION_MODE_LINEAR,
+			nullptr            // ì´ë¯¸ì§€ ì›ë³¸ ì˜ì—­ ì „ì²´ ì‚¬ìš©
+		);
+	}
+
+	HRESULT hr = deviceContext->EndDraw();
+	if (FAILED(hr)) {
+		D2DRenderManager::GetInstance().OutputError(hr);
+	}
+
+	deviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+	deviceContext->SetTarget(D2DRenderManager::GetInstance().m_bitmapTarget.Get());
+	deviceContext->BeginDraw();
+
+	if (D2DRenderManager::GetInstance().m_sceneEffect.Get())
+		deviceContext->DrawImage(
+			D2DRenderManager::GetInstance().m_sceneEffect.Get(),
+			nullptr,
+			nullptr,
+			D2D1_INTERPOLATION_MODE_LINEAR,
+			D2D1_COMPOSITE_MODE_SOURCE_OVER
+		);
+	else
+	{
+		deviceContext->DrawBitmap(D2DRenderManager::GetInstance().m_screenBitmap.Get());
+	}
+	deviceContext->EndDraw();
+}
+
+void RenderSystem::RenderScreenSpace()
+{
+	ViewRect view = GetCameraView();
+
+	std::vector<WeakObjectPtr<RenderComponent>> screenQueue;
+	screenQueue.reserve(m_renderers.size());
+
+	std::copy_if(
+		m_renderers.begin(), m_renderers.end(),
+		std::back_inserter(screenQueue),
+		[](const WeakObjectPtr<RenderComponent>& item) {
+			return !item.expired() && item->GetDrawType() == Define::EDrawType::ScreenSpace;
+		}
+	);
+
+	std::sort(
+		screenQueue.begin(), screenQueue.end(),
+		[](const WeakObjectPtr<RenderComponent>& a, const WeakObjectPtr<RenderComponent>& b) {
+			return RenderSortCompare(a, b);
+		}
+	);
+
+	ComPtr<ID2D1DeviceContext7> deviceContext = D2DRenderManager::GetInstance().m_d2dDeviceContext;
+	if (!deviceContext.Get()) return;
+
+	deviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+	deviceContext->BeginDraw();
+
+	std::for_each(
+		screenQueue.begin(), screenQueue.end(),
+		[](const WeakObjectPtr<RenderComponent>& item) {
+			if (item.expired()) return;
+			item->Render();
+		}
+	);
+	deviceContext->EndDraw();
 }

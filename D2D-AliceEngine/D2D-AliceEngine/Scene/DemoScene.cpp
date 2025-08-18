@@ -1,24 +1,23 @@
-#include "DemoScene.h"
+ï»¿#include "DemoScene.h"
 #include <Manager/SceneManager.h>
 #include <Manager/D2DRenderManager.h>
 #include <Component/InputComponent.h>
 #include <Component/TextRenderComponent.h>
 #include <Component/BoxComponent.h>
 #include <Component/VideoComponent.h>
-#include <Component/Spine2DRenderComponent.h>
 #include <Component/SpriteRenderer.h>
 #include <Component/TransformComponent.h>
 #include <Core/Input.h>
 #include <Math/TColor.h>
-#include "../Scripts/Sun.h"
-#include "../Scripts/Moon.h"
-#include "../Scripts/Earth.h"
-#include "../Scripts/YuukaVideo.h"
-#include "../Scripts/CameraController.h"
+#include "../Scripts/SolarScene/Sun.h"
+#include "../Scripts/SolarScene/Moon.h"
+#include "../Scripts/SolarScene/Earth.h"
+#include "../Scripts/Video/YuukaVideo.h"
+#include "../Scripts/Legacy/CameraController.h"
 
 /*
-*	NewObject<T>(std::wstring&) : ÇØ´ç ÀÌ¸§ÀÇ °ÔÀÓ¿ÀºêÁ§Æ®¸¦ »ı¼ºÇÏ°í rawPointer¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
-*	Initilize(std::wstring&, FVector2&, float&, FVector2&, FVector2&) : ÁÂÇ¥, È¸Àü, ½ºÄÉÀÏ, ÇÇº¿À» ÁöÁ¤ÇÕ´Ï´Ù.
+*	NewObject<T>(std::wstring&) : í•´ë‹¹ ì´ë¦„ì˜ ê²Œì„ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒì„±í•˜ê³  rawPointerë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
+*	Initilize(std::wstring&, FVector2&, float&, FVector2&, FVector2&) : ì¢Œí‘œ, íšŒì „, ìŠ¤ì¼€ì¼, í”¼ë´‡ì„ ì§€ì •í•©ë‹ˆë‹¤.
 */
 
 void DemoScene::Initialize()
@@ -57,29 +56,29 @@ void DemoScene::OnEnter()
 
 	m_widget = NewObject<gameObject>(L"widget");
 	m_widget->AddComponent<TextRenderComponent>()->SetText(
-		L" <Ä«¸Ş¶ó> \n"
-		L" [w,s] : Ä«¸Ş¶ó »óÇÏ ÀÌµ¿ \n"
-		L" [a,d] : Ä«¸Ş¶ó ÁÂ¿ì ÀÌµ¿ \n"
-		L" [ [ / ] ] : Ä«¸Ş¶ó Ãà¼Ò, È®´ë\n"
-		L" [1/2] : D2D, Unity ÁÂÇ¥°è \n"
+		L" <ì¹´ë©”ë¼> \n"
+		L" [w,s] : ì¹´ë©”ë¼ ìƒí•˜ ì´ë™ \n"
+		L" [a,d] : ì¹´ë©”ë¼ ì¢Œìš° ì´ë™ \n"
+		L" [ [ / ] ] : ì¹´ë©”ë¼ ì¶•ì†Œ, í™•ëŒ€\n"
+		L" [1/2] : D2D, Unity ì¢Œí‘œê³„ \n"
 		L"\n"
-		L" <ÅÂ¾ç, Áö±¸, ´Ş> \n"
-		L" [z,c] : ÅÂ¾ç È¸Àü \n"
-		L" [È­»ìÇ¥ »ó,ÇÏ] : ÅÂ¾ç »óÇÏ ÀÌµ¿ \n"
-		L" [È­»ìÇ¥ ÁÂ/¿ì] : ÅÂ¾ç ÁÂ¿ì ÀÌµ¿ \n"
-		L" [4] : ÅÂ¾ç ÀÌ¸§ ÇÑ¿µ ÀüÈ¯ \n"
-		L" [b,m] : Áö±¸ È¸Àü \n"
-		L" [y,h] : Áö±¸ »óÇÏ ÀÌµ¿ \n"
-		L" [g,j] : Áö±¸ ÁÂ¿ì ÀÌµ¿ \n"
-		L" [9,0] : ´Ş È¸Àü \n"
-		L" [o,l] : ´Ş »óÇÏ ÀÌµ¿ \n"
-		L" [k,;] : ´Ş ÁÂ¿ì ÀÌµ¿ \n"
+		L" <íƒœì–‘, ì§€êµ¬, ë‹¬> \n"
+		L" [z,c] : íƒœì–‘ íšŒì „ \n"
+		L" [í™”ì‚´í‘œ ìƒ,í•˜] : íƒœì–‘ ìƒí•˜ ì´ë™ \n"
+		L" [í™”ì‚´í‘œ ì¢Œ/ìš°] : íƒœì–‘ ì¢Œìš° ì´ë™ \n"
+		L" [4] : íƒœì–‘ ì´ë¦„ í•œì˜ ì „í™˜ \n"
+		L" [b,m] : ì§€êµ¬ íšŒì „ \n"
+		L" [y,h] : ì§€êµ¬ ìƒí•˜ ì´ë™ \n"
+		L" [g,j] : ì§€êµ¬ ì¢Œìš° ì´ë™ \n"
+		L" [9,0] : ë‹¬ íšŒì „ \n"
+		L" [o,l] : ë‹¬ ìƒí•˜ ì´ë™ \n"
+		L" [k,;] : ë‹¬ ì¢Œìš° ì´ë™ \n"
 		L"\n"
-		L" <¹è°æ ½ÇÇà> \n"
-		L" [P] : ¹è°æ ½ÇÇà, ÁßÁö \n"
+		L" <ë°°ê²½ ì‹¤í–‰> \n"
+		L" [P] : ë°°ê²½ ì‹¤í–‰, ì¤‘ì§€ \n"
 		L"\n"
-		L" <¾Ö´Ï¸ŞÀÌ¼Ç> \n"
-		L" [5,6] : ¾Æ½º³ª, À¯¿ìÄ« ÀüÈ¯"
+		L" <ì• ë‹ˆë©”ì´ì…˜> \n"
+		L" [5,6] : ì•„ìŠ¤ë‚˜, ìœ ìš°ì¹´ ì „í™˜"
 	);
 
 	m_widget2 = NewObject<gameObject>(L"widget2");
@@ -91,19 +90,19 @@ void DemoScene::OnEnter()
 	m_sun->AddChildObject(m_earth);
 	m_earth->AddChildObject(m_moon);
 	/*
-	* UI´Â gameObject¿Í º°°³·Î ºĞ¸®ÇØ¼­ ¸¸µé¾î¾ßÇÔ. ÀÌÈÄ¿¡ ¿¹Á¤ 
+	* UIëŠ” gameObjectì™€ ë³„ê°œë¡œ ë¶„ë¦¬í•´ì„œ ë§Œë“¤ì–´ì•¼í•¨. ì´í›„ì— ì˜ˆì • 
 	*/
-	m_widget->GetComponent<TextRenderComponent>()->SetPosition(FVector2(20, 80));
+	m_widget->GetComponent<TextRenderComponent>()->SetRelativePosition(FVector2(20, 80));
 	m_widget->GetComponent<TextRenderComponent>()->SetFontSize(18.0f);
 
-	m_widget2->AddComponent<TextRenderComponent>()->SetText(L" <¾À> \n [3] : ¾À ÀüÈ¯");
+	m_widget2->AddComponent<TextRenderComponent>()->SetText(L" <ì”¬> \n [3] : ì”¬ ì „í™˜");
 	m_widget2->GetComponent<TextRenderComponent>()->SetTextAlignment(ETextFormat::TopRight);
-	m_widget2->GetComponent<TextRenderComponent>()->SetPosition(FVector2(850, 0));
+	m_widget2->GetComponent<TextRenderComponent>()->SetRelativePosition(FVector2(850, 0));
 	m_widget2->GetComponent<TextRenderComponent>()->SetFontSize(20.0f);
 
-	m_widget3->AddComponent<TextRenderComponent>()->SetText(L" <ÇöÀç ¾À> " + GetName());
+	m_widget3->AddComponent<TextRenderComponent>()->SetText(L" <í˜„ì¬ ì”¬> " + GetName());
 	m_widget3->GetComponent<TextRenderComponent>()->SetTextAlignment(ETextFormat::TopLeft);
-	m_widget3->GetComponent<TextRenderComponent>()->SetPosition(FVector2(20, 10));
+	m_widget3->GetComponent<TextRenderComponent>()->SetRelativePosition(FVector2(20, 10));
 	m_widget3->GetComponent<TextRenderComponent>()->SetFontSize(20.0f);
 }
 

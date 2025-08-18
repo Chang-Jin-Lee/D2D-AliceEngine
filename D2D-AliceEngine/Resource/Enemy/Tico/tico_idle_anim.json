@@ -1,0 +1,33 @@
+{
+    "clipName": "tico_idle",
+    "loop": true,
+    "texturePath": "Enemy/Tico/tico_sprite.png",
+    "duration": 0.5,
+    "frames": [
+        {
+            "sprite": "tico_sprite_0",
+            "time": 0.0
+        },
+        {
+            "sprite": "tico_sprite_1",
+            "time": 0.0833333358168602
+        },
+        {
+            "sprite": "tico_sprite_2",
+            "time": 0.1666666716337204
+        },
+        {
+            "sprite": "tico_sprite_3",
+            "time": 0.25
+        },
+        {
+            "sprite": "tico_sprite_4",
+            "time": 0.3333333432674408
+        },
+        {
+            "sprite": "tico_sprite_5",
+            "time": 0.4166666567325592
+        }
+    ],
+    "events": []
+}

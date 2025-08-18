@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert>
 
 /*
 * @brief Singleton Å¬·¡½º.

@@ -1,0 +1,15 @@
+{
+    "controllerName": "bike_sprite_0",
+    "parameters": [],
+    "defaultState": "bike_idle",
+    "states": [
+        {
+            "name": "bike_idle",
+            "motionName": "bike_idle",
+            "clipLength": 0.5,
+            "loop": true,
+            "transitions": []
+        }
+    ],
+    "anyStateTransitions": []
+}

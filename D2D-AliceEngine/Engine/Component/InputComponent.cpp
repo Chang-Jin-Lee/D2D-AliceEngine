@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "InputComponent.h"
 #include <Manager/UpdateTaskManager.h>
 
@@ -15,17 +15,7 @@ InputComponent::~InputComponent()
 
 void InputComponent::Initialize()
 {
-	UpdateTaskManager::GetInstance().Enque(
-		WeakFromThis<ITickable>(),
-		Define::ETickingGroup::TG_PrePhysics,
-		[weak = WeakFromThis<ITickable>()](const float& dt)
-	{
-		if (auto sp = weak.lock())
-		{
-			sp->Update(dt);
-		}
-	}
-	);
+	REGISTER_TICK_TASK(Update, Define::ETickingGroup::TG_PrePhysics);
 }
 
 void InputComponent::Update(const float& deltaSeconds)

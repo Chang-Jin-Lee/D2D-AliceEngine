@@ -1,9 +1,11 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Component.h"
 #include <Component/TransformComponent.h>
 #include <Object/gameObject.h>
 #include <Helpers/StringHelper.h>
 #include <Math/Transform.h>
+#include <Scene/Scene.h>
+#include <Object/Camera.h>
 
 Component::Component()
 {
@@ -28,22 +30,42 @@ void Component::Update(const float& deltaSeconds)
 
 const std::wstring& Component::GetOwnerName()
 {
-	// TODO: ¿©±â¿¡ return ¹®À» »ðÀÔÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— return ë¬¸ì„ ì‚½ìž…í•©ë‹ˆë‹¤.
 	if (!owner.expired())
 		return owner.lock()->GetName();
 	return L"No Owner";
 }
 
-Transform* Component::GetTransform() const
+Transform* Component::GetOwnerTransform() const
 {
 	if (!owner.expired()) 
 		return &owner.lock()->transform()->m_worldTransform;
 	return nullptr;
 }
 
-FVector2* Component::GetPivot() const
+TransformComponent* Component::GetOwnerTransformComponent() const
+{
+	if (!owner.expired())
+		return owner.lock()->GetComponent<TransformComponent>();
+
+	return nullptr;
+}
+
+FVector2* Component::GetOwnerPivot() const
 {
 	if (!owner.expired())
 		return owner.lock()->transform()->GetPivot();
+	return nullptr;
+}
+
+Camera* Component::GetCamera()
+{
+	if (Scene* scene = GetWorld())
+	{
+		if (Camera* camera = scene->GetCamera())
+		{
+			return camera;
+		}
+	}
 	return nullptr;
 }
