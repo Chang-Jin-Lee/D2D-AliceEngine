@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game_EffectDemo", "Game_Eff
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game_SpineDemo", "Game_SpineDemo\Game_SpineDemo.vcxproj", "{B54FB6BD-FE2B-440C-9E1C-FAC36B374E2A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game_RaiseDog", "Game_RaiseDog\Game_RaiseDog.vcxproj", "{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{B54FB6BD-FE2B-440C-9E1C-FAC36B374E2A}.Release|x64.Build.0 = Release|x64
 		{B54FB6BD-FE2B-440C-9E1C-FAC36B374E2A}.Release|x86.ActiveCfg = Release|Win32
 		{B54FB6BD-FE2B-440C-9E1C-FAC36B374E2A}.Release|x86.Build.0 = Release|Win32
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Debug|x64.ActiveCfg = Debug|x64
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Debug|x64.Build.0 = Debug|x64
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Debug|x86.ActiveCfg = Debug|Win32
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Debug|x86.Build.0 = Debug|Win32
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Release|x64.ActiveCfg = Release|x64
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Release|x64.Build.0 = Release|x64
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Release|x86.ActiveCfg = Release|Win32
+		{4EDDB4D0-1E76-43EA-BBD4-22D0F06516B2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
