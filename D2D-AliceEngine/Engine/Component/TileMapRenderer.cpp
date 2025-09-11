@@ -5,6 +5,7 @@
 #include <Helpers/FileHelper.h>
 #include <TileMap/TileMapLoader.h>
 #include <Helpers/CoordHelper.h>
+#include <Application.h>
 
 TileMapRenderer::TileMapRenderer()
 {
@@ -51,7 +52,8 @@ void TileMapRenderer::Render()
 	assert(batchSize > 0);
 
 	D2D1_MATRIX_3X2_F skewTransform = CoordHelper::GetSkewMatrix(skewAngle, mapHeight * tileHeight);
-	D2D1_MATRIX_3X2_F backD2DTransform = D2D1::Matrix3x2F::Translation(-Define::SCREEN_WIDTH/2 - GetBitmapSizeX() / 2, -Define::SCREEN_HEIGHT / 2);
+	FVector2 appSize = Application::GetInstance().GetSize();
+	D2D1_MATRIX_3X2_F backD2DTransform = D2D1::Matrix3x2F::Translation(-appSize.x/2 - GetBitmapSizeX() / 2, -appSize.y / 2);
 	context->SetTransform(backD2DTransform *skewTransform * view); // 최종 View와 결합
 	context->DrawSpriteBatch(
 		batch,

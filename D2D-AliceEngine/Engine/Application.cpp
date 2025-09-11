@@ -222,3 +222,26 @@ void Application::GetApplicationSize(int& width, int& height)
 	width = rc.right - rc.left;
 	height = rc.bottom - rc.top;
 }
+
+void Application::SetResolution(UINT width, UINT height)
+{
+	m_width = width;
+	m_height = height;
+	ApplyResolution();
+}
+
+void Application::ApplyResolution()
+{
+	if (!m_hwnd) return;
+	// 윈도우 크기 조정
+	SIZE clientSize = { (LONG)m_width,(LONG)m_height };
+	RECT clientRect = { 0, 0, clientSize.cx, clientSize.cy };
+	AdjustWindowRect(&clientRect, WS_OVERLAPPEDWINDOW, FALSE);
+	SetWindowPos(m_hwnd, nullptr, 0, 0,
+		clientRect.right - clientRect.left,
+		clientRect.bottom - clientRect.top,
+		SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// 스왑체인/타겟 재설정
+	D2DRenderManager::GetInstance().CreateSwapChainAndD2DTarget();
+}

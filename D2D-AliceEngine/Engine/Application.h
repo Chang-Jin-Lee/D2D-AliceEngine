@@ -20,6 +20,10 @@ public:
 
 	FVector2 GetSize() { return FVector2(m_width, m_height); }
 
+	// 게임별 런타임 해상도 변경 API
+	void SetResolution(UINT width, UINT height);
+	void ApplyResolution();
+
 protected:
 	HWND m_hwnd = nullptr;
 	HINSTANCE m_hInstance;

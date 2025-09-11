@@ -7,6 +7,7 @@
 #include <Component/Rigidbody2D.h>
 #include <Component/TransformComponent.h>
 #include <Math/Transform.h>
+#include <Application.h>
 
 RenderComponent::RenderComponent()
 {
@@ -47,15 +48,14 @@ void RenderComponent::Render()
 	view = D2D1::Matrix3x2F::Identity();
 	D2D1::Matrix3x2F unity = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
 	D2D1::Matrix3x2F flipY = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
-	D2D1::Matrix3x2F screen = D2D1::Matrix3x2F::Translation(Define::SCREEN_WIDTH * 0.5f, Define::SCREEN_HEIGHT * 0.5f);
+	FVector2 appSize = Application::GetInstance().GetSize();
+	D2D1::Matrix3x2F screen = D2D1::Matrix3x2F::Translation(appSize.x * 0.5f, appSize.y * 0.5f);
 	D2D1::Matrix3x2F world = relativeTransform.m_worldTransform.ToMatrix();
 	D2D1::Matrix3x2F cameraInv = camera->relativeTransform.m_worldTransform.ToMatrix();
 	cameraInv.Invert();
 
 	if (GetDrawType() == Define::EDrawType::WorldSpace)
 	{
-		//view = view * unity * world * cameraInv;
-		//view = view * unity * D2D1::Matrix3x2F::Translation(Define::SCREEN_WIDTH * 0.5f, Define::SCREEN_HEIGHT * 0.5f);
 		// Unity 좌표계 * Owner의 월드 위치 * 카메라 변환 *  화면 중심 보정
 		view = flipY * world * cameraInv * flipY * screen;
 	}

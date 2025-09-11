@@ -17,6 +17,7 @@
 #include <Component/ButtonComponent.h>
 #include <Component/Effect/ParticleComponent.h>
 #include <Helpers/CoordHelper.h>
+#include <Application.h>
 
 Scene::Scene()
 {
@@ -82,7 +83,8 @@ void Scene::OnEnter()
 	sysText->SetColor(FColor(200, 0, 0, 255));
 	sysText->SetOpacity(0);
     // ScreenSpace 좌표 (좌상단 0,0)
-    sysText->SetRelativePosition(FVector2(Define::SCREEN_WIDTH * 0.8f, Define::SCREEN_HEIGHT * 0.1f));
+    	FVector2 appSize = Application::GetInstance().GetSize();
+	sysText->SetRelativePosition(FVector2(appSize.x * 0.8f, appSize.y * 0.1f));
 	sysText->SetLayer(987654321);
 
     // FPS 위젯
@@ -91,7 +93,7 @@ void Scene::OnEnter()
     fpsText->SetDrawType(Define::EDrawType::ScreenSpace);
     fpsText->SetColor(FColor(0, 255, 0, 255));
 	fpsText->SetOpacity(1);
-    fpsText->SetRelativePosition(FVector2(Define::SCREEN_WIDTH * 0.8f, Define::SCREEN_HEIGHT * 0.05f));
+    	fpsText->SetRelativePosition(FVector2(appSize.x * 0.8f, appSize.y * 0.05f));
 	fpsText->SetLayer(987654321);
 
 	m_mouseTrail = NewObject<gameObject>(L"Scene_Default_ParticleScreenTrail");

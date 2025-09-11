@@ -30,6 +30,10 @@ public:
     void SetClockwise(bool cw) { m_clockwise = cw; }
     bool IsClockwise() const { return m_clockwise; }
 
+    // UI 편의를 위한 헬퍼: 픽셀 크기/색상 설정
+    void SetSize(const FVector2& sizePixels);
+    void SetColor(const FColor& color);
+
 private:
     float m_progress = 1.0f;            // 0..1
     EProgressBarType m_type = EProgressBarType::Linear;

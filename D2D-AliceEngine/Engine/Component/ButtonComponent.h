@@ -60,6 +60,10 @@ public:
 	void StopAllAnimations(); // 모든 애니메이션 즉시 중지
 	void CreateGlowEffect(float intensity = 0.5f, FColor color = FColor::Blue);
 	
+	// Fallback 렌더링 설정
+	void SetFallbackSize(const FVector2& px) { m_fallbackSize = px; }
+	void SetFallbackColor(const FColor& c) { m_fallbackColor = c; }
+
 private:
 	// UI 영역 내 마우스 위치 확인 헬퍼 메서드
 	bool IsMouseInUIArea(const FVector2& mousePos, const FVector2& uiPos, const FVector2& uiSize);
@@ -99,6 +103,10 @@ private:
 	float m_effectTargetIntensity{ 1.f };
 	float m_currentEffectIntensity{ 0.f };
 	FColor m_effectColor{ FColor::Blue }; // 글로우 색상
+
+	// Fallback
+	FVector2 m_fallbackSize{ 200.f, 60.f };
+	FColor m_fallbackColor{ 80, 150, 255, 255 };
 
 public:
 	// 필요시 파라미터로 조절 가능

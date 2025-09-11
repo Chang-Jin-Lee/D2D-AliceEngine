@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "Object/UObject.h"
 #include <Component/TransformComponent.h>
 
 /*
-* @brief Ä«¸Ş¶ó Å¬·¡½º. 
-* @details ÇöÀç´Â Object¸¦ »ó¼Ó¹Ş¾Æ ±âº»ÀûÀÎ ±â´É¸¸ ±¸ÇöµÇ¾î ÀÖ½À´Ï´Ù.
+* @brief ì¹´ë©”ë¼ í´ë˜ìŠ¤. 
+* @details í˜„ì¬ëŠ” Objectë¥¼ ìƒì†ë°›ì•„ ê¸°ë³¸ì ì¸ ê¸°ëŠ¥ë§Œ êµ¬í˜„ë˜ì–´ ìˆìŠµë‹ˆë‹¤.
 */
 class Transform;
 class gameObject;
@@ -32,7 +32,7 @@ public:
 	void AddRotation(const float& _val);
 	void AddPosition(const float& _x, const float& _y);
 
-	// »ó´ë ÁÂÇ¥, ½ºÄÉÀÏ, È¸Àü °ü·Ã ÇÔ¼öµé
+	// ìƒëŒ€ ì¢Œí‘œ, ìŠ¤ì¼€ì¼, íšŒì „ ê´€ë ¨ í•¨ìˆ˜ë“¤
 	void SetRelativePosition(const FVector2& _pos);
 	void SetRelativeRotation(const float& _rotation);
 	void SetRelativeScale(const FVector2& _scale);
@@ -48,23 +48,23 @@ public:
 	void SetOwner(gameObject* obj);
 	void ClearOwner();
 
-	// ºÎ¸ğ-ÀÚ½Ä °ü°è °ü¸® ÇÔ¼öµé
+	// ë¶€ëª¨-ìì‹ ê´€ê³„ ê´€ë¦¬ í•¨ìˆ˜ë“¤
 	void AddChildObject(gameObject* obj);
 	void AddChildObject(RenderComponent* obj);
 	void RemoveFromParent();
 
 	D2D1_POINT_2F TransformPoint(const D2D1_MATRIX_3X2_F& mat, const D2D1_POINT_2F& pt);
 
-	// ÁÂÇ¥ º¯È¯ ÇÔ¼öµé
+	// ì¢Œí‘œ ë³€í™˜ í•¨ìˆ˜ë“¤
 	D2D1_POINT_2F ViewportToWorldPoint(const D2D1_POINT_2F& viewport);
 	D2D1_POINT_2F WorldToViewportPoint(const D2D1_POINT_2F& world);
 
 	D2D1_POINT_2F ScreenToWorldPoint(const D2D1_POINT_2F& screenPos);
 	D2D1_POINT_2F WorldToScreenPoint(const D2D1_POINT_2F& world);
 
-	// D2D ½ºÅ©¸° ÇÈ¼¿ ¡æ UI ÁÂÇ¥°è (0~1, ÁÂÇÏ´Ü ±âÁØ)
+	// D2D ìŠ¤í¬ë¦° í”½ì…€ â†’ UI ì¢Œí‘œê³„ (0~1, ì¢Œí•˜ë‹¨ ê¸°ì¤€)
 	D2D1_POINT_2F ScreenToUICoord(const D2D1_POINT_2F& screen);
-	// UI ÁÂÇ¥°è (0~1, ÁÂÇÏ´Ü ±âÁØ) ¡æ D2D ½ºÅ©¸° ÇÈ¼¿
+	// UI ì¢Œí‘œê³„ (0~1, ì¢Œí•˜ë‹¨ ê¸°ì¤€) â†’ D2D ìŠ¤í¬ë¦° í”½ì…€
 	D2D1_POINT_2F UICoordToScreen(const D2D1_POINT_2F& ui);
 
 	void SetFieldOfView(float& InFieldOfView) { fieldOfView = InFieldOfView; }
@@ -73,10 +73,12 @@ public:
 	TransformComponent relativeTransform;
 	bool bDebug = true;
   
-  	// Ä«¸Ş¶ó ÄÃ¸µ ½ºÄÉÀÏ Á¶Àı
+  	// ì¹´ë©”ë¼ ì»¬ë§ ìŠ¤ì¼€ì¼ ì¡°ì ˆ
   	void SetCullingScale(const FVector2& scale) { cullingScale = scale; }
   	void SetCullingScale(float scaleX, float scaleY) { cullingScale = FVector2(scaleX, scaleY); }
   	FVector2 GetCullingScale() const { return cullingScale; }
   	FVector2 cullingScale{ 1.0f, 1.0f };
+
+	D2D1::Matrix3x2F GetWorldToScreenMatrix();
 };
 

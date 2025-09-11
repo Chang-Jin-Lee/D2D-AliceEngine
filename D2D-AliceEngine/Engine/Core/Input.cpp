@@ -2,14 +2,15 @@
 #include "Input.h"
 #include <Helpers/CoordHelper.h>
 #include <Manager/SceneManager.h>
+#include <Application.h>
 
 namespace Input
 {
 	SHORT prevState[256] = { 0 };
 	SHORT currState[256] = { 0 };
 	HWND m_hwnd;
-	POINT m_point;					// MousePos
-	short m_mouseWheelDelta;		// MouseWheel
+	POINT m_point;                    // MousePos (client pixels)
+	short m_mouseWheelDelta;          // MouseWheel
 
 	void Initialize(HWND hwnd)
 	{
@@ -42,7 +43,11 @@ namespace Input
 
 		GetCursorPos(&m_point);
 		ScreenToClient(m_hwnd, &m_point);
-	
+
+		// 해상도 변화에 대응하여 CoordHelper screen size 업데이트
+		int w = 0, h = 0; Application::GetInstance().GetApplicationSize(w, h);
+		CoordHelper::SetScreenSize(FVector2((float)w, (float)h));
+
 		// 마우스 상태 검증 및 자동 초기화
 		// 마우스가 클릭된 상태로 너무 오래 유지되는 경우 자동 초기화
 		static int mouseHoldFrameCount = 0;
@@ -60,11 +65,11 @@ namespace Input
 		{
 			mouseHoldFrameCount = 0;
 		}
-	
+
 		// 추가 안전장치: 마우스가 클릭된 상태로 너무 오래 유지되면 강제 초기화
 		static int totalFrameCount = 0;
 		totalFrameCount++;
-	
+
 		// 매 1000프레임마다 마우스 상태 검증
 		if (totalFrameCount % 1000 == 0)
 		{
@@ -99,6 +104,7 @@ namespace Input
 
 	FVector2 GetMousePosition()
 	{
+		// 반환은 항상 현재 클라이언트 픽셀 좌표
 		return FVector2(float(m_point.x), float(m_point.y));
 	}
 
@@ -118,7 +124,6 @@ namespace Input
 		return worldMousePos;
 	}
 
-	// 아무 키를 눌렀을 때
 	bool AnyKeyPressed()
 	{
 		for (int i = 0; i < 256; ++i)
@@ -137,17 +142,6 @@ namespace Input
 		ClientToScreen(m_hwnd, &pt);
 		SetCursorPos(pt.x, pt.y);
 	}
-
-	//FVector2 GetMouseWorldPosition(std::weak_ptr<ACameraActor> camera)
-	//{
-	//	FVector2 screenPos = GetMousePosition();
-	//	FVector2 cameraPos = FVector2(0, 0);
-	//	if (const auto cameraRef = camera.lock())
-	//	{
-	//		cameraPos = cameraRef->GetActorLocation();
-	//	}
-	//	return screenPos + cameraPos;
-	//}
 
 	bool IsMouseLeftReleased()
 	{

@@ -8,6 +8,7 @@
 #include <Manager/D2DRenderManager.h>
 #include <tuple>
 #include <Define/Define.h>
+#include <Application.h>
 
 RenderSystem::RenderSystem()
 {
@@ -132,7 +133,8 @@ void RenderSystem::DebugCamera()
 		if (camera->bDebug)
 		{
 			D2D1::Matrix3x2F flipY = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
-			D2D1::Matrix3x2F screen = D2D1::Matrix3x2F::Translation(Define::SCREEN_WIDTH * 0.5f, Define::SCREEN_HEIGHT * 0.5f);
+			FVector2 appSize = Application::GetInstance().GetSize();
+			D2D1::Matrix3x2F screen = D2D1::Matrix3x2F::Translation(appSize.x * 0.5f, appSize.y * 0.5f);
 			D2D1::Matrix3x2F cameraInv = camera->relativeTransform.m_worldTransform.ToMatrix();
 			cameraInv.Invert();
 			deviceContext->SetTransform(cameraInv * flipY * screen);

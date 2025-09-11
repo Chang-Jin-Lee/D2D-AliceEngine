@@ -6,8 +6,8 @@
 
 namespace Define
 {
-	static const int SCREEN_WIDTH = 1920;	// 화면 너비
-	static const int SCREEN_HEIGHT = 1080;	// 화면 높이
+	static const int SCREEN_WIDTH = 1280;	// 기본 화면 너비 (전역 기본)
+	static const int SCREEN_HEIGHT = 720;	// 기본 화면 높이 (전역 기본)
 	static const int FRAME_RATE = 60;		// 프레임 레이트
 	static const std::wstring WINDOW_CLASS_NAME = L"Game";	// 윈도우 클래스 이름
 	static const std::wstring WINDOW_TITLE = L"Alice Engine";		// 윈도우 타이틀
@@ -34,7 +34,7 @@ namespace Define
 	// ========== Layer List ==========
 	static const int ParticleLayer = 987654322;
 
-// Scene : 350000 ~ 359999
+	// Scene : 350000 ~ 359999
 	static const int CutSceneLayer = 350001;
 	// UI : 50000 ~
 	static const int NormalUILayer = 50000;
@@ -43,9 +43,6 @@ namespace Define
 	static const int ButtonTextLayer = 50021;
 	static const int PopupLayer = 50030;
 	static const int PopupPopLayer = 50031;
-	static const int PopupObjectLayer = 50032;
-	static const int PopupButtonLayer = 50033;
-	static const int PopupTextLayer = 50034;
 
 	// Player
 	static const int HUDLayer = 50000;

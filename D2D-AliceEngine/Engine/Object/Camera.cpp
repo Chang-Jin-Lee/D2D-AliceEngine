@@ -1,9 +1,12 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Camera.h"
 #include "gameObject.h"
 #include <Component/TransformComponent.h>
 #include <Math/Transform.h>
 #include <Component/RenderComponent.h>
+#include <Manager/D2DRenderManager.h>
+#include <Manager/SceneManager.h>
+#include <Application.h>
 
 Camera::Camera()
 {
@@ -42,7 +45,7 @@ FVector2 Camera::GetScale()
 
 void Camera::SetScale(const FVector2& scale)
 {
-	// 0 ÀÌÇÏ °ªÀº 0.0001·Î °íÁ¤ (¶Ç´Â 0À¸·Î °íÁ¤ÇØµµ µÊ)
+	// 0 ì´í•˜ ê°’ì€ 0.0001ë¡œ ê³ ì • (ë˜ëŠ” 0ìœ¼ë¡œ ê³ ì •í•´ë„ ë¨)
 	float safeX = scale.x > 0.0f ? scale.x : 0.0001f;
 	float safeY = scale.y > 0.0f ? scale.y : 0.0001f;
 	relativeTransform.SetScale(safeX, safeY);
@@ -83,7 +86,7 @@ void Camera::AddPosition(const float& _x, const float& _y)
 	relativeTransform.SetPosition(relativeTransform.GetPosition().x + _x, relativeTransform.GetPosition().y + _y);
 }
 
-// »ó´ë ÁÂÇ¥, ½ºÄÉÀÏ, È¸Àü °ü·Ã ÇÔ¼öµé
+// ìƒëŒ€ ì¢Œí‘œ, ìŠ¤ì¼€ì¼, íšŒì „ ê´€ë ¨ í•¨ìˆ˜ë“¤
 void Camera::SetRelativePosition(const FVector2& _pos)
 {
 	relativeTransform.SetPosition(_pos.x, _pos.y);
@@ -144,7 +147,7 @@ void Camera::ClearOwner()
 	owner = nullptr;
 }
 
-// ºÎ¸ğ-ÀÚ½Ä °ü°è °ü¸® ÇÔ¼öµé
+// ë¶€ëª¨-ìì‹ ê´€ê³„ ê´€ë¦¬ í•¨ìˆ˜ë“¤
 void Camera::AddChildObject(gameObject* obj)
 {
 	if (obj && obj->transform())
@@ -153,7 +156,7 @@ void Camera::AddChildObject(gameObject* obj)
 	}
 }
 
-// ºÎ¸ğ-ÀÚ½Ä °ü°è °ü¸® ÇÔ¼öµé
+// ë¶€ëª¨-ìì‹ ê´€ê³„ ê´€ë¦¬ í•¨ìˆ˜ë“¤
 void Camera::AddChildObject(RenderComponent* obj)
 {
 	if (obj)
@@ -227,23 +230,33 @@ D2D1_POINT_2F Camera::WorldToScreenPoint(const D2D1_POINT_2F& world)
 	return TransformPoint(mat, world);
 }
 
-// ½ÇÁ¦ À§Ä¡¿¡¼­ ui ÁÂÇ¥°è·Î º¯È¯ÇÏ±â
+// ì‹¤ì œ ìœ„ì¹˜ì—ì„œ ui ì¢Œí‘œê³„ë¡œ ë³€í™˜í•˜ê¸°
 D2D1_POINT_2F Camera::ScreenToUICoord(const D2D1_POINT_2F& screen)
 {
-	// D2D´Â ÁÂ»ó´ÜÀÌ (0,0), ¾Æ·¡·Î ³»·Á°¥¼ö·Ï y Áõ°¡
-	// Unity UI´Â ÁÂÇÏ´ÜÀÌ (0,0), À§·Î ¿Ã¶ó°¥¼ö·Ï y Áõ°¡
+	// D2DëŠ” ì¢Œìƒë‹¨ì´ (0,0), ì•„ë˜ë¡œ ë‚´ë ¤ê°ˆìˆ˜ë¡ y ì¦ê°€
+	// Unity UIëŠ” ì¢Œí•˜ë‹¨ì´ (0,0), ìœ„ë¡œ ì˜¬ë¼ê°ˆìˆ˜ë¡ y ì¦ê°€
 	return {
 		screen.x / static_cast<float>(Define::SCREEN_WIDTH),
 		1.0f - (screen.y / static_cast<float>(Define::SCREEN_HEIGHT))
 	};
 }
 
-// UICoordToScreen({0.5f,0.5f}); ·Î ¾²¸é ¹İÈ¯°ªÀÌ ½ÇÁ¦ À§Ä¡.
+// UICoordToScreen({0.5f,0.5f}); ë¡œ ì“°ë©´ ë°˜í™˜ê°’ì´ ì‹¤ì œ ìœ„ì¹˜.
 D2D1_POINT_2F Camera::UICoordToScreen(const D2D1_POINT_2F& ui)
 {
-	// UI (0~1) ¡æ ÇÈ¼¿ ÁÂÇ¥·Î º¯È¯, YÃà µÚÁı±â
+	// UI (0~1) â†’ í”½ì…€ ì¢Œí‘œë¡œ ë³€í™˜, Yì¶• ë’¤ì§‘ê¸°
 	return {
 		ui.x * static_cast<float>(Define::SCREEN_WIDTH),
 		(1.0f - ui.y) * static_cast<float>(Define::SCREEN_HEIGHT)
 	};
+}
+
+D2D1::Matrix3x2F Camera::GetWorldToScreenMatrix()
+{
+	FVector2 appSize = Application::GetInstance().GetSize();
+	D2D1::Matrix3x2F flipY = D2D1::Matrix3x2F::Scale(1.0f, -1.0f);
+	D2D1::Matrix3x2F screen = D2D1::Matrix3x2F::Translation(appSize.x * 0.5f, appSize.y * 0.5f);
+	D2D1::Matrix3x2F cameraInv = relativeTransform.m_worldTransform.ToMatrix();
+	cameraInv.Invert();
+	return flipY * cameraInv * flipY * screen;
 }

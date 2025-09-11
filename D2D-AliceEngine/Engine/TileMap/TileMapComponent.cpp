@@ -17,6 +17,8 @@
 #include <Component/BoxComponent.h>
 #include "../../D2D-AliceEngine/Scripts/Enemy/Spawn/SpawnData.h"
 
+#include <Application.h>
+
 TileMapComponent::TileMapComponent()
 {
 }
@@ -92,7 +94,7 @@ void TileMapComponent::CreateTileCollision()
 			);
 
 			D2D1_MATRIX_3X2_F fullTransform =
-				D2D1::Matrix3x2F::Translation(-Define::SCREEN_WIDTH / 2.0f, -Define::SCREEN_HEIGHT / 2.0f) *
+				D2D1::Matrix3x2F::Translation(-Application::GetInstance().GetSize().x / 2.0f, -Application::GetInstance().GetSize().y / 2.0f) *
 				CoordHelper::GetSkewMatrix(skewAngle, mapHeight * tileHeight) * 
 				D2D1::Matrix3x2F::Scale(1,-1);
 			D2D1_POINT_2F tl = CoordHelper::TransformPoint(fullTransform, D2D1::Point2F(destRect.left, destRect.top));

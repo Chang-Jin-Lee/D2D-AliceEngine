@@ -156,24 +156,48 @@ void ButtonComponent::Release()
 void ButtonComponent::Render()
 {
 	if (!GetVisible()) return;
-	if (!m_bitmap) return;
 	__super::Render();
 
 	ID2D1DeviceContext7* context = D2DRenderManager::GetD2DDevice();
 	if (!context) return;
 
 	FVector2 relativeSize = FVector2(GetBitmapSizeX(), GetBitmapSizeY());
-	D2D1_RECT_F destRect = D2D1::RectF(-relativeSize.x / 2, -relativeSize.y / 2, relativeSize.x / 2, relativeSize.y / 2);
-	
-	// 먼저 글로우 이펙트를 뒤에 그리기 (있는 경우)
-	if (m_effect)
+	if (m_bitmap)
 	{
-		D2D1_POINT_2F glowPos = D2D1::Point2F(-relativeSize.x / 2, -relativeSize.y / 2);
-		context->DrawImage(m_effect.Get(), &glowPos);
+		D2D1_RECT_F destRect = D2D1::RectF(-relativeSize.x / 2, -relativeSize.y / 2, relativeSize.x / 2, relativeSize.y / 2);
+		// 먼저 글로우 이펙트를 뒤에 그리기 (있는 경우)
+		if (m_effect)
+		{
+			D2D1_POINT_2F glowPos = D2D1::Point2F(-relativeSize.x / 2, -relativeSize.y / 2);
+			context->DrawImage(m_effect.Get(), &glowPos);
+		}
+		// 그 다음 기존 버튼 이미지를 위에 그리기
+		context->DrawBitmap(m_bitmap.get(), destRect);
+		return;
 	}
-	
-	// 그 다음 기존 버튼 이미지를 위에 그리기
-	context->DrawBitmap(m_bitmap.get(), destRect);
+
+	// Fallback: solid rectangle with rounded corners
+	const float w = (relativeSize.x > 1.f ? relativeSize.x : m_fallbackSize.x);
+	const float h = (relativeSize.y > 1.f ? relativeSize.y : m_fallbackSize.y);
+	const float rx = 12.0f, ry = 12.0f;
+
+	ComPtr<ID2D1SolidColorBrush> brush;
+	context->CreateSolidColorBrush(D2D1::ColorF(
+		m_fallbackColor.r / 255.0f,
+		m_fallbackColor.g / 255.0f,
+		m_fallbackColor.b / 255.0f,
+		m_fallbackColor.a / 255.0f
+	), &brush);
+
+	D2D1_ROUNDED_RECT rr = {
+		D2D1::RectF(-w / 2, -h / 2, w / 2, h / 2), rx, ry
+	};
+	context->FillRoundedRectangle(&rr, brush.Get());
+
+	// subtle outline
+	ComPtr<ID2D1SolidColorBrush> outline;
+	context->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0, 0.25f), &outline);
+	context->DrawRoundedRectangle(&rr, outline.Get(), 2.0f);
 }
 
 float ButtonComponent::GetBitmapSizeX()
@@ -192,10 +216,16 @@ float ButtonComponent::GetBitmapSizeY()
 
 FVector2 ButtonComponent::GetRelativeSize()
 {
-	FVector2 relativeSize = __super::GetRelativeSize();
-	relativeSize.x *= GetBitmapSizeX();
-	relativeSize.y *= GetBitmapSizeY();;
-	return relativeSize;
+	FVector2 relativeScale = __super::GetRelativeSize();
+	if (m_bitmap)
+	{
+		relativeScale.x *= GetBitmapSizeX();
+		relativeScale.y *= GetBitmapSizeY();
+		return relativeScale;
+	}
+	// No bitmap: use fallback pixel size scaled by relative scale factors
+	return FVector2(relativeScale.x * m_fallbackSize.x,
+		relativeScale.y * m_fallbackSize.y);
 }
 
 void ButtonComponent::LoadData(Define::EButtonState state, const std::wstring& path)
